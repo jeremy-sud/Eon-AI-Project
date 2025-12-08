@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # TinyLM v2 Web Server
+  tinylm:
+    build:
+      context: .
+      dockerfile: phase7-language/Dockerfile
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./phase7-language:/app/phase7-language
+      - ./phase1-foundations:/app/phase1-foundations
+    networks:
+      - eon-net
+
+  # Mente Colectiva Simulation
+  collective-mind:
+    build:
+      context: .
+      dockerfile: phase6-collective/Dockerfile
+    volumes:
+      - ./phase6-collective:/app/phase6-collective
+      - ./phase1-foundations:/app/phase1-foundations
+    networks:
+      - eon-net
+
+networks:
+  eon-net:
+    driver: bridge

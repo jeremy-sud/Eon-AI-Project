@@ -109,7 +109,7 @@ python server.py
 - [x] Fase 6: Mente Colectiva
 - [x] Fase 7: TinyLM
 - [x] Fase 8: Paper académico
-- [ ] Fase 9: RAG o LLM pequeño integrado
+- [ ] Fase 9: Experimentación Abierta y Descubrimiento
 - [ ] Fase 10: Publicación arXiv
 
 ## 📜 Licencia

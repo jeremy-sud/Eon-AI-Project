@@ -7,6 +7,7 @@
 
 #include "libAeon.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /* ============================================================
@@ -450,6 +451,36 @@ float aeon_train(aeon_core_t *core, const aeon_state_t *inputs,
   }
 
   return mse / (float)(train_samples * AEON_OUTPUT_SIZE);
+}
+
+int aeon_prune(aeon_core_t *core, float threshold) {
+  if (core == NULL)
+    return -1;
+
+  int pruned_count = 0;
+  int total_weights = AEON_OUTPUT_SIZE * AEON_RESERVOIR_SIZE;
+
+#if AEON_USE_FIXED_POINT
+  aeon_weight_t fixed_threshold = (aeon_weight_t)(threshold * AEON_SCALE);
+#endif
+
+  for (int i = 0; i < total_weights; i++) {
+    aeon_weight_t w = core->W_out[i];
+
+#if AEON_USE_FIXED_POINT
+    if (abs(w) < fixed_threshold) {
+      core->W_out[i] = 0;
+      pruned_count++;
+    }
+#else
+    if (fabs(w) < threshold) {
+      core->W_out[i] = 0.0f;
+      pruned_count++;
+    }
+#endif
+  }
+
+  return pruned_count;
 }
 
 /* ============================================================

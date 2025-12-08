@@ -86,6 +86,22 @@ int main(void) {
   }
   test_passed("Training Stability");
 
+  // TEST 4: Structural Pruning
+  int pruned = aeon_prune(&core, 0.05f);
+  if (pruned < 0) {
+    test_failed("Pruning", "Failed to execute prune");
+  }
+  printf("Pruned %d connections\n", pruned);
+
+  // Verify MSE didn't explode
+  float mse_pruned = aeon_train(&core, inputs, targets, N_SAMPLES, 50);
+  if (mse_pruned > 0.05f) { // Allow slight degradation
+    char msg[64];
+    sprintf(msg, "MSE exploded after pruning: %f", mse_pruned);
+    test_failed("Pruning Stability", msg);
+  }
+  test_passed("Structural Pruning");
+
   printf("\nAll tests passed successfully.\n");
   return 0;
 }

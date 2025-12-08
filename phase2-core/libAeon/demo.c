@@ -130,6 +130,38 @@ int main(void) {
     printf("    ✗ Error guardando: %d\n", result);
   }
 
+  /* === PODA === */
+  printf("\n[6/6] Poda Estructural (Pruning)...\n");
+
+  float threshold = 0.1f;
+  int pruned = aeon_prune(&core, threshold);
+
+  printf("    ✓ Umbral: %.2f\n", threshold);
+  printf("    ✓ Conexiones podadas: %d / %d\n", pruned,
+         AEON_OUTPUT_SIZE * AEON_RESERVOIR_SIZE);
+
+  /* Verificar impacto en precisión */
+  aeon_reset(&core);
+  float total_error_pruned = 0.0f;
+
+  for (int i = 200; i < 200 + test_samples; i++) {
+    aeon_update(&core, &inputs[i]);
+    aeon_state_t pred;
+    aeon_predict(&core, &pred);
+
+#if AEON_USE_FIXED_POINT
+    float p = (float)pred / AEON_SCALE;
+    float y = (float)targets[i] / AEON_SCALE;
+#else
+    float p = pred;
+    float y = targets[i];
+#endif
+    float err = (p - y) * (p - y);
+    total_error_pruned += err;
+  }
+
+  printf("    ✓ MSE post-poda: %.6f\n", total_error_pruned / test_samples);
+
   /* === RESUMEN === */
   print_header("RESUMEN");
 

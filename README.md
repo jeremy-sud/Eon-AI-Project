@@ -19,13 +19,13 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 
 ## ✨ Características
 
-| Característica          | Descripción                      |
-| ----------------------- | -------------------------------- |
-| **Ultraligero**         | Núcleo C de 1.3KB de memoria     |
-| **Multi-plataforma**    | Python, C, JavaScript, Arduino   |
-| **Reservoir Computing** | Echo State Networks eficientes   |
-| **Mente Colectiva**     | Aprendizaje federado entre nodos |
-| **TinyLM**              | Generación de texto minimalista  |
+| Característica          | Descripción                    |
+| ----------------------- | ------------------------------ |
+| **Ultraligero**         | Núcleo C de 1.3KB de memoria   |
+| **Multi-plataforma**    | Python, C, JavaScript, Arduino |
+| **Reservoir Computing** | Echo State Networks eficientes |
+| **Mente Colectiva**     | Protocolo 1-Bit Ultraligero    |
+| **TinyLM**              | Diccionario Trie Optimizado    |
 
 ## 📊 Comparativa
 
@@ -92,7 +92,8 @@ python server.py
 
 - **ESN Python**: MSE 0.0004 en Mackey-Glass
 - **ESN C**: MSE 0.009 con punto fijo Q8.8
-- **TinyLM v2**: 99.9% accuracy en predicción de palabras
+- **TinyLM v2**: 99.9% accuracy con **>50% reducción de memoria** (Trie).
+- **Mente Colectiva**: Compresión **17x** en intercambio de pesos (1-Bit).
 - **Arduino**: ~500 bytes RAM para 16 neuronas
 
 ## 📚 Documentación

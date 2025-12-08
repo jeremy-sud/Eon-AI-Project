@@ -21,6 +21,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "phase1-foundations" / "python"))
 
 from esn.esn import EchoStateNetwork
+from src.trie_vocab import TrieVocab
 
 
 class WordTokenizer:
@@ -31,8 +32,8 @@ class WordTokenizer:
     def __init__(self, vocab_size: int = 500, embedding_dim: int = 32):
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
-        self.word_to_idx: Dict[str, int] = {}
-        self.idx_to_word: Dict[int, str] = {}
+        # Replace dicts with TrieVocab
+        self.vocab = TrieVocab()
         self.embeddings: Optional[np.ndarray] = None
         
         # Tokens especiales
@@ -40,6 +41,12 @@ class WordTokenizer:
         self.UNK = "<UNK>"
         self.BOS = "<BOS>"
         self.EOS = "<EOS>"
+        
+        # Pre-seed special tokens
+        self.vocab.add(self.PAD)
+        self.vocab.add(self.UNK)
+        self.vocab.add(self.BOS)
+        self.vocab.add(self.EOS)
         
     def fit(self, text: str):
         """Construye vocabulario y embeddings."""
@@ -49,19 +56,21 @@ class WordTokenizer:
         # Contar frecuencias
         counter = Counter(words)
         
-        # Tokens especiales + más frecuentes
-        vocab = [self.PAD, self.UNK, self.BOS, self.EOS]
-        vocab += [w for w, _ in counter.most_common(self.vocab_size - len(vocab))]
+        # Agregar palabras más frecuentes al Trie
+        # Note: Trie grows sequentially, so ID order corresponds to insertion order (roughly)
+        # We need to make sure we don't exceed desired size if possible, or just add all.
+        # Ideally we add most frequent first.
         
-        self.word_to_idx = {w: i for i, w in enumerate(vocab)}
-        self.idx_to_word = {i: w for w, i in self.word_to_idx.items()}
-        self.actual_vocab_size = len(vocab)
+        target_size = self.vocab_size - 4
+        for w, _ in counter.most_common(target_size):
+            self.vocab.add(w)
+            
+        self.actual_vocab_size = self.vocab.size
         
-        # Crear embeddings aleatorios (en un modelo real serían aprendidos)
+        # Crear embeddings aleatorios
         np.random.seed(42)
         self.embeddings = np.random.randn(self.actual_vocab_size, self.embedding_dim) * 0.1
-        # Hacer PAD = ceros
-        self.embeddings[0] = 0
+        self.embeddings[0] = 0 # PAD
         
     def _tokenize(self, text: str) -> List[str]:
         """Tokeniza texto en palabras."""
@@ -75,12 +84,26 @@ class WordTokenizer:
     def encode(self, text: str) -> np.ndarray:
         """Convierte texto a índices."""
         words = self._tokenize(text)
-        unk_idx = self.word_to_idx[self.UNK]
-        return np.array([self.word_to_idx.get(w, unk_idx) for w in words])
+        unk_idx = self.vocab.get_id(self.UNK)
+        
+        indices = []
+        for w in words:
+            idx = self.vocab.get_id(w)
+            if idx == -1:
+                indices.append(unk_idx)
+            else:
+                indices.append(idx)
+        return np.array(indices)
     
     def decode(self, indices: np.ndarray) -> str:
         """Convierte índices a texto."""
-        words = [self.idx_to_word.get(int(i), self.UNK) for i in indices]
+        words = []
+        for i in indices:
+            w = self.vocab.get_word(int(i))
+            if w == "<UNK>" and int(i) != self.vocab.get_id(self.UNK):
+                # Should not happen if within bounds
+                pass
+            words.append(w)
         # Limpiar tokens especiales
         words = [w for w in words if w not in [self.PAD, self.BOS, self.EOS]]
         # Reconstruir texto
@@ -225,9 +248,9 @@ class TinyLMv2:
         
         # Generar
         generated = list(prompt_indices)
-        current_idx = prompt_indices[-1] if len(prompt_indices) > 0 else self.tokenizer.word_to_idx[self.tokenizer.BOS]
+        current_idx = prompt_indices[-1] if len(prompt_indices) > 0 else self.tokenizer.vocab.get_id(self.tokenizer.BOS)
         
-        eos_idx = self.tokenizer.word_to_idx.get(self.tokenizer.EOS, -1)
+        eos_idx = self.tokenizer.vocab.get_id(self.tokenizer.EOS)
         
         for _ in range(max_tokens):
             # Embedding actual

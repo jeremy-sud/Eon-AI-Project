@@ -53,6 +53,7 @@ Todos los cambios notables del Proyecto Eón.
 
 - v1: Tokenización por caracteres
 - v2: Tokenización por palabras (99.9% accuracy)
+- **Trie Dictionary**: Vocabulario comprimido basado en LCRS arrays (`phase7-language/src/trie_vocab.py`).
 - Servidor web Flask
 
 ### Fase 8: Paper Académico

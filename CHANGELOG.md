@@ -43,6 +43,8 @@ Todos los cambios notables del Proyecto Eón.
 
 ### Fase 6: Mente Colectiva
 
+- **Intercambio 1-Bit**: Protocolo MQTT ultraligero para ESP32 (`phase6-collective/src`).
+- Compresión 17x (Float32 -> 1-Bit) para transmisión de pesos.
 - AeonNode: Nodo individual
 - CollectiveMind: Coordinador
 - Sincronización de pesos W_out

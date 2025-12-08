@@ -104,6 +104,7 @@ make test
 - **Mente Colectiva**: Protocolo P2P funcional en ESP32 con compresión **17x** (1-Bit).
 - **Consistencia**: "Spirit Hash" único (16 bytes) idéntico en Python, C y JS.
 - **Robustez**: Core C verificado con suite de pruebas unitarias.
+- **Eón Bio**: Detección de arritmias en simulador con **<2KB RAM** (Privacidad total).
 
 ## 📚 Documentación
 
@@ -117,7 +118,7 @@ make test
 
 - [x] Fase 1-3: Fundamentos (Python, C, JS)
 - [x] Fase 4: Hardware (Arduino, ESP32) + Mente Colectiva
-- [x] Fase 5: Aplicaciones IoT
+- [x] Fase 5: Aplicaciones IoT + **Bio Monitor**
 - [x] Fase 6: Protocolo de Intercambio (1-Bit)
 - [x] Fase 7: TinyLM (Language Model)
 - [x] Fase 8: Paper académico y Auditoría

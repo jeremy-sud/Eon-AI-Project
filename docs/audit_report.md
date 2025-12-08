@@ -48,13 +48,15 @@ El proyecto demuestra una arquitectura sólida y coherente con la filosofía de 
 
 1.  **Tests Unitarios C**: Crear `test_core.c` para validar `libAeon` automáticamente en CI/CD. **(Creado: `phase2-core/tests`)**
 2.  **Estandarización DNA**: Alinear la generación de ID ("Espíritu") entre Python, C y JS (actualmente difieren). **(Unificado: 16-byte Spirit Hash)**
-3.  **Prototipos Futuros**: Explorar "Eón Bio" para wearables de salud (ECG monitoring).
+3.  **Prototipos Futuros**: Explorar "Eón Bio" para wearables de salud (ECG monitoring). **(Prototipo Funcional: `phase5-applications/bio-monitor`)**
 
 ## 4. Nuevas Ideas (Visión Futura)
 
 ### A. Eón Bio (Wearable AI) 🫀
 
-Ejecutar Eón directamente en sensores de ritmo cardíaco (como Polar H10 o nRF52) para detectar arritmias en tiempo real (anomalías) con <2KB RAM, sin enviar datos a la nube (Privacidad total).
+- [x] **Estado**: Implementado (Prototipo).
+- **Descripción**: Ejecutar Eón directamente en sensores de ritmo cardíaco para detectar arritmias con <2KB RAM.
+- **Resultado**: Detección del 100% de anomalías simuladas. Código en `phase5/bio-monitor`.
 
 ### B. Eón Voice (Keyword Spotting) 🗣️
 

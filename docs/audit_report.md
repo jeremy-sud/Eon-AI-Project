@@ -60,7 +60,9 @@ El proyecto demuestra una arquitectura sólida y coherente con la filosofía de 
 
 ### B. Eón Voice (Keyword Spotting) 🗣️
 
-Usar el reservoir para detectar 2-3 palabras clave ("Eón, activa luces") en un Cortex-M4. La naturaleza temporal del ESN es perfecta para audio corto.
+- [x] **Estado**: Implementado (Prototipo).
+- **Descripción**: Detectar 2-3 palabras clave ("Eón") en Cortex-M4.
+- **Resultado**: Detección de espectrogramas simulados. Código en `phase5/voice-command`.
 
 ### C. Eón Dream (General Art) 🎨
 

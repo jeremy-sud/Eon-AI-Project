@@ -1,0 +1,35 @@
+# Proyecto Eón - venv
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.so
+*.o
+*.a
+
+# Archivos de build
+build/
+dist/
+*.egg-info/
+aeon_demo
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Datos temporales
+*.tmp
+*.bak
+
+# Node modules (si los hay)
+node_modules/

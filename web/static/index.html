@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eón - Momento Cero</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-primary: #0a0a0f;
+        --bg-secondary: #12121a;
+        --accent: #00f0ff;
+        --accent-glow: rgba(0, 240, 255, 0.3);
+        --text-primary: #e0e0e0;
+        --text-muted: #666;
+        --success: #00ff88;
+        --warning: #ffaa00;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Roboto Mono", monospace;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Fondo animado */
+      .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+            ellipse at 20% 80%,
+            rgba(0, 240, 255, 0.05) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 80% 20%,
+            rgba(0, 255, 136, 0.03) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Header */
+      header {
+        text-align: center;
+        padding: 3rem 0;
+      }
+
+      h1 {
+        font-family: "Orbitron", sans-serif;
+        font-size: 3rem;
+        background: linear-gradient(135deg, var(--accent), var(--success));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.3em;
+      }
+
+      .subtitle {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        letter-spacing: 0.2em;
+      }
+
+      /* Paneles */
+      .panel {
+        background: var(--bg-secondary);
+        border: 1px solid rgba(0, 240, 255, 0.1);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .panel::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent),
+          transparent
+        );
+      }
+
+      .panel-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 0.8rem;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        letter-spacing: 0.15em;
+      }
+
+      /* Status Grid */
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      .status-item {
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+      }
+
+      .status-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .status-value {
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        margin-top: 0.3rem;
+      }
+
+      .status-value.highlight {
+        color: var(--accent);
+        text-shadow: 0 0 10px var(--accent-glow);
+      }
+
+      /* Botones */
+      .btn-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        font-family: "Orbitron", sans-serif;
+        padding: 0.8rem 1.5rem;
+        border: 1px solid var(--accent);
+        background: transparent;
+        color: var(--accent);
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 4px;
+      }
+
+      .btn:hover {
+        background: var(--accent);
+        color: var(--bg-primary);
+        box-shadow: 0 0 20px var(--accent-glow);
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: var(--bg-primary);
+      }
+
+      .btn-success {
+        border-color: var(--success);
+        color: var(--success);
+      }
+
+      .btn-success:hover {
+        background: var(--success);
+        color: var(--bg-primary);
+      }
+
+      /* Log */
+      .log {
+        font-size: 0.75rem;
+        max-height: 200px;
+        overflow-y: auto;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 1rem;
+        border-radius: 4px;
+        line-height: 1.6;
+      }
+
+      .log-entry {
+        margin-bottom: 0.5rem;
+        padding-left: 1rem;
+        border-left: 2px solid var(--text-muted);
+      }
+
+      .log-entry.success {
+        border-color: var(--success);
+      }
+
+      .log-entry.info {
+        border-color: var(--accent);
+      }
+
+      .log-entry .time {
+        color: var(--text-muted);
+      }
+
+      /* Input */
+      select,
+      input {
+        font-family: "Roboto Mono", monospace;
+        padding: 0.6rem 1rem;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(0, 240, 255, 0.2);
+        color: var(--text-primary);
+        border-radius: 4px;
+        font-size: 0.85rem;
+      }
+
+      select:focus,
+      input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      /* Estado no nacido */
+      .not-born {
+        text-align: center;
+        padding: 3rem;
+      }
+
+      .birth-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+      }
+
+      /* Animación de pulso */
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+
+      /* Canvas para gráfico */
+      #predictionChart {
+        width: 100%;
+        height: 150px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-animation"></div>
+
+    <div class="container">
+      <header>
+        <h1>EÓN</h1>
+        <p class="subtitle">
+          ARQUITECTURA EMERGENTE Y OPTIMIZACIÓN NEUROMÓRFICA
+        </p>
+      </header>
+
+      <!-- Panel de Estado -->
+      <div class="panel" id="statusPanel">
+        <div class="panel-title">ESTADO DEL SISTEMA</div>
+
+        <div id="notBornState" class="not-born">
+          <div class="birth-icon">◯</div>
+          <p style="color: var(--text-muted)">Sin instancia activa</p>
+          <p
+            style="
+              font-size: 0.75rem;
+              color: var(--text-muted);
+              margin-top: 0.5rem;
+            "
+          >
+            Presiona "MOMENTO CERO" para dar nacimiento a Eón
+          </p>
+        </div>
+
+        <div id="bornState" style="display: none">
+          <div class="status-grid">
+            <div class="status-item">
+              <div class="status-label">Nombre</div>
+              <div class="status-value" id="statusName">-</div>
+            </div>
+            <div class="status-item">
+              <div class="status-label">Nacimiento</div>
+              <div class="status-value highlight" id="statusBirth">-</div>
+            </div>
+            <div class="status-item">
+              <div class="status-label">Edad</div>
+              <div class="status-value pulse" id="statusAge">-</div>
+            </div>
+            <div class="status-item">
+              <div class="status-label">Hash Único</div>
+              <div class="status-value" id="statusHash">-</div>
+            </div>
+            <div class="status-item">
+              <div class="status-label">Muestras Aprendidas</div>
+              <div class="status-value" id="statusSamples">0</div>
+            </div>
+            <div class="status-item">
+              <div class="status-label">Memoria</div>
+              <div class="status-value" id="statusMemory">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel de Control -->
+      <div class="panel">
+        <div class="panel-title">CONTROL</div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="birthBtn" onclick="createBirth()">
+            ◉ MOMENTO CERO
+          </button>
+          <select id="patternSelect">
+            <option value="sine">Onda Sinusoidal</option>
+            <option value="mackey_glass">Mackey-Glass (Caótico)</option>
+            <option value="square">Onda Cuadrada</option>
+            <option value="random">Ruido Aleatorio</option>
+          </select>
+          <button
+            class="btn btn-success"
+            id="learnBtn"
+            onclick="learn()"
+            disabled
+          >
+            ▶ APRENDER
+          </button>
+          <button class="btn" id="predictBtn" onclick="predict()" disabled>
+            ◈ PREDECIR
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel de Predicción -->
+      <div class="panel" id="predictionPanel" style="display: none">
+        <div class="panel-title">PREDICCIÓN</div>
+        <canvas id="predictionChart"></canvas>
+      </div>
+
+      <!-- Panel de Log -->
+      <div class="panel">
+        <div class="panel-title">REGISTRO</div>
+        <div class="log" id="logContainer">
+          <div class="log-entry info">
+            <span class="time">[INIT]</span> Sistema listo. Esperando Momento
+            Cero...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = "";
+      let isBorn = false;
+      let statusInterval = null;
+
+      function log(message, type = "info") {
+        const container = document.getElementById("logContainer");
+        const time = new Date().toLocaleTimeString();
+        const entry = document.createElement("div");
+        entry.className = `log-entry ${type}`;
+        entry.innerHTML = `<span class="time">[${time}]</span> ${message}`;
+        container.insertBefore(entry, container.firstChild);
+      }
+
+      async function createBirth() {
+        log("Iniciando Momento Cero...", "info");
+
+        try {
+          const response = await fetch(`${API_BASE}/api/birth`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ n_reservoir: 100 }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            isBorn = true;
+            log(`✓ NACIMIENTO: ${data.status.name}`, "success");
+            log(`  Hash: ${data.status.birth_hash}`, "info");
+            updateUI(data.status);
+            startStatusPolling();
+          } else {
+            log(`✗ Error: ${data.error}`, "error");
+          }
+        } catch (error) {
+          log(`✗ Error de conexión: ${error.message}`, "error");
+        }
+      }
+
+      async function learn() {
+        const pattern = document.getElementById("patternSelect").value;
+        log(`Aprendiendo patrón: ${pattern}...`, "info");
+
+        try {
+          const response = await fetch(`${API_BASE}/api/learn`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ pattern, samples: 500 }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            log(
+              `✓ Aprendido: ${data.result.samples_learned} muestras`,
+              "success"
+            );
+            updateUI(data.status);
+            document.getElementById("predictBtn").disabled = false;
+          } else {
+            log(`✗ Error: ${data.error}`, "error");
+          }
+        } catch (error) {
+          log(`✗ Error: ${error.message}`, "error");
+        }
+      }
+
+      async function predict() {
+        const pattern = document.getElementById("patternSelect").value;
+        log("Generando predicción...", "info");
+
+        try {
+          const response = await fetch(`${API_BASE}/api/predict`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ pattern, samples: 100 }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            log(
+              `✓ Predicción generada: ${data.predictions.length} puntos`,
+              "success"
+            );
+            drawChart(data.input, data.predictions);
+          } else {
+            log(`✗ Error: ${data.error}`, "error");
+          }
+        } catch (error) {
+          log(`✗ Error: ${error.message}`, "error");
+        }
+      }
+
+      function updateUI(status) {
+        document.getElementById("notBornState").style.display = "none";
+        document.getElementById("bornState").style.display = "block";
+        document.getElementById("learnBtn").disabled = false;
+        document.getElementById("birthBtn").disabled = true;
+
+        document.getElementById("statusName").textContent = status.name;
+        document.getElementById("statusBirth").textContent = new Date(
+          status.birth_timestamp
+        ).toLocaleString();
+        document.getElementById("statusAge").textContent = status.age;
+        document.getElementById("statusHash").textContent = status.birth_hash;
+        document.getElementById("statusSamples").textContent =
+          status.total_samples_learned;
+        document.getElementById("statusMemory").textContent =
+          status.memory_kb.toFixed(2) + " KB";
+      }
+
+      function startStatusPolling() {
+        statusInterval = setInterval(async () => {
+          try {
+            const response = await fetch(`${API_BASE}/api/status`);
+            const data = await response.json();
+            if (data.success) {
+              document.getElementById("statusAge").textContent =
+                data.status.age;
+            }
+          } catch (e) {}
+        }, 1000);
+      }
+
+      function drawChart(input, predictions) {
+        const panel = document.getElementById("predictionPanel");
+        panel.style.display = "block";
+
+        const canvas = document.getElementById("predictionChart");
+        const ctx = canvas.getContext("2d");
+
+        // Ajustar tamaño
+        canvas.width = canvas.offsetWidth;
+        canvas.height = 150;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Escalar datos
+        const allData = [...input, ...predictions];
+        const min = Math.min(...allData);
+        const max = Math.max(...allData);
+        const range = max - min || 1;
+
+        const scaleY = (val) =>
+          canvas.height - ((val - min) / range) * (canvas.height - 20) - 10;
+        const scaleX = (i, len) => (i / (len - 1)) * canvas.width;
+
+        // Dibujar input
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(0, 240, 255, 0.5)";
+        ctx.lineWidth = 1;
+        input.forEach((val, i) => {
+          const x = scaleX(i, input.length);
+          const y = scaleY(val);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // Dibujar predicciones
+        ctx.beginPath();
+        ctx.strokeStyle = "#00ff88";
+        ctx.lineWidth = 2;
+        predictions.forEach((val, i) => {
+          const x = scaleX(i, predictions.length);
+          const y = scaleY(val);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+
+      // Verificar estado al cargar
+      window.onload = async () => {
+        try {
+          const response = await fetch(`${API_BASE}/api/status`);
+          const data = await response.json();
+          if (data.success) {
+            isBorn = true;
+            updateUI(data.status);
+            startStatusPolling();
+            log("Instancia existente cargada", "success");
+          }
+        } catch (e) {}
+      };
+    </script>
+  </body>
+</html>

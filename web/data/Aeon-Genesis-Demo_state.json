@@ -1,0 +1,21 @@
+{
+  "status": {
+    "name": "Aeon-Genesis-Demo",
+    "birth_timestamp": "2025-12-08T10:36:03.031701+00:00",
+    "birth_hash": "ef50094c9b085d02",
+    "age": "1.0 segundos",
+    "age_seconds": 1.041135,
+    "is_trained": true,
+    "total_samples_learned": 499,
+    "learning_sessions": 1,
+    "reservoir_size": 100,
+    "memory_kb": 80.46875
+  },
+  "learning_history": [
+    {
+      "timestamp": "2025-12-08T10:36:04.072724+00:00",
+      "samples": 499,
+      "age_at_learning": 1.041076
+    }
+  ]
+}

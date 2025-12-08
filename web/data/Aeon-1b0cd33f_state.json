@@ -1,0 +1,36 @@
+{
+  "status": {
+    "name": "Aeon-1b0cd33f",
+    "birth_timestamp": "2025-12-08T10:39:19.874256+00:00",
+    "birth_hash": "1b0cd33f6ee90ace",
+    "age": "46.3 segundos",
+    "age_seconds": 46.269561,
+    "is_trained": true,
+    "total_samples_learned": 1996,
+    "learning_sessions": 4,
+    "reservoir_size": 100,
+    "memory_kb": 80.46875
+  },
+  "learning_history": [
+    {
+      "timestamp": "2025-12-08T10:39:38.701678+00:00",
+      "samples": 499,
+      "age_at_learning": 18.82747
+    },
+    {
+      "timestamp": "2025-12-08T10:39:56.826229+00:00",
+      "samples": 499,
+      "age_at_learning": 36.952021
+    },
+    {
+      "timestamp": "2025-12-08T10:40:01.655277+00:00",
+      "samples": 499,
+      "age_at_learning": 41.78108
+    },
+    {
+      "timestamp": "2025-12-08T10:40:06.143775+00:00",
+      "samples": 499,
+      "age_at_learning": 46.26954
+    }
+  ]
+}

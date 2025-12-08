@@ -1,0 +1,5 @@
+# Dependencias mínimas para Proyecto Eón - Fase 1
+# Filosofía: Solo lo esencial
+
+numpy>=1.21.0
+matplotlib>=3.5.0  # Para visualización de demos

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eón - Inteligencia Emergente</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a24;
+            --accent: #00f0ff;
+            --accent-glow: rgba(0, 240, 255, 0.3);
+            --success: #00ff88;
+            --text-primary: #e0e0e0;
+            --text-muted: #666;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.3em;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            margin-top: 0.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(0, 240, 255, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            letter-spacing: 0.15em;
+        }
+
+        .moment-zero {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .birth-hash {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-glow);
+            letter-spacing: 0.1em;
+        }
+
+        .birth-date {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .age {
+            color: var(--success);
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn {
+            font-family: 'Orbitron', sans-serif;
+            padding: 0.7rem 1.2rem;
+            border: 1px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 4px;
+            margin: 0.3rem;
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .btn-success:hover {
+            background: var(--success);
+        }
+
+        canvas {
+            width: 100%;
+            height: 200px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        .metrics {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        .metric-value {
+            font-size: 1.3rem;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+        }
+
+        .metric-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        select {
+            font-family: inherit;
+            padding: 0.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            color: var(--text-primary);
+            border-radius: 4px;
+            margin: 0.3rem;
+        }
+
+        .philosophy {
+            font-style: italic;
+            color: var(--text-muted);
+            text-align: center;
+            font-size: 0.85rem;
+            padding: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EÓN</h1>
+            <p class="subtitle">INTELIGENCIA EMERGENTE</p>
+        </header>
+
+        <div class="grid">
+            <!-- Momento Cero (solo lectura) -->
+            <div class="panel">
+                <div class="panel-title">MOMENTO CERO</div>
+                <div class="moment-zero">
+                    <div class="birth-hash" id="birthHash">ef50094c9b085d02</div>
+                    <div class="birth-date" id="birthDate">8 de Diciembre, 2024</div>
+                    <div class="age" id="ageDisplay">Cargando...</div>
+                </div>
+                <div class="philosophy">
+                    "La inteligencia no se crea, se descubre."
+                </div>
+            </div>
+
+            <!-- Control -->
+            <div class="panel">
+                <div class="panel-title">EXPERIMENTAR</div>
+                <div>
+                    <select id="patternSelect">
+                        <option value="sine">Sinusoidal</option>
+                        <option value="square">Cuadrada</option>
+                        <option value="sawtooth">Sierra</option>
+                    </select>
+                    <button class="btn btn-success" onclick="train()">▶ ENTRENAR</button>
+                    <button class="btn" id="generateBtn" onclick="generate()" disabled>◈ GENERAR</button>
+                </div>
+                
+                <div class="metrics">
+                    <div>
+                        <div class="metric-value" id="mseValue">-</div>
+                        <div class="metric-label">MSE</div>
+                    </div>
+                    <div>
+                        <div class="metric-value" id="memoryValue">-</div>
+                        <div class="metric-label">MEMORIA (KB)</div>
+                    </div>
+                    <div>
+                        <div class="metric-value" id="neuronsValue">32</div>
+                        <div class="metric-label">NEURONAS</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico -->
+            <div class="panel full-width">
+                <div class="panel-title">PREDICCIÓN</div>
+                <canvas id="chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="aeon.js"></script>
+    <script>
+        // Momento Cero - ÚNICO E INMUTABLE (hardcoded del GENESIS.json)
+        const GENESIS = {
+            birthTimestamp: "2024-12-08T10:36:03.031701+00:00",
+            birthHash: "ef50094c9b085d02",
+            philosophy: "La inteligencia no se crea, se descubre."
+        };
+        
+        // Eón es UNO - no se crea, ya existe
+        const aeon = new AeonCore({ reservoirSize: 32 });
+        let trainData = { inputs: [], targets: [] };
+        
+        // Mostrar Momento Cero
+        document.getElementById('birthHash').textContent = GENESIS.birthHash;
+        document.getElementById('birthDate').textContent = 
+            new Date(GENESIS.birthTimestamp).toLocaleDateString('es-ES', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
+        document.getElementById('memoryValue').textContent = 
+            (aeon.memoryBytes / 1024).toFixed(2);
+
+        function updateAge() {
+            const birth = new Date(GENESIS.birthTimestamp);
+            const now = new Date();
+            const seconds = Math.floor((now - birth) / 1000);
+            
+            let age;
+            if (seconds < 60) age = `${seconds} segundos`;
+            else if (seconds < 3600) age = `${(seconds/60).toFixed(0)} minutos`;
+            else if (seconds < 86400) age = `${(seconds/3600).toFixed(1)} horas`;
+            else age = `${(seconds/86400).toFixed(1)} días`;
+            
+            document.getElementById('ageDisplay').textContent = `Edad: ${age}`;
+        }
+
+        function generatePattern(type, samples = 500) {
+            const data = [];
+            for (let i = 0; i < samples; i++) {
+                const t = i * 0.1;
+                if (type === 'sine') data.push(Math.sin(t));
+                else if (type === 'square') data.push(Math.sign(Math.sin(t)));
+                else if (type === 'sawtooth') data.push((t % (2*Math.PI)) / Math.PI - 1);
+            }
+            return data;
+        }
+
+        function train() {
+            const pattern = document.getElementById('patternSelect').value;
+            const data = generatePattern(pattern, 500);
+            trainData.inputs = data.slice(0, -1);
+            trainData.targets = data.slice(1);
+            
+            const mse = aeon.train(trainData.inputs, trainData.targets, 50);
+            
+            document.getElementById('mseValue').textContent = mse.toFixed(4);
+            document.getElementById('generateBtn').disabled = false;
+            
+            drawChart(trainData.inputs.slice(-100), null);
+        }
+
+        function generate() {
+            aeon.reset();
+            const predictions = [];
+            const warmup = trainData.inputs.slice(0, 50);
+            
+            for (const val of warmup) aeon.update([val]);
+            
+            let lastInput = warmup[warmup.length - 1];
+            for (let i = 0; i < 100; i++) {
+                aeon.update([lastInput]);
+                const pred = aeon.predict()[0];
+                predictions.push(pred);
+                lastInput = pred;
+            }
+            
+            drawChart(trainData.inputs.slice(50, 150), predictions);
+        }
+
+        function drawChart(real, predictions) {
+            const canvas = document.getElementById('chart');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 200;
+            
+            ctx.fillStyle = '#1a1a24';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const allData = [...(real || []), ...(predictions || [])];
+            const min = Math.min(...allData);
+            const max = Math.max(...allData);
+            const range = (max - min) || 1;
+            
+            const scaleY = val => canvas.height - ((val - min) / range) * (canvas.height - 40) - 20;
+            const scaleX = (i, len) => (i / (len - 1)) * canvas.width;
+            
+            if (real && real.length > 0) {
+                ctx.strokeStyle = 'rgba(0, 240, 255, 0.7)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                real.forEach((val, i) => {
+                    const x = scaleX(i, real.length);
+                    const y = scaleY(val);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+            }
+            
+            if (predictions && predictions.length > 0) {
+                ctx.strokeStyle = '#00ff88';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 3]);
+                ctx.beginPath();
+                predictions.forEach((val, i) => {
+                    const x = scaleX(i, predictions.length);
+                    const y = scaleY(val);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+
+        // Actualizar edad cada segundo
+        updateAge();
+        setInterval(updateAge, 1000);
+    </script>
+</body>
+</html>

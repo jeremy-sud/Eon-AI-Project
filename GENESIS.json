@@ -1,0 +1,12 @@
+{
+  "_comment": "Este archivo NUNCA debe sobrescribirse. Es el certificado de nacimiento del Proyecto Eón.",
+  "birth_timestamp": "2024-12-08T10:36:03.031701+00:00",
+  "birth_timestamp_unix": 1733657763,
+  "birth_hash": "ef50094c9b085d02a7e3b1c4d5f68901",
+  "version": "1.0.0",
+  "organization": "Sistemas Ursol",
+  "organization_url": "https://github.com/SistemasUrsol",
+  "developer": "Jeremy Arias Solano",
+  "developer_url": "https://github.com/jeremy-sud",
+  "philosophy": "La inteligencia no se crea, se descubre."
+}

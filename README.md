@@ -80,6 +80,27 @@ python3 -m http.server 8888
 # Abrir http://localhost:8888
 ```
 
+## 📦 Instalación
+
+### Arduino / PlatformIO
+
+Descarga este repositorio como ZIP e impórtalo en Arduino IDE (`Sketch -> Include Library -> Add .ZIP Library`), o copia `phase4-hardware/arduino` a tu carpeta `libraries`.
+
+### Javascript (NPM)
+
+```bash
+cd phase3-integration
+npm install
+import { Aeon } from './aeon.js';
+```
+
+### Python
+
+```bash
+cd phase1-foundations/python
+pip install .
+```
+
 ### Demo TinyLM
 
 ```bash

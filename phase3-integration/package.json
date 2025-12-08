@@ -1,0 +1,24 @@
+{
+  "name": "eon-js",
+  "version": "1.0.0",
+  "description": "Ultra-lightweight Echo State Network for the Browser and Node.js",
+  "main": "aeon.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "demo": "python3 -m http.server 8888 -d demos"
+  },
+  "keywords": [
+    "neural-network",
+    "reservoir-computing",
+    "esn",
+    "tinyml",
+    "edge-ai"
+  ],
+  "author": "Jeremy Sud",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeremy-sud/Eon-AI-Project.git"
+  }
+}

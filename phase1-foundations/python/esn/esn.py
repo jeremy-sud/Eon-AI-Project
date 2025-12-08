@@ -46,6 +46,12 @@ class EchoStateNetwork:
         # Inicializar generador aleatorio
         self.rng = np.random.RandomState(random_state)
         
+        # === MOMENTO CERO (Standardized DNA) ===
+        import time
+        self.birth_time = int(time.time())
+        seed = random_state if random_state is not None else self.birth_time
+        self.birth_hash = self._generate_hash(seed, self.birth_time)
+        
         # Inicializar matrices
         self._initialize_weights()
         
@@ -54,6 +60,21 @@ class EchoStateNetwork:
         
         # Matriz de salida (la única que se entrena)
         self.W_out: Optional[np.ndarray] = None
+
+    def _generate_hash(self, seed: int, timestamp: int) -> str:
+        """Genera hash de nacimiento estandarizado (compatible con C/JS)."""
+        state = seed ^ timestamp
+        # LCG constants from C implementation (mixed/simplified)
+        # Using a simple Python implementation to mimic the C logic 
+        # C: state = (state * 1103515245 + 12345) & 0x7fffffff
+        
+        bytes_list = []
+        curr = state & 0xFFFFFFFF
+        for _ in range(16):
+            curr = (curr * 1103515245 + 12345) & 0x7fffffff
+            bytes_list.append(curr & 0xFF)
+            
+        return ''.join(f'{b:02x}' for b in bytes_list)
         
     def _initialize_weights(self):
         """Inicializa las matrices de pesos aleatorios."""

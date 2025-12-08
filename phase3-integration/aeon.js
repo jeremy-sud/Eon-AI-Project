@@ -62,14 +62,20 @@ class AeonCore {
    * Genera hash único de nacimiento
    */
   _generateHash() {
-    const data = `${Date.now()}-${Math.random()}-${
-      navigator?.userAgent || "node"
-    }`;
+    // High entropy source: Time + Multiple Randoms
+    // Removing userAgent to avoid fingerprinting privacy risks
+    const timestamp = Date.now().toString(36);
+    const entropy1 = Math.random().toString(36).substring(2);
+    const entropy2 = Math.random().toString(36).substring(2);
+
+    // Simple non-cryptographic unique ID
+    const raw = `${timestamp}-${entropy1}-${entropy2}`;
+
     let hash = 0;
-    for (let i = 0; i < data.length; i++) {
-      const char = data.charCodeAt(i);
+    for (let i = 0; i < raw.length; i++) {
+      const char = raw.charCodeAt(i);
       hash = (hash << 5) - hash + char;
-      hash = hash & hash;
+      hash = hash & hash; // Convert to 32bit integer
     }
     return Math.abs(hash).toString(16).padStart(16, "0").slice(0, 16);
   }

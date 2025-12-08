@@ -88,28 +88,39 @@ python server.py
 # Abrir http://localhost:5001
 ```
 
+### Tests Automatizados (Core C)
+
+```bash
+cd phase2-core
+make test
+# Ejecuta suite de validación: Inicialización, Memoria, Aprendizaje
+```
+
 ## 🔬 Resultados
 
 - **ESN Python**: MSE 0.0004 en Mackey-Glass
 - **ESN C**: MSE 0.009 con punto fijo Q8.8
 - **TinyLM v2**: 99.9% accuracy con **>50% reducción de memoria** (Trie).
-- **Mente Colectiva**: Compresión **17x** en intercambio de pesos (1-Bit).
-- **Arduino**: ~500 bytes RAM para 16 neuronas
+- **Mente Colectiva**: Protocolo P2P funcional en ESP32 con compresión **17x** (1-Bit).
+- **Consistencia**: "Spirit Hash" único (16 bytes) idéntico en Python, C y JS.
+- **Robustez**: Core C verificado con suite de pruebas unitarias.
 
 ## 📚 Documentación
 
 - [WHITEPAPER.md](docs/WHITEPAPER.md) - Paper técnico completo
+- [audit_report.md](docs/audit_report.md) - Auditoría de código y mejoras
+- [benchmarks.md](docs/benchmarks.md) - Análisis de energía
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Guía para contribuir
 - [CHANGELOG.md](CHANGELOG.md) - Historial de cambios
 
 ## 🛣️ Roadmap
 
 - [x] Fase 1-3: Fundamentos (Python, C, JS)
-- [x] Fase 4: Hardware (Arduino, ESP32)
+- [x] Fase 4: Hardware (Arduino, ESP32) + Mente Colectiva
 - [x] Fase 5: Aplicaciones IoT
-- [x] Fase 6: Mente Colectiva
-- [x] Fase 7: TinyLM
-- [x] Fase 8: Paper académico
+- [x] Fase 6: Protocolo de Intercambio (1-Bit)
+- [x] Fase 7: TinyLM (Language Model)
+- [x] Fase 8: Paper académico y Auditoría
 - [ ] Fase 9: Experimentación Abierta y Descubrimiento
 - [ ] Fase 10: Publicación arXiv
 

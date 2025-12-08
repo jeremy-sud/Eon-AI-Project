@@ -82,14 +82,14 @@ public:
    */
   bool isTrained() { return _trained; }
 
-private:
+protected:
   uint8_t _size; // Tamaño del reservoir
   bool _trained; // Estado de entrenamiento
 
   // Estado (punto fijo Q8.8)
   int16_t _state[AEON_MAX_RESERVOIR];
 
-  // Pesos (punto fijo Q8.8)
+  // Pesos (punto fijo Q?.?) -> int8_t
   int8_t _W_in[AEON_MAX_RESERVOIR];
   int8_t _W_out[AEON_MAX_RESERVOIR];
 

@@ -47,3 +47,17 @@ message(STATUS "Build Configuration:")
 message(STATUS "  Reservoir Size: ${AEON_RESERVOIR_SIZE}")
 message(STATUS "  Sparsity:       ${AEON_SPARSITY_FACTOR}")
 message(STATUS "  Fixed Point:    ${AEON_USE_FIXED_POINT}")
+
+# ==========================================
+# Testing
+# ==========================================
+enable_testing()
+add_executable(test_aeon test_aeon.c)
+target_link_libraries(test_aeon PRIVATE aeon)
+
+if(UNIX AND NOT APPLE)
+    target_link_libraries(test_aeon PRIVATE m)
+endif()
+
+add_test(NAME CoreRegressionTest COMMAND test_aeon)
+

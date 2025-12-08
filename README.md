@@ -112,6 +112,17 @@ python server.py
 - [ ] Fase 9: Experimentación Abierta y Descubrimiento
 - [ ] Fase 10: Publicación arXiv
 
+## 📈 Benchmarks de Energía
+
+Resultados recientes (Ver [docs/benchmarks.md](docs/benchmarks.md)):
+
+| Motor         | Energía / Ciclo (Cortex-M4) |
+| :------------ | :-------------------------- |
+| **Eón Motor** | **0.0045 μJ**               |
+| TinyML MLP    | 0.0015 μJ                   |
+
+El motor Eón es 3x más costoso computacionalmente que una red estática simple, pero ofrece memoria temporal dinámica. Aún así, es **extremadamente eficiente** para operación con baterías de reloj.
+
 ## 📜 Licencia
 
 MIT License - 2024 [Sistemas Ursol](https://github.com/SistemasUrsol)

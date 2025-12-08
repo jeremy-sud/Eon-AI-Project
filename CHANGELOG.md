@@ -13,6 +13,11 @@ Todos los cambios notables del Proyecto Eón.
 
 ### Fase 2: Núcleo C
 
+- **Benchmarks de Energía**: Eón (0.0045 μJ) vs TinyML (0.0015 μJ) en Cortex-M4.
+- **Documentación Completa**: Arquitectura, benchmarks, y guías de uso actualizadas.
+
+### Fase 2: Núcleo C
+
 - libAeon: 1.3KB de memoria
 - Aritmética de punto fijo Q8.8
 - Entrenamiento Gauss-Jordan

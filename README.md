@@ -67,6 +67,9 @@ python esn/esn.py
 ```bash
 cd phase2-core/libAeon
 make && ./aeon_demo
+# O usando CMake:
+# mkdir -p build && cd build
+# cmake .. && make && ./aeon_demo
 ```
 
 ### Demo Web

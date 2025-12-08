@@ -147,8 +147,9 @@ make test
 - [x] Fase 6: Protocolo de Intercambio (1-Bit)
 - [x] Fase 7: TinyLM (Language Model)
 - [x] Fase 8: Paper académico y Auditoría
-- [ ] Fase 9: Experimentación Abierta y Descubrimiento
-- [ ] Fase 10: Publicación arXiv
+- [x] Fase 9: Empaquetado y Distribución
+- [x] Fase 10: Publicación arXiv
+- [ ] Fase 11: Experimentación Abierta (Futuro)
 
 ## 📈 Benchmarks de Energía
 

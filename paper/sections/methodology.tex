@@ -1,0 +1,14 @@
+\section{Methodology}
+
+\subsection{The Eón Core}
+The core engine follows the standard ESN update equation:
+\begin{equation}
+    x(t) = (1 - \alpha)x(t-1) + \alpha \tanh(W_{in}u(t) + W x(t-1))
+\end{equation}
+where $\alpha$ is the leak rate, $W_{in}$ projects input $u(t)$ to the reservoir space, and $W$ is the sparse recurrent weight matrix. In Eón, $W$ is strictly sparse ($<10\%$ connectivity) and generated pseudo-randomly on-the-fly to save memory, ensuring $O(N)$ storage rather than $O(N^2)$.
+
+\subsection{Spirit Hash}
+To ensure interoperability without transmitting large matrices, we implement "Spirit Hash". Nodes exchange a 16-byte seed derived from a timestamp and a local secret. This seed initializes the Linear Congruential Generator (LCG) for weights, guaranteeing that Node A (Python) and Node B (Cortex-M4) mathematically "hallucinate" the exact same brain structure instantly.
+
+\subsection{1-Bit Collective Mind}
+For distributed learning, nodes exchange their readout weights $W_{out}$. We adhere to a strict quantization protocol where weights are compressed to 1 bit (Sign) for transmission, achieving a 32x compression ratio compared to float32, crucial for low-bandwidth LoRa or BLE links.

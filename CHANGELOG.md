@@ -35,6 +35,14 @@ Todos los cambios notables del Proyecto Eón.
 - Extensión ESP32 con WiFi
 - Ejemplos de predicción
 
+### Fase 9: Empaquetado
+
+- **Empaquetado**: NPM, PyPI, Arduino Library.
+
+### Fase 10: Generación de Paper Académico
+
+- **Generación de Paper Académico**: (LaTeX) para arXiv.
+
 ### Fase 5: Aplicaciones IoT
 
 - Predictor de temperatura

@@ -1,0 +1,13 @@
+\section{Experiments and Prototypes}
+
+\subsection{Eón Bio: Arrhythmia Detection}
+We implemented the Eón Core on a simulated sensor analyzing RR-intervals. With a reservoir size of $N=20$, the model learns the subject's Respiratory Sinus Arrhythmia (RSA) within 50 heartbeats.
+\textbf{Result:} The system detected $100\%$ of injected Premature Ventricular Contractions (PVCs) by flagging deviations $>20\%$ from the predicted interval, utilizing only 1.3KB of RAM.
+
+\subsection{TinyLM: Efficient Language Modeling}
+Using a modest reservoir ($N=256$) and a Trie-compressed vocabulary structure, we trained an ESN to generate coherent char-level text.
+\textbf{Result:} The approach reduced memory usage by $>50\%$ compared to standard dictionary lookups while maintaining training stability on the Mackey-Glass benchmark (MSE $0.009$).
+
+\subsection{Eón Voice: Keyword Spotting}
+We processed audio into 4 semantic frequency bands at 50Hz. An ESN ($N=100$) was trained to detect the temporal signature of the keyword "Eón".
+\textbf{Result:} High-confidence detection ($>0.8$ probability) was achieved with a negligible false positive rate in synthetic noise tests.

@@ -1,0 +1,15 @@
+\section{Introduction}
+
+The field of TinyML aims to bring machine learning to the network edge. However, dominant approaches like TensorFlow Lite for Microcontrollers predominantly rely on compressing feed-forward architectures (CNNs, MLPs) trained offline \cite{warden2019tinyml}. While effective for static classification, these models lack inherent temporal memory and on-device plasticity. 
+
+Reservoir Computing (RC), specifically Echo State Networks (ESNs) \cite{jaeger2001echo}, offers a compelling alternative. By fixing a large, random recurrent hidden layer (the "reservoir") and only training a linear output layer, RC allows for extremely cheap training and inference. 
+
+\textbf{Eón} explores the lower bound of this paradigm. We ask: \textit{What is the minimal viable structure required for emergent functional intelligence?} 
+
+Our contributions are:
+\begin{itemize}
+    \item A fixed-point C implementation fitting in 1.3KB RAM.
+    \item A deterministic cross-platform initialization scheme ("Spirit Hash").
+    \item Protocols for distributed learning via 1-bit quantization.
+    \item Real-world prototypes in text, bio-signals, and audio.
+\end{itemize}

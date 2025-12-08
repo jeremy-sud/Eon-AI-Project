@@ -64,7 +64,9 @@ Usar el reservoir para detectar 2-3 palabras clave ("Eón, activa luces") en un 
 
 ### C. Eón Dream (General Art) 🎨
 
-Visualizar los estados internos del reservoir como "arte generativo". Al entrenar con música o texto, mapear las activaciones neuronales a colores/formas en un canvas HTML5.
+- [x] **Estado**: Implementado (Prototipo Web).
+- **Descripción**: Visualizar activaciones neuronales en HTML5.
+- **Resultado**: Demo interactiva en `phase3/demos/dream.html`.
 
 ### D. Protocolo "Gossip" P2P 🕸️
 

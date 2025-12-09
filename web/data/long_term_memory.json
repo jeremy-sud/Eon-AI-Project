@@ -1,0 +1,62 @@
+{
+  "users": {
+    "jeremy": {
+      "name": "Jeremy",
+      "first_seen": 1765255187.3524423,
+      "interaction_count": 3,
+      "topics": [
+        "creador_usuario"
+      ],
+      "is_creator": true,
+      "preferences": {},
+      "last_seen": 1765255302.3863878
+    }
+  },
+  "facts": [
+    {
+      "fact": "soy jeremy",
+      "hash": "271a0a4d",
+      "source": "conversation",
+      "confidence": 0.9801,
+      "learned_at": 1765255187.3528864,
+      "last_confirmed": 1765255302.3866065
+    }
+  ],
+  "summaries": [],
+  "preferences": {},
+  "interactions": {
+    "total": 3,
+    "by_intent": {
+      "creador_usuario": 3
+    },
+    "by_hour": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0
+    ]
+  },
+  "emotional_memory": [],
+  "created_at": 1765255170.0615954,
+  "last_updated": 1765255717.42784
+}

@@ -181,6 +181,50 @@
                 </div>
             </div>
 
+            <!-- Panel de Aprendizaje y Memoria -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>🧠 APRENDIZAJE CONTINUO</span>
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Eventos de Aprendizaje</div>
+                        <div class="stat-value text-accent" id="learnEvents">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Usuarios Conocidos</div>
+                        <div class="stat-value" id="learnUsers">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Hechos Aprendidos</div>
+                        <div class="stat-value" id="learnFacts">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Feedback Recibido</div>
+                        <div class="stat-value" id="learnFeedback">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Tasa de Aprobación</div>
+                        <div class="stat-value highlight" id="learnApproval">-%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Consolidaciones</div>
+                        <div class="stat-value" id="learnConsolidations">0</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                    <button class="action-btn" id="forceConsolidateBtn" title="Forzar Consolidación" style="padding: 0.5rem 1rem; font-size: 0.8rem; flex: 1;">
+                        <i class="fa-solid fa-moon"></i> Consolidar Memoria
+                    </button>
+                    <button class="action-btn" id="viewMemoryBtn" title="Ver Memoria" style="padding: 0.5rem 1rem; font-size: 0.8rem; flex: 1;">
+                        <i class="fa-solid fa-database"></i> Ver Memoria
+                    </button>
+                </div>
+            </div>
+
             <div class="panel">
                 <div class="panel-header">
                     <span>CONFIGURACIÓN DE IA</span>

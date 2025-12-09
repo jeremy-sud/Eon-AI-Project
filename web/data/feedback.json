@@ -1,0 +1,46 @@
+{
+  "log": [
+    {
+      "timestamp": 1765255413.2731218,
+      "user_message": "Hola soy Jeremy",
+      "bot_response": "Hola Jeremy! Reconozco a quien me dio forma",
+      "is_positive": true,
+      "intent": null,
+      "pattern_hash": "2b6683ea847f",
+      "new_score": 0.6
+    },
+    {
+      "timestamp": 1765255517.2697809,
+      "user_message": "como estas hoy?",
+      "bot_response": "\u00a1Hola de nuevo, Jeremy!  Mi nombre es E\u00f3n. Estoy aqu\u00ed para conversar contigo.",
+      "is_positive": false,
+      "intent": null,
+      "pattern_hash": "9a282dd2a64d",
+      "new_score": 0.4
+    },
+    {
+      "timestamp": 1765255532.578444,
+      "user_message": "cuanto es 2+2",
+      "bot_response": "Interesante. Me gustar\u00eda saber m\u00e1s sobre tu perspectiva.",
+      "is_positive": false,
+      "intent": null,
+      "pattern_hash": "578e7dde2ba1",
+      "new_score": 0.4
+    },
+    {
+      "timestamp": 1765255591.502542,
+      "user_message": "cuanto es 34*5",
+      "bot_response": "\u00a1Jeremy, qu\u00e9 interesante. Cu\u00e9ntame m\u00e1s.",
+      "is_positive": false,
+      "intent": null,
+      "pattern_hash": "2c8fd5ec5f72",
+      "new_score": 0.4
+    }
+  ],
+  "scores": {
+    "2b6683ea847f": 0.6,
+    "9a282dd2a64d": 0.4,
+    "578e7dde2ba1": 0.4,
+    "2c8fd5ec5f72": 0.4
+  }
+}

@@ -59,6 +59,17 @@ const App = {
       clearHistoryBtn.addEventListener("click", () => this.clearHistory());
     }
 
+    // Learning system buttons
+    const forceConsolidateBtn = document.getElementById("forceConsolidateBtn");
+    if (forceConsolidateBtn) {
+      forceConsolidateBtn.addEventListener("click", () => this.forceConsolidation());
+    }
+    
+    const viewMemoryBtn = document.getElementById("viewMemoryBtn");
+    if (viewMemoryBtn) {
+      viewMemoryBtn.addEventListener("click", () => this.viewMemory());
+    }
+
     // Dream controls
     document
       .getElementById("btnGrid")
@@ -241,6 +252,9 @@ const App = {
       return;
     }
 
+    // Guardar mensaje del usuario para feedback
+    this._lastUserMessage = text;
+
     try {
       // Usar el endpoint de chat para conversación
       const res = await fetch(`${this.API_BASE}/api/chat`, {
@@ -252,7 +266,12 @@ const App = {
 
       if (data.success) {
         setTimeout(() => {
-          this.addMessage(data.reply, "ai");
+          this.addMessage(data.reply, "ai", true); // true = mostrar feedback
+          
+          // Actualizar indicadores de aprendizaje si están visibles
+          if (data.learned) {
+            this.loadLearningStats();
+          }
         }, 300 + Math.random() * 500); // Delay natural
       } else {
         this.addMessage("Error procesando la solicitud.", "ai");
@@ -263,7 +282,7 @@ const App = {
     }
   },
 
-  addMessage(text, type) {
+  addMessage(text, type, showFeedback = false) {
     const container = document.querySelector(".chat-container");
     const msgDiv = document.createElement("div");
     msgDiv.className = `message ${type}`;
@@ -278,8 +297,54 @@ const App = {
     msgDiv.appendChild(header);
     msgDiv.appendChild(content);
 
+    // Añadir botones de feedback para mensajes de Eón
+    if (type === "ai" && showFeedback) {
+      const feedbackDiv = document.createElement("div");
+      feedbackDiv.className = "message-feedback";
+      feedbackDiv.style.cssText = "margin-top: 8px; display: flex; gap: 8px; opacity: 0.7;";
+      
+      const thumbsUp = document.createElement("button");
+      thumbsUp.innerHTML = "👍";
+      thumbsUp.title = "Buena respuesta";
+      thumbsUp.style.cssText = "background: none; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px;";
+      thumbsUp.onclick = () => this.sendFeedback(text, true, feedbackDiv);
+      
+      const thumbsDown = document.createElement("button");
+      thumbsDown.innerHTML = "👎";
+      thumbsDown.title = "Respuesta mejorable";
+      thumbsDown.style.cssText = "background: none; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px;";
+      thumbsDown.onclick = () => this.sendFeedback(text, false, feedbackDiv);
+      
+      feedbackDiv.appendChild(thumbsUp);
+      feedbackDiv.appendChild(thumbsDown);
+      msgDiv.appendChild(feedbackDiv);
+    }
+
     container.appendChild(msgDiv);
     container.scrollTop = container.scrollHeight;
+  },
+
+  async sendFeedback(botResponse, isPositive, feedbackDiv) {
+    try {
+      const res = await fetch(`${this.API_BASE}/api/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_message: this._lastUserMessage || "",
+          bot_response: botResponse,
+          is_positive: isPositive
+        }),
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        // Reemplazar botones con mensaje de agradecimiento
+        feedbackDiv.innerHTML = `<span style="font-size: 12px; color: var(--text-muted);">${isPositive ? '✓ ¡Gracias!' : '✓ Anotado'}</span>`;
+        this.loadLearningStats();
+      }
+    } catch (e) {
+      console.error("Error sending feedback:", e);
+    }
   },
 
   addSystemMessage(text) {
@@ -496,11 +561,126 @@ const App = {
       console.error("Error saving personality", e);
     }
   },
+
+  // === SISTEMA DE APRENDIZAJE ===
+  
+  async loadLearningStats() {
+    try {
+      const res = await fetch(`${this.API_BASE}/api/learning-stats`);
+      const data = await res.json();
+      
+      if (data.success && data.learning) {
+        const learn = data.learning;
+        
+        // Actualizar indicadores en UI
+        const el = (id) => document.getElementById(id);
+        
+        if (el('learnEvents')) el('learnEvents').textContent = learn.learning_events || 0;
+        if (el('learnUsers')) el('learnUsers').textContent = learn.memory?.users_known || 0;
+        if (el('learnFacts')) el('learnFacts').textContent = learn.memory?.facts_learned || 0;
+        if (el('learnFeedback')) el('learnFeedback').textContent = learn.feedback?.total_feedbacks || 0;
+        
+        const approval = learn.feedback?.positive_rate;
+        if (el('learnApproval')) {
+          el('learnApproval').textContent = approval !== undefined 
+            ? `${(approval * 100).toFixed(0)}%` 
+            : '-%';
+        }
+        
+        if (el('learnConsolidations')) {
+          el('learnConsolidations').textContent = learn.consolidation?.consolidation_count || 0;
+        }
+      }
+    } catch (e) {
+      console.error("Error loading learning stats:", e);
+    }
+  },
+  
+  async forceConsolidation() {
+    const btn = document.getElementById("forceConsolidateBtn");
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Consolidando...';
+    }
+    
+    try {
+      const res = await fetch(`${this.API_BASE}/api/consolidate`, {
+        method: 'POST'
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        this.addSystemMessage("💤 Consolidación de memoria completada. Eón ha procesado sus experiencias.");
+        this.loadLearningStats();
+      }
+    } catch (e) {
+      this.addSystemMessage("Error en la consolidación.");
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-moon"></i> Consolidar Memoria';
+      }
+    }
+  },
+  
+  async viewMemory() {
+    try {
+      const res = await fetch(`${this.API_BASE}/api/memory?type=all`);
+      const data = await res.json();
+      
+      if (data.success && data.memory) {
+        const mem = data.memory;
+        
+        let message = "📚 **Estado de la Memoria**\n\n";
+        
+        // Usuarios conocidos
+        if (mem.users && mem.users.length > 0) {
+          message += `👥 Usuarios conocidos (${mem.users.length}):\n`;
+          mem.users.slice(0, 5).forEach(u => {
+            const isCreator = u.is_creator ? ' ⭐' : '';
+            message += `  • ${u.name}${isCreator} (${u.interaction_count} interacciones)\n`;
+          });
+          if (mem.users.length > 5) message += `  ... y ${mem.users.length - 5} más\n`;
+        } else {
+          message += "👥 No hay usuarios registrados aún.\n";
+        }
+        
+        message += "\n";
+        
+        // Hechos aprendidos
+        if (mem.facts && mem.facts.length > 0) {
+          message += `📝 Hechos aprendidos (${mem.facts.length}):\n`;
+          mem.facts.slice(0, 3).forEach(f => {
+            message += `  • "${f.fact}" (confianza: ${(f.confidence * 100).toFixed(0)}%)\n`;
+          });
+          if (mem.facts.length > 3) message += `  ... y ${mem.facts.length - 3} más\n`;
+        } else {
+          message += "📝 No hay hechos aprendidos aún.\n";
+        }
+        
+        // Stats
+        if (mem.stats) {
+          message += `\n📊 Edad de la memoria: ${mem.stats.memory_age_days?.toFixed(1) || 0} días`;
+          message += `\n📊 Total interacciones: ${mem.stats.total_interactions || 0}`;
+        }
+        
+        this.addSystemMessage(message);
+      }
+    } catch (e) {
+      this.addSystemMessage("Error al cargar la memoria.");
+    }
+  },
 };
 
 window.addEventListener("DOMContentLoaded", () => {
   App.init();
   
+  // Cargar estadísticas de aprendizaje al inicio
+  App.loadLearningStats();
+  
   // Actualizar estadísticas cada 30 segundos
-  setInterval(() => App.loadStats(), 30000);
+  setInterval(() => {
+    App.loadStats();
+    App.loadLearningStats();
+  }, 30000);
 });

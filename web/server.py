@@ -21,6 +21,9 @@ from core.aeon_birth import AeonBirth
 from core.genesis import get_genesis
 from esn.esn import generate_mackey_glass
 
+# Importar sistema de aprendizaje continuo
+from learning import EonLearningSystem
+
 # Intentar cargar TinyLMv2 para generación de texto
 try:
     from tiny_lm_v2 import TinyLMv2
@@ -139,6 +142,10 @@ except FileNotFoundError:
         data_dir=DATA_DIR
     )
     print(f" [INFO] Eón ha nacido: {_aeon_instance.name}")
+
+# Inicializar Sistema de Aprendizaje Continuo
+_learning_system = EonLearningSystem(DATA_DIR, _aeon_instance.esn)
+print(f" [INFO] Sistema de aprendizaje inicializado")
 
 # Inicializar TinyLMv2 para generación de texto
 _tinylm_model = None
@@ -404,6 +411,12 @@ class EonChat:
             response = random.choice(responses)
             return response.format(user_name=cls._context['user_name'])
         
+        # Manejar cuando el usuario dice que es el creador
+        if intent == 'creador_usuario' and cls._context['user_name']:
+            responses = cls.RESPONSES['creador_usuario']
+            response = random.choice(responses)
+            return response.format(user_name=cls._context['user_name'])
+        
         # Para intenciones conocidas, usar respuestas predefinidas
         if intent != 'default':
             responses = cls.RESPONSES.get(intent, cls.RESPONSES['default'])
@@ -416,6 +429,9 @@ class EonChat:
                 response = response.replace('Eón', aeon_status.get('name', 'Eón'))
             elif intent == 'saludo' and cls._context['user_name']:
                 response = f"¡Hola de nuevo, {cls._context['user_name']}! " + response.split('!')[-1] if '!' in response else response
+            # Formatear user_name si está en la respuesta
+            if '{user_name}' in response and cls._context['user_name']:
+                response = response.format(user_name=cls._context['user_name'])
                 
             return response
         
@@ -545,33 +561,67 @@ def chat():
     # Verificar si usar el modelo de lenguaje
     use_lm = data.get('use_lm', True) and _tinylm_model is not None
     
+    # Extraer nombre del usuario si está presente
+    user_name = EonChat.extract_name(message)
+    
+    # Buscar contexto del usuario en memoria a largo plazo
+    user_context = None
+    if user_name:
+        user_context = _learning_system.get_user_context(user_name)
+        EonChat._context['user_name'] = user_name
+    
+    # Buscar hechos relevantes
+    relevant_facts = _learning_system.search_relevant_facts(message)
+    
     # Generar respuesta con contexto del historial
     reply = EonChat.get_response(message, status, use_lm=use_lm)
+    
+    # Si conocemos al usuario, personalizar respuesta
+    if user_context and user_context.get('is_creator'):
+        if 'creador' not in EonChat.get_intent(message):
+            # Agregar reconocimiento sutil
+            reply = reply.rstrip('.!') + f", {user_name}."
     
     # Guardar respuesta en historial
     _add_to_history('assistant', reply)
     
-    # Aprendizaje continuo: alimentar el ESN con el mensaje
+    # === APRENDIZAJE CONTINUO ===
+    intent = EonChat.get_intent(message)
+    reservoir_state = None
+    
     try:
-        # Convertir texto a señal numérica simple
+        # Convertir texto a señal numérica y obtener estado del reservoir
         signal = np.array([ord(c) / 255.0 for c in message[:50]])
         if len(signal) >= 10:
-            _aeon_instance.esn._update_state(signal[:10])
+            reservoir_state = _aeon_instance.esn._update_state(signal[:10]).copy()
             _stats['samples_learned_from_chat'] += 1
     except Exception:
         pass
     
+    # Procesar conversación en el sistema de aprendizaje
+    learning_result = _learning_system.process_conversation(
+        user_message=message,
+        bot_response=reply,
+        intent=intent,
+        user_name=user_name,
+        reservoir_state=reservoir_state
+    )
+    
     # Guardar estadísticas periódicamente
     if _stats['total_messages'] % 10 == 0:
         _save_stats()
+        _aeon_instance.save()
     
     return jsonify({
         'success': True,
         'reply': reply,
-        'intent': EonChat.get_intent(message),
+        'intent': intent,
         'age': status['age'],
-        'lm_used': use_lm and EonChat.get_intent(message) == 'default',
-        'messages_count': _stats['total_messages']
+        'lm_used': use_lm and intent == 'default',
+        'messages_count': _stats['total_messages'],
+        'learned': learning_result.get('learned_from_chat', False),
+        'user_remembered': learning_result.get('user_remembered', False),
+        'facts_extracted': learning_result.get('facts_extracted', 0)
     })
 
 
@@ -612,6 +662,108 @@ def get_stats():
             'lm_available': _tinylm_model is not None,
             'lm_stats': _tinylm_model.get_stats() if _tinylm_model else None
         }
+    })
+
+
+@app.route('/api/feedback', methods=['POST'])
+def submit_feedback():
+    """
+    Endpoint para recibir feedback del usuario (👍/👎).
+    
+    Esto refuerza o debilita patrones de respuesta,
+    permitiendo que Eón aprenda de las preferencias del usuario.
+    """
+    data = request.get_json() or {}
+    
+    user_message = data.get('user_message', '')
+    bot_response = data.get('bot_response', '')
+    is_positive = data.get('is_positive', True)
+    
+    if not user_message or not bot_response:
+        return jsonify({
+            'success': False,
+            'error': 'Se requiere user_message y bot_response'
+        }), 400
+    
+    result = _learning_system.record_feedback(
+        user_message=user_message,
+        bot_response=bot_response,
+        is_positive=is_positive
+    )
+    
+    return jsonify({
+        'success': True,
+        'message': '¡Gracias por tu feedback!' if is_positive else 'Anotado, mejoraré.',
+        'result': result
+    })
+
+
+@app.route('/api/learning-stats', methods=['GET'])
+def get_learning_stats():
+    """
+    Estadísticas completas del sistema de aprendizaje.
+    
+    Incluye:
+    - Muestras aprendidas online
+    - Usuarios conocidos
+    - Hechos en memoria
+    - Historial de feedback
+    - Estado de consolidación
+    """
+    stats = _learning_system.get_comprehensive_stats()
+    
+    return jsonify({
+        'success': True,
+        'learning': stats
+    })
+
+
+@app.route('/api/memory', methods=['GET'])
+def get_memory():
+    """
+    Obtiene información de la memoria a largo plazo.
+    
+    Query params:
+    - type: 'users', 'facts', 'all' (default: 'all')
+    - query: buscar en hechos (opcional)
+    """
+    memory_type = request.args.get('type', 'all')
+    query = request.args.get('query', '')
+    
+    result = {}
+    
+    if memory_type in ['users', 'all']:
+        result['users'] = list(_learning_system.memory.memory['users'].values())
+    
+    if memory_type in ['facts', 'all']:
+        if query:
+            result['facts'] = _learning_system.search_relevant_facts(query)
+        else:
+            # Últimos 20 hechos
+            result['facts'] = _learning_system.memory.memory['facts'][-20:]
+    
+    if memory_type == 'all':
+        result['stats'] = _learning_system.memory.get_stats()
+    
+    return jsonify({
+        'success': True,
+        'memory': result
+    })
+
+
+@app.route('/api/consolidate', methods=['POST'])
+def force_consolidation():
+    """
+    Fuerza una consolidación de memoria ("sueño").
+    
+    Útil para mantenimiento o antes de apagar.
+    """
+    _learning_system.consolidation.force_consolidation()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Consolidación completada',
+        'stats': _learning_system.consolidation.get_stats()
     })
 
 

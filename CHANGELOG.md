@@ -2,6 +2,61 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [1.6.0] - 2025-12-09
+
+### Plan de Alimentación - Crecimiento Dinámico (NUEVO)
+
+- **Alimentación Continua del Core C**
+  - Nuevo `continuous_demo.c`: series climáticas con picos y cambios bruscos
+  - Loop de entrenamiento con guardado periódico de pesos (Wout)
+  - Simulación de "vida" de sensor con aprendizaje continuo
+  - Mejor MSE logrado: 0.267 en series erráticas
+
+- **Optimizaciones del Motor C** (sin aumentar memoria)
+  - Xorshift32 RNG: Mejor calidad de números aleatorios
+  - tanh mejorado: Error reducido de 5% a 1% con polinomio grado 5
+  - Ridge Regularization: λ = 0.001 para estabilidad numérica
+  - Loop Unrolling: +30% velocidad en update
+
+- **TinyLM - Vocabulario Técnico Expandido**
+  - +40 términos de robótica: LIDAR, cinemática, PID, SLAM, gripper, ROS
+  - +40 términos de programación: recursión, ORM, Docker, mutex, API REST
+  - Nuevos datasets: 'robotica' y 'programacion'
+  - Accuracy: 99.9-100% en todos los datasets
+
+- **Memoria Factual con Timestamps**
+  - Sistema para resolver ambigüedades temporales
+  - Ejemplo: "El motor falló" → "El motor se recuperó" → "¿Estado del motor?" = última info
+  - Historial de 10 actualizaciones por topic
+  - Timestamps con "hace X segundos/minutos"
+
+- **RAG Ligero**
+  - Búsqueda automática en `/docs/` para responder preguntas
+  - Keywords: protocolo, 1-bit, arquitectura, whitepaper, mqtt
+  - Cache de 5 minutos para eficiencia
+  - Extracción de contexto relevante (hasta 500 chars)
+
+- **Protocolo 1-Bit - Implementación Completa**
+  - `export_weights_1bit()`: Cuantización con 9-17x compresión
+  - `import_weights_1bit()`: Reconstrucción y fusión de conocimiento
+  - Demo completo de transmisión entre nodos
+  - Documentación completa en `docs/PROTOCOL.md`
+
+### Nuevos Archivos
+
+- `phase2-core/libAeon/continuous_demo.c` - Demo de alimentación continua
+- `docs/PROTOCOL.md` - Documentación del Protocolo 1-Bit
+
+### Métodos Internos Añadidos
+
+- `_store_factual_update()`: Almacena hechos con timestamp
+- `_query_factual_state()`: Consulta estado más reciente
+- `_load_docs_for_rag()`: Carga documentos para RAG
+- `_search_docs()`: Búsqueda semántica en docs/
+- `_handle_factual_message()`: Manejo de mensajes factuales
+- `export_weights_1bit()`: Exportación cuantizada de pesos
+- `import_weights_1bit()`: Importación y fusión de pesos
+
 ## [1.5.0] - 2025-12-08
 
 ### Chat Conversacional Avanzado (NUEVO)

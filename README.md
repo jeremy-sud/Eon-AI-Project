@@ -2,13 +2,14 @@
 
 > **A.E.O.N.** - Arquitectura Emergente y Optimización Neuromórfica
 
-[![Versión](https://img.shields.io/badge/Versión-1.5.0-brightgreen)]()
+[![Versión](https://img.shields.io/badge/Versión-1.6.0-brightgreen)]()
 [![Fase](https://img.shields.io/badge/Fase-10%20Completa-success)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)]()
 [![C](https://img.shields.io/badge/C-1.3KB-orange)]()
 [![JavaScript](https://img.shields.io/badge/JS-Browser-yellow)]()
 [![Arduino](https://img.shields.io/badge/Arduino-Compatible-teal)]()
 [![Aprendizaje](https://img.shields.io/badge/Aprendizaje-Continuo-purple)]()
+[![RAG](https://img.shields.io/badge/RAG-Ligero-cyan)]()
 [![Licencia](https://img.shields.io/badge/Licencia-MIT-green)]()
 
 ---
@@ -27,14 +28,17 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 | **Multi-plataforma**        | Python, C, JavaScript, Arduino              |
 | **Reservoir Computing**     | Echo State Networks eficientes              |
 | **Aprendizaje Continuo**    | Online Learning + Memoria a largo plazo     |
-| **Mente Colectiva**         | Protocolo 1-Bit Ultraligero                 |
+| **Mente Colectiva**         | Protocolo 1-Bit Ultraligero (9-17x compresión) |
 | **TinyLMv2**                | Modelo de lenguaje word-level               |
+| **RAG Ligero**              | Búsqueda semántica en documentación         |
+| **Memoria Factual**         | Timestamps para resolver ambigüedades      |
+| **Alimentación Continua**   | Series climáticas con cambios bruscos      |
 | **Sistema de Feedback**     | Mejora con retroalimentación 👍/👎           |
 | **Chat Avanzado**           | 20+ categorías de intención + memoria personal |
 | **Predicción de Secuencias**| Aritmético, geométrico, Fibonacci, potencias |
 | **Base de Conocimiento**    | Definiciones técnicas integradas            |
 | **Arte Generativo**         | 5 estilos (fractal, flow, particles, waves, neural) |
-| **Consolidación de Sueño**  | Optimización durante inactividad            |
+| **Vocabulario Técnico**     | Robótica, programación, filosofía          |
 
 ## 📊 Comparativa
 

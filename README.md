@@ -2,7 +2,7 @@
 
 > **A.E.O.N.** - Arquitectura Emergente y Optimización Neuromórfica
 
-[![Versión](https://img.shields.io/badge/Versión-1.4.0-brightgreen)]()
+[![Versión](https://img.shields.io/badge/Versión-1.5.0-brightgreen)]()
 [![Fase](https://img.shields.io/badge/Fase-10%20Completa-success)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)]()
 [![C](https://img.shields.io/badge/C-1.3KB-orange)]()
@@ -30,7 +30,9 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 | **Mente Colectiva**         | Protocolo 1-Bit Ultraligero                 |
 | **TinyLMv2**                | Modelo de lenguaje word-level               |
 | **Sistema de Feedback**     | Mejora con retroalimentación 👍/👎           |
-| **Chat Conversacional**     | 17 categorías de intención + memoria        |
+| **Chat Avanzado**           | 20+ categorías de intención + memoria personal |
+| **Predicción de Secuencias**| Aritmético, geométrico, Fibonacci, potencias |
+| **Base de Conocimiento**    | Definiciones técnicas integradas            |
 | **Arte Generativo**         | 5 estilos (fractal, flow, particles, waves, neural) |
 | **Consolidación de Sueño**  | Optimización durante inactividad            |
 
@@ -58,7 +60,7 @@ Eón Project AI/
 ├── phase7-language/         # TinyLMv2 (word-level)
 ├── phase8-paper/            # Paper LaTeX
 └── web/                     # Servidor Web Principal
-    ├── server.py            # API REST Flask (~1500 líneas)
+    ├── server.py            # API REST Flask (~2000 líneas)
     ├── learning.py          # Sistema de Aprendizaje Continuo
     ├── data/                # Persistencia
     │   ├── chat_history.json
@@ -186,7 +188,9 @@ make test
 - **Eón Bio**: Detección de arritmias con <2KB RAM
 - **Eón Voice**: Detección de palabras clave ("EÓN") en Cortex-M4
 - **Eón Dream**: Arte generativo neuronal en web
-- **Chat con Memoria**: 17 categorías de intención + memoria persistente
+- **Chat Avanzado**: 20+ categorías de intención + memoria personal + predicción de secuencias
+- **Predicción de Patrones**: Aritmético, geométrico, Fibonacci, potencias (100% precisión)
+- **Base de Conocimiento**: Definiciones técnicas integradas (entropía, ESN, Spirit Hash, etc.)
 - **Generación de Imágenes**: 5 estilos (fractal, flow, particles, waves, neural) + 12 paletas
 - **Aprendizaje Continuo**: Online Learning con feedback en tiempo real
 - **Memoria a Largo Plazo**: Almacenamiento de usuarios, hechos y estadísticas

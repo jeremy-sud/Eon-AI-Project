@@ -2,6 +2,56 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [1.5.0] - 2025-12-08
+
+### Chat Conversacional Avanzado (NUEVO)
+
+- **Predicción de Secuencias Numéricas**: Detección automática de patrones (aritmético, geométrico, Fibonacci, potencias, cuadrático)
+  - Ejemplo: "4, 8, 16, 32" → "El siguiente valor es: **64**"
+  - Soporte para múltiples valores: "siguientes 3 números: 4, 8, 16, 32" → "**64, 128, 256**"
+  
+- **Memoria Personal**: Almacena y recuerda hechos sobre el usuario
+  - "Mi color favorito es ultramarino" → "Guardaré que color favorito: ultramarino 🧠"
+  - "¿Cuál es mi color favorito?" → "Tu color favorito es ultramarino"
+  
+- **Base de Conocimiento Técnico**: Definiciones de conceptos clave
+  - Entropía, ESN, Spirit Hash, Reservorio, Aprendizaje Hebbiano, Mackey-Glass, Cuantización
+  
+- **Consulta de Sensores**: Simulación del sistema colectivo
+  - "estado del SENSOR-3" → Datos simulados (temperatura, humedad, batería, estado)
+  - Manejo de reportes de falla con generación de tickets
+  
+- **Afirmaciones Generales**: Confirmación de hechos del mundo
+  - "El cielo es azul" → "Correcto. Mi base de conocimiento lo confirma ✓"
+  
+- **Autocompletado de Texto**: Completación contextual de frases
+  - "La velocidad del viento..." → completación relevante
+
+### Mejoras en Detección de Intenciones
+
+- **20+ Categorías de Intención**: Expandido desde 17 categorías
+- **Detección Automática de Secuencias**: 3+ números separados por comas se detectan automáticamente
+- **Mejor Extracción de Números**: Ignora números en texto contextual ("siguientes 3 números")
+- **Patrones de Múltiples Valores**: Soporte para "siguientes N números"
+
+### Correcciones de Chat
+
+- **Matemáticas Mejoradas**: "¿Cuánto es 34*5?" → "El resultado es **170** 🧮"
+- **Historias Temáticas**: "Cuéntame una historia de aventura" genera historias apropiadas
+- **Recomendaciones Contextuales**: "¿Qué helado me recomiendas?" → recomendaciones específicas
+- **Eliminación de Falsos Positivos**: "cuéntame" ya no activa saludo
+- **Orden de Patrones Optimizado**: Saludos al final para evitar conflictos
+
+### Nuevos Métodos Internos
+
+- `_predict_sequence()`: Predicción de patrones numéricos con soporte multi-valor
+- `_store_personal_fact()`: Almacenamiento de hechos personales
+- `_recall_personal_fact()`: Recuperación de memoria personal
+- `_get_knowledge()`: Acceso a base de conocimiento técnico
+- `_query_sensor()`: Simulación de consultas a sensores
+- `_complete_text()`: Autocompletado contextual
+- `_contains_sequence()`: Detección automática de secuencias
+
 ## [1.4.0] - 2024-12-08
 
 ### Sistema de Aprendizaje Continuo (NUEVO)

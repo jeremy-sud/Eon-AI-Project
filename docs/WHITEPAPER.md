@@ -1,6 +1,6 @@
 # Eón: Inteligencia Emergente con Recursos Mínimos
 
-**Whitepaper Técnico v1.4**
+**Whitepaper Técnico v1.5**
 
 > _"La inteligencia no se crea, se descubre."_
 
@@ -17,7 +17,9 @@ Este documento presenta **Eón**, una arquitectura de inteligencia artificial ba
 3. **Sistema de aprendizaje continuo** (OnlineLearner, LongTermMemory, Feedback)
 4. Plasticidad Hebbiana para adaptación sin reentrenamiento
 5. Generación de arte neuronal (5 estilos, 12 paletas)
-6. Chat conversacional con 17 categorías de intención
+6. **Chat conversacional avanzado con 20+ categorías de intención**
+7. **Predicción de secuencias numéricas** (aritmético, geométrico, Fibonacci)
+8. **Memoria personal y base de conocimiento técnico**
 
 ---
 
@@ -116,6 +118,9 @@ Para hardware embebido, usamos aritmética de punto fijo:
 | Navegador (puro)     | ✅          | ❌        | ❌          |
 | Entrenamiento online | ✅          | ❌        | ❌          |
 | Memoria < 10KB       | ✅          | ❌        | ❌          |
+| Predicción secuencias| ✅          | ❌        | ❌          |
+| Memoria personal     | ✅          | ❌        | ❌          |
+| Base conocimiento    | ✅          | ❌        | ❌          |
 
 ---
 
@@ -234,7 +239,67 @@ Usuario → Input → ESN → Output → Respuesta
 
 ---
 
-## 8. Conclusiones
+## 8. Sistema de Chat Avanzado (v1.5)
+
+### 8.1 Categorías de Intención
+
+El sistema EonChat implementa **20+ categorías de intención** para respuestas contextuales:
+
+| Categoría | Ejemplos | Handler |
+|-----------|----------|---------|
+| secuencia | "4, 8, 16, 32" | `_predict_sequence()` |
+| matematica | "34*5" | `_solve_math()` |
+| historia | "cuéntame una historia" | `_generate_story()` |
+| recomendacion | "recomiéndame un helado" | `_generate_recommendation()` |
+| afirmacion | "mi color favorito es azul" | `_store_personal_fact()` |
+| memoria_personal | "¿cuál es mi color?" | `_recall_personal_fact()` |
+| conocimiento_tecnico | "¿qué es la entropía?" | `_get_knowledge()` |
+| sensor | "estado del SENSOR-3" | `_query_sensor()` |
+| autocompletado | "la velocidad del viento..." | `_complete_text()` |
+
+### 8.2 Predicción de Secuencias
+
+El sistema detecta y predice patrones numéricos:
+
+| Tipo | Ejemplo | Predicción |
+|------|---------|------------|
+| Aritmético | 3, 6, 9, 12 | 15 |
+| Geométrico | 4, 8, 16, 32 | 64 |
+| Fibonacci | 1, 1, 2, 3, 5, 8 | 13 |
+| Potencias | 1, 3, 9, 27 | 81 |
+| Cuadrático | 1, 4, 9, 16 | 25 |
+
+Soporta múltiples valores: "siguientes 3 números: 4, 8, 16, 32" → **64, 128, 256**
+
+### 8.3 Base de Conocimiento
+
+Definiciones técnicas integradas:
+
+- **Entropía**: Medida de desorden/incertidumbre (Shannon, termodinámica)
+- **ESN**: Echo State Networks - reservorio recurrente con salida entrenable
+- **Spirit Hash**: Identificador único de 16 bytes del estado de Eón
+- **Reservorio**: Red de neuronas recurrentes que transforma señales
+- **Hebbiano**: "Neuronas que disparan juntas, se conectan juntas"
+- **Mackey-Glass**: Sistema dinámico caótico para benchmarks
+- **Cuantización**: Reducción de precisión numérica para eficiencia
+
+### 8.4 Memoria Personal
+
+El sistema almacena y recuerda hechos sobre el usuario:
+
+```
+Usuario: "Mi color favorito es ultramarino"
+Eón: "Guardaré que color favorito: ultramarino 🧠"
+
+[... más tarde ...]
+
+Usuario: "¿Cuál es mi color favorito?"
+Eón: "Tu color favorito es ultramarino"
+```
+
+---
+
+## 9. Conclusiones
 
 Eón demuestra que:
 
@@ -244,6 +309,8 @@ Eón demuestra que:
 4. **El aprendizaje continuo permite adaptación en tiempo real**
 5. **La retroalimentación del usuario mejora las respuestas**
 6. **La consolidación "nocturna" optimiza los patrones aprendidos**
+7. **La predicción de patrones numéricos es posible sin modelos masivos**
+8. **La memoria personal crea experiencias conversacionales ricas**
 
 Esto abre la puerta a IA verdaderamente ubicua: en sensores, wearables, y dispositivos donde 1MB es un lujo.
 

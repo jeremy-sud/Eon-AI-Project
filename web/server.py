@@ -388,7 +388,7 @@ class EonChat:
         # Música
         'musica': ['hablemos de música', 'hablemos de musica', 'sobre música', 'sobre musica', 'de música', 'de musica'],
         # Secuencias numéricas
-        'secuencia': ['valor más probable', 'valor mas probable', 'siguiente número', 'siguiente numero', 'completar secuencia', 'secuencia', '__'],
+        'secuencia': ['valor más probable', 'valor mas probable', 'siguiente número', 'siguiente numero', 'siguientes número', 'siguientes numero', 'completar secuencia', 'secuencia', 'patrón', 'patron', 'serie', 'continúa', 'continua', '__'],
         # Afirmaciones personales (el usuario declara algo sobre sí mismo)
         'afirmacion': ['mi color favorito es', 'mi comida favorita es', 'me gusta el', 'prefiero el', 'mi favorito es', 'mi favorita es'],
         # Afirmaciones generales (hechos del mundo)
@@ -454,6 +454,10 @@ class EonChat:
         if cls._contains_math(message_lower):
             return 'matematica'
         
+        # Detectar secuencias numéricas (3+ números separados por comas)
+        if cls._contains_sequence(message_lower):
+            return 'secuencia'
+        
         return 'default'
     
     @classmethod
@@ -463,6 +467,18 @@ class EonChat:
         # Buscar patrones como "2+2", "34*5", "100/2", "50-10"
         math_pattern = r'\d+\s*[\+\-\*\/x×÷]\s*\d+'
         return bool(re.search(math_pattern, message))
+    
+    @classmethod
+    def _contains_sequence(cls, message: str) -> bool:
+        """Detecta si el mensaje contiene una secuencia numérica (3+ números separados por comas)."""
+        import re
+        # Buscar 3 o más números separados por comas (con o sin espacios)
+        # Ejemplos: "4, 8, 16, 32" o "1,2,3,4,5"
+        numbers = re.findall(r'-?\d+\.?\d*', message)
+        # Si hay 3+ números y hay comas en el mensaje, es probablemente una secuencia
+        if len(numbers) >= 3 and ',' in message:
+            return True
+        return False
     
     @classmethod
     def _solve_math(cls, message: str) -> str:
@@ -614,8 +630,29 @@ class EonChat:
         """Predice el siguiente valor en una secuencia numérica."""
         import re
         
-        # Extraer números de la secuencia
+        original_message = message.lower()
+        
+        # Detectar si pide múltiples valores (ej: "siguientes 3 números")
+        multi_match = re.search(r'(?:siguientes?|pr[oó]ximos?)\s*(\d+)', original_message)
+        count_requested = int(multi_match.group(1)) if multi_match else 1
+        count_requested = min(count_requested, 5)  # Máximo 5 valores
+        
+        # Estrategia: buscar números separados por comas
+        # Si hay ":" en el mensaje, tomar solo lo que viene después
+        if ':' in message:
+            message = message.split(':')[-1]
+        
+        # Extraer todos los números
         numbers = re.findall(r'-?\d+\.?\d*', message)
+        
+        # Filtrar números muy pequeños que probablemente no son parte de la secuencia
+        # (como "3" en "siguientes 3 números")
+        if len(numbers) > 4:
+            # Probablemente hay números extra, tomar los últimos que estén en formato de comas
+            comma_parts = message.split(',')
+            if len(comma_parts) >= 3:
+                numbers = [n.strip() for part in comma_parts for n in re.findall(r'-?\d+\.?\d*', part)]
+        
         if len(numbers) < 3:
             return "Necesito al menos 3 números para identificar un patrón. Por ejemplo: '4, 8, 16, 32, __'"
         
@@ -625,23 +662,49 @@ class EonChat:
         except ValueError:
             return "No pude interpretar los números de la secuencia."
         
+        # Función helper para formatear número
+        def fmt(val):
+            return int(val) if val == int(val) else round(val, 2)
+        
+        # Función helper para generar múltiples valores
+        def generate_arithmetic(last, diff, count):
+            return [fmt(last + diff * (i + 1)) for i in range(count)]
+        
+        def generate_geometric(last, ratio, count):
+            return [fmt(last * (ratio ** (i + 1))) for i in range(count)]
+        
+        def generate_fibonacci(seq, count):
+            result = []
+            a, b = seq[-2], seq[-1]
+            for _ in range(count):
+                next_val = a + b
+                result.append(fmt(next_val))
+                a, b = b, next_val
+            return result
+        
         # Detectar patrones comunes
         # 1. Progresión aritmética (diferencia constante)
         diffs = [seq[i+1] - seq[i] for i in range(len(seq)-1)]
         if len(set(diffs)) == 1:
-            next_val = seq[-1] + diffs[0]
-            diff = int(diffs[0]) if diffs[0] == int(diffs[0]) else diffs[0]
-            next_display = int(next_val) if next_val == int(next_val) else next_val
-            return f"Es una progresión aritmética con diferencia {diff}. El siguiente valor es: **{next_display}** 📊"
+            diff = fmt(diffs[0])
+            next_vals = generate_arithmetic(seq[-1], diffs[0], count_requested)
+            if count_requested == 1:
+                return f"Es una progresión aritmética con diferencia {diff}. El siguiente valor es: **{next_vals[0]}** 📊"
+            else:
+                vals_str = ', '.join(str(v) for v in next_vals)
+                return f"Es una progresión aritmética con diferencia {diff}. Los siguientes {count_requested} valores son: **{vals_str}** 📊"
         
         # 2. Progresión geométrica (razón constante)
         if 0 not in seq:
             ratios = [seq[i+1] / seq[i] for i in range(len(seq)-1)]
             if len(set([round(r, 6) for r in ratios])) == 1:
-                next_val = seq[-1] * ratios[0]
-                ratio = int(ratios[0]) if ratios[0] == int(ratios[0]) else round(ratios[0], 2)
-                next_display = int(next_val) if next_val == int(next_val) else round(next_val, 2)
-                return f"Es una progresión geométrica con razón {ratio}. El siguiente valor es: **{next_display}** 📈"
+                ratio = fmt(ratios[0])
+                next_vals = generate_geometric(seq[-1], ratios[0], count_requested)
+                if count_requested == 1:
+                    return f"Es una progresión geométrica con razón {ratio}. El siguiente valor es: **{next_vals[0]}** 📈"
+                else:
+                    vals_str = ', '.join(str(v) for v in next_vals)
+                    return f"Es una progresión geométrica con razón {ratio}. Los siguientes {count_requested} valores son: **{vals_str}** 📈"
         
         # 3. Fibonacci-like (cada elemento es suma de los dos anteriores)
         is_fib = True
@@ -650,9 +713,12 @@ class EonChat:
                 is_fib = False
                 break
         if is_fib:
-            next_val = seq[-1] + seq[-2]
-            next_display = int(next_val) if next_val == int(next_val) else next_val
-            return f"Es una secuencia tipo Fibonacci. El siguiente valor es: **{next_display}** 🌀"
+            next_vals = generate_fibonacci(seq, count_requested)
+            if count_requested == 1:
+                return f"Es una secuencia tipo Fibonacci. El siguiente valor es: **{next_vals[0]}** 🌀"
+            else:
+                vals_str = ', '.join(str(v) for v in next_vals)
+                return f"Es una secuencia tipo Fibonacci. Los siguientes {count_requested} valores son: **{vals_str}** 🌀"
         
         # 4. Potencias (2^n, 3^n, etc.)
         if len(seq) >= 3 and seq[0] != 0:

@@ -90,7 +90,7 @@ graph LR
 4.  **Feedback**: User provides 👍/👎 → pattern scoring
 5.  **Consolidate**: Background optimization during idle periods
 
-## Web Architecture (v1.4)
+## Web Architecture (v1.5)
 
 \`\`\`
 ┌─────────────────────────────────────────────────────────────────┐
@@ -114,7 +114,7 @@ graph LR
             ▼                 ▼                 ▼
     ┌───────────────┐ ┌───────────────┐ ┌───────────────┐
     │   ESN Core    │ │   EonChat     │ │ LearningSystem│
-    │  (100 neurons)│ │ (17 intents)  │ │ (4 components)│
+    │  (100 neurons)│ │ (20+ intents) │ │ (4 components)│
     └───────────────┘ └───────────────┘ └───────────────┘
                               │
                               ▼
@@ -127,14 +127,46 @@ graph LR
                     └───────────────────┘
 \`\`\`
 
-## Chat System Architecture
+## Chat System Architecture (v1.5)
 
-EonChat implementa 17 categorías de intención:
-- identity, greeting, image, code, philosophy, memory, help
-- capabilities, emotion, farewell, weather, time
-- learning, feedback, config, joke, question, default
+EonChat implementa **20+ categorías de intención**:
 
-Cada intención tiene respuestas contextuales variadas, evitando la necesidad de TinyLMv2 para respuestas coherentes.
+### Intenciones Básicas
+- saludo, despedida, nombre, estado, capacidad, creador
+- filosofía, ayuda, agradecimiento, chiste, sentimiento, tiempo
+
+### Intenciones de Contenido
+- matematica, historia, recomendacion, musica, opinion
+
+### Intenciones Avanzadas (NEW in v1.5)
+- **secuencia**: Predicción de patrones numéricos (aritmético, geométrico, Fibonacci, potencias)
+- **afirmacion**: Almacenamiento de hechos personales ("Mi color favorito es...")
+- **afirmacion_general**: Confirmación de hechos del mundo ("El cielo es azul")
+- **memoria_personal**: Recuperación de hechos almacenados
+- **conocimiento_tecnico**: Definiciones de entropía, ESN, Spirit Hash, etc.
+- **sensor**: Consultas a sensores del sistema colectivo
+- **autocompletado**: Completación contextual de texto
+
+### Métodos Especiales de Procesamiento
+
+| Método | Función | Ejemplo |
+|--------|---------|---------|
+| \`_predict_sequence()\` | Detecta patrones numéricos | "4,8,16,32" → "64" |
+| \`_solve_math()\` | Calcula operaciones | "34*5" → "170" |
+| \`_generate_story()\` | Genera historias temáticas | "historia de amor" |
+| \`_generate_recommendation()\` | Recomendaciones contextuales | "helado" → sabores |
+| \`_store_personal_fact()\` | Guarda hechos del usuario | color favorito |
+| \`_recall_personal_fact()\` | Recupera hechos guardados | "¿cuál es mi color?" |
+| \`_get_knowledge()\` | Accede a definiciones | "¿qué es la entropía?" |
+| \`_query_sensor()\` | Simula sensores | "estado SENSOR-3" |
+| \`_complete_text()\` | Autocompleta frases | "La velocidad del viento..." |
+
+### Detección Automática
+
+El sistema detecta automáticamente:
+- **Secuencias numéricas**: 3+ números separados por comas
+- **Operaciones matemáticas**: Patrones como "N+N", "N*N"
+- **Afirmaciones personales**: "mi X favorito es Y"
 
 ## Image Generation
 
@@ -157,7 +189,7 @@ Cada intención tiene respuestas contextuales variadas, evitando la necesidad de
 
 | Component | File | Lines |
 |-----------|------|-------|
-| Flask Server | \`web/server.py\` | ~1500 |
+| Flask Server | \`web/server.py\` | ~2000 |
 | Learning System | \`web/learning.py\` | ~400 |
 | Frontend | \`web/static/js/app.js\` | ~600 |
 | ESN Core | \`phase1-foundations/python/esn/esn.py\` | ~300 |
@@ -165,4 +197,4 @@ Cada intención tiene respuestas contextuales variadas, evitando la necesidad de
 
 ---
 
-*Updated: 2024-12-08 (v1.4.0)*
+*Updated: 2025-12-08 (v1.5.0)*

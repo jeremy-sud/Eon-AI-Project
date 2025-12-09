@@ -1,0 +1,372 @@
+openapi: 3.1.0
+info:
+  title: Eón 1-Bit Protocol API
+  description: |
+    Protocol specification for the Eón Collective Mind's 1-Bit weight transmission system.
+    
+    The 1-Bit Protocol enables ultra-efficient transmission of ESN (Echo State Network) 
+    weight updates between distributed nodes via MQTT and LoRa, achieving 9.5× compression 
+    compared to standard JSON payloads.
+    
+    ## Overview
+    
+    - **Header**: 14 bytes containing routing and identification information
+    - **Payload**: ceil(N/8) bytes for N weights (1 bit per weight)
+    - **Total**: 21 bytes for 50 weights vs 175 bytes for JSON
+    
+    ## Binary Format
+    
+    ```
+    ┌─────────────────────────────────────────────────────────────┐
+    │ BYTE OFFSET │ SIZE   │ FIELD         │ DESCRIPTION          │
+    ├─────────────────────────────────────────────────────────────┤
+    │ 0-3         │ 4      │ magic         │ "EON\x01" (0x454F4E01)│
+    │ 4-7         │ 4      │ spirit_hash   │ Network identifier    │
+    │ 8-11        │ 4      │ node_id       │ Source node ID        │
+    │ 12-13       │ 2      │ weight_count  │ Number of weights (N) │
+    │ 14+         │ ⌈N/8⌉  │ weights       │ Packed 1-bit weights  │
+    └─────────────────────────────────────────────────────────────┘
+    ```
+    
+    ## Weight Encoding
+    
+    Each weight is quantized to 1 bit:
+    - Positive weight (> 0) → 1
+    - Negative or zero weight (≤ 0) → 0
+    
+    Bits are packed MSB-first into bytes.
+    
+  version: 1.7.1
+  contact:
+    name: Eón Project AI
+    url: https://github.com/Sjmilner/eon-project-ai
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: mqtt://localhost:1883
+    description: Local MQTT Broker (Mosquitto)
+  - url: ws://localhost:8765
+    description: WebSocket Bridge
+  - url: http://localhost:8000
+    description: Web Dashboard
+
+tags:
+  - name: mqtt
+    description: MQTT topic operations
+  - name: websocket
+    description: WebSocket real-time events
+  - name: binary
+    description: Binary protocol structures
+
+components:
+  schemas:
+    ProtocolHeader:
+      type: object
+      description: 14-byte binary header for 1-Bit Protocol
+      properties:
+        magic:
+          type: string
+          pattern: "^EON\\x01$"
+          description: Magic bytes identifying Eón protocol (0x454F4E01)
+          example: "EON\u0001"
+        spirit_hash:
+          type: string
+          format: hex
+          minLength: 8
+          maxLength: 8
+          description: 32-bit hash identifying the ESN network spirit
+          example: "1b0cd33f"
+        node_id:
+          type: integer
+          format: uint32
+          description: Unique identifier for the transmitting node
+          example: 42
+        weight_count:
+          type: integer
+          format: uint16
+          minimum: 1
+          maximum: 65535
+          description: Number of weights in the payload
+          example: 50
+      required:
+        - magic
+        - spirit_hash
+        - node_id
+        - weight_count
+    
+    WeightPayload:
+      type: string
+      format: binary
+      description: |
+        Packed 1-bit weights, MSB-first.
+        Size = ceil(weight_count / 8) bytes.
+        
+        Example for 8 weights [0.5, -0.3, 0.1, -0.8, 0.0, 0.9, -0.1, 0.2]:
+        Bits: [1, 0, 1, 0, 0, 1, 0, 1] = 0xA5
+    
+    StatusMessage:
+      type: object
+      description: Node status update message (JSON over MQTT)
+      properties:
+        node_id:
+          type: string
+          description: Unique node identifier
+          example: "sensor-001"
+        status:
+          type: string
+          enum: [online, offline, error, syncing]
+          description: Current node status
+          example: "online"
+        uptime:
+          type: integer
+          description: Seconds since node boot
+          example: 3600
+        rssi:
+          type: integer
+          description: Received Signal Strength Indicator (dBm)
+          example: -85
+        snr:
+          type: number
+          description: Signal-to-Noise Ratio (dB)
+          example: 8.5
+        reservoir_size:
+          type: integer
+          description: ESN reservoir size
+          example: 50
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: "2024-01-15T10:30:00Z"
+      required:
+        - node_id
+        - status
+    
+    WeightsMessage:
+      type: object
+      description: Weight update message (JSON wrapper for binary or array)
+      properties:
+        node_id:
+          type: string
+          description: Source node identifier
+          example: "sensor-001"
+        spirit_hash:
+          type: string
+          format: hex
+          description: Network spirit hash
+          example: "1b0cd33f"
+        format:
+          type: string
+          enum: [json, binary, base64]
+          description: Weight encoding format
+          example: "base64"
+        weights:
+          oneOf:
+            - type: array
+              items:
+                type: number
+              description: Float weights (JSON format)
+            - type: string
+              format: base64
+              description: Base64-encoded binary weights
+          example: "pQ=="
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - node_id
+        - spirit_hash
+        - weights
+    
+    ConsensusMessage:
+      type: object
+      description: Federated consensus broadcast
+      properties:
+        type:
+          type: string
+          const: "consensus"
+        round:
+          type: integer
+          description: Consensus round number
+          example: 42
+        participants:
+          type: integer
+          description: Number of nodes in consensus
+          example: 5
+        weights:
+          type: array
+          items:
+            type: number
+          description: Averaged consensus weights
+        agreement:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Agreement score (0-1)
+          example: 0.95
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - type
+        - round
+        - weights
+    
+    WebSocketEvent:
+      type: object
+      description: WebSocket bridge event
+      properties:
+        event:
+          type: string
+          enum: [mqtt_message, client_connected, client_disconnected, error]
+        topic:
+          type: string
+          description: MQTT topic (for mqtt_message events)
+        payload:
+          oneOf:
+            - $ref: '#/components/schemas/StatusMessage'
+            - $ref: '#/components/schemas/WeightsMessage'
+            - $ref: '#/components/schemas/ConsensusMessage'
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - event
+        - timestamp
+
+paths:
+  /aeon/colony/status/{node_id}:
+    parameters:
+      - name: node_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Node identifier
+    post:
+      tags: [mqtt]
+      summary: Publish node status
+      description: |
+        MQTT topic for publishing node status updates.
+        
+        **Topic Pattern**: `aeon/colony/status/{node_id}`
+        
+        **QoS**: 1 (at least once)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusMessage'
+      responses:
+        '200':
+          description: Message published successfully
+  
+  /aeon/colony/weights/{node_id}:
+    parameters:
+      - name: node_id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [mqtt]
+      summary: Publish weight update
+      description: |
+        MQTT topic for publishing ESN weight updates.
+        
+        **Topic Pattern**: `aeon/colony/weights/{node_id}`
+        
+        **QoS**: 1 (at least once)
+        
+        Supports both JSON array format and base64-encoded binary format.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WeightsMessage'
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+              description: Raw 1-Bit Protocol binary packet
+      responses:
+        '200':
+          description: Weights published successfully
+  
+  /aeon/colony/consensus:
+    post:
+      tags: [mqtt]
+      summary: Broadcast consensus
+      description: |
+        MQTT topic for broadcasting federated consensus results.
+        
+        **Topic**: `aeon/colony/consensus`
+        
+        **QoS**: 2 (exactly once)
+        
+        Published by coordinator node after federated averaging.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsensusMessage'
+      responses:
+        '200':
+          description: Consensus broadcast successfully
+
+  /ws:
+    get:
+      tags: [websocket]
+      summary: WebSocket connection endpoint
+      description: |
+        Connect to WebSocket bridge for real-time MQTT event streaming.
+        
+        **URL**: `ws://localhost:8765`
+        
+        **Protocol**: JSON over WebSocket
+        
+        Events are forwarded from MQTT topics matching `aeon/colony/#`
+      responses:
+        '101':
+          description: WebSocket upgrade successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebSocketEvent'
+
+x-mqtt-topics:
+  description: MQTT Topic Reference
+  topics:
+    aeon/colony/status/+:
+      description: Node status updates (wildcard for node_id)
+      qos: 1
+      retain: true
+    aeon/colony/weights/+:
+      description: Weight update transmissions
+      qos: 1
+      retain: false
+    aeon/colony/consensus:
+      description: Federated consensus broadcasts
+      qos: 2
+      retain: true
+    aeon/colony/heartbeat:
+      description: Coordinator heartbeat
+      qos: 0
+      retain: false
+
+x-lora-config:
+  description: LoRa Configuration for ESP32
+  parameters:
+    frequency: 915000000
+    bandwidth: 125000
+    spreading_factor: 10
+    coding_rate: 5
+    sync_word: 0x12
+    preamble_length: 8
+    tx_power: 14
+  energy:
+    tx_current_ma: 120
+    rx_current_ma: 12
+    sleep_current_ua: 10

@@ -1,0 +1,38 @@
+# ==========================================================
+# Eón WebSocket Bridge Dockerfile
+# ==========================================================
+# MQTT-to-WebSocket bridge for real-time dashboard updates
+# ==========================================================
+
+FROM python:3.11-slim
+
+LABEL maintainer="Eón Project AI"
+LABEL description="WebSocket-MQTT Bridge for Collective Mind"
+LABEL version="1.7.1"
+
+WORKDIR /app
+
+# Install dependencies
+RUN pip install --no-cache-dir \
+    paho-mqtt>=2.0.0 \
+    websockets>=12.0 \
+    numpy>=1.24.0
+
+# Copy bridge and foundations
+COPY phase1-foundations /app/phase1-foundations
+COPY phase6-collective /app/phase6-collective
+
+# Set Python path
+ENV PYTHONPATH=/app:/app/phase1-foundations/python
+ENV PYTHONUNBUFFERED=1
+
+# Expose WebSocket port
+EXPOSE 8765
+
+# Health check - verify process is running
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import socket; s=socket.socket(); s.connect(('localhost',8765)); s.close()" || exit 1
+
+# Run bridge
+WORKDIR /app/phase6-collective
+CMD ["python", "ws_bridge.py"]

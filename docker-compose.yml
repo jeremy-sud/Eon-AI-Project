@@ -1,11 +1,111 @@
+# ==========================================================
+# Eón Project AI - Full Stack Docker Compose
+# ==========================================================
+# Complete containerized deployment of the Eón ecosystem:
+#   - MQTT Broker (Mosquitto)
+#   - WebSocket Bridge (MQTT ↔ Browser)
+#   - Web Dashboard (Flask)
+#   - TinyLM Language Model
+#   - Collective Mind Simulation
+#   - C Core Builder
+#
+# Usage:
+#   docker compose up -d           # Start all services
+#   docker compose logs -f         # View logs
+#   docker compose down            # Stop all services
+#   docker compose up web tinylm   # Start specific services
+# ==========================================================
+
 version: '3.8'
 
 services:
-  # TinyLM v2 Web Server
+  # ========================================
+  # MQTT Broker - Message Hub
+  # ========================================
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: eon-mqtt
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./docker/mosquitto/config:/mosquitto/config:ro
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-log:/mosquitto/log
+    networks:
+      - eon-net
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1", "-u", "health", "-P", "check"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ========================================
+  # WebSocket Bridge - Real-time Events
+  # ========================================
+  ws-bridge:
+    build:
+      context: .
+      dockerfile: phase6-collective/Dockerfile.bridge
+    container_name: eon-ws-bridge
+    restart: unless-stopped
+    ports:
+      - "8765:8765"
+    environment:
+      - MQTT_HOST=mqtt
+      - MQTT_PORT=1883
+      - WS_HOST=0.0.0.0
+      - WS_PORT=8765
+    depends_on:
+      mqtt:
+        condition: service_started
+    networks:
+      - eon-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.connect(('localhost',8765)); s.close()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ========================================
+  # Web Dashboard - Main UI
+  # ========================================
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    container_name: eon-web
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - MQTT_HOST=mqtt
+      - WS_HOST=ws-bridge
+    volumes:
+      - ./web/data:/app/web/data
+      - ./GENESIS.json:/app/GENESIS.json:ro
+    depends_on:
+      - mqtt
+      - ws-bridge
+    networks:
+      - eon-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ========================================
+  # TinyLM v2 - Language Model Server
+  # ========================================
   tinylm:
     build:
       context: .
       dockerfile: phase7-language/Dockerfile
+    container_name: eon-tinylm
+    restart: unless-stopped
     ports:
       - "5001:5001"
     volumes:
@@ -13,18 +113,82 @@ services:
       - ./phase1-foundations:/app/phase1-foundations
     networks:
       - eon-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # Mente Colectiva Simulation
+  # ========================================
+  # Collective Mind - Distributed Learning
+  # ========================================
   collective-mind:
     build:
       context: .
       dockerfile: phase6-collective/Dockerfile
+    container_name: eon-collective
+    environment:
+      - MQTT_HOST=mqtt
+      - MQTT_PORT=1883
+      - NODE_COUNT=5
     volumes:
       - ./phase6-collective:/app/phase6-collective
       - ./phase1-foundations:/app/phase1-foundations
+    depends_on:
+      mqtt:
+        condition: service_started
     networks:
       - eon-net
 
+  # ========================================
+  # C Core Builder - libAeon
+  # ========================================
+  core-builder:
+    build:
+      context: .
+      dockerfile: phase2-core/Dockerfile
+    container_name: eon-core-builder
+    volumes:
+      - ./phase2-core:/src/phase2-core:ro
+      - core-builds:/app/bin
+    profiles:
+      - build
+    networks:
+      - eon-net
+
+  # ========================================
+  # Static File Server (Development)
+  # ========================================
+  static:
+    image: nginx:alpine
+    container_name: eon-static
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./web/static:/usr/share/nginx/html:ro
+    networks:
+      - eon-net
+    profiles:
+      - dev
+
+# ========================================
+# Networks
+# ========================================
 networks:
   eon-net:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# ========================================
+# Volumes
+# ========================================
+volumes:
+  mosquitto-data:
+    driver: local
+  mosquitto-log:
+    driver: local
+  core-builds:
+    driver: local

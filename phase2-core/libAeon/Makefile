@@ -2,7 +2,7 @@
 # Compilación ultraligera para hardware embebido
 
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -std=c99
+CFLAGS = -Wall -Wextra -O2 -std=gnu99
 LDFLAGS = -lm
 
 # Configuración del reservoir (ajustar según hardware)
@@ -17,8 +17,9 @@ DEFINES = -DAEON_RESERVOIR_SIZE=$(RESERVOIR_SIZE) \
 SRC = libAeon.c demo.c
 OBJ = $(SRC:.c=.o)
 TARGET = aeon_demo
+CONTINUOUS = continuous_demo
 
-.PHONY: all clean size run float
+.PHONY: all clean size run float continuous
 
 # Compilación por defecto (punto fijo)
 all: $(TARGET)
@@ -28,8 +29,17 @@ all: $(TARGET)
 	@echo "  Escasez: 1/$(SPARSITY)"
 	@echo ""
 
-$(TARGET): $(SRC)
+$(TARGET): libAeon.c demo.c
 	$(CC) $(CFLAGS) $(DEFINES) -o $@ $^ $(LDFLAGS)
+
+# Demo de alimentación continua (series climáticas)
+$(CONTINUOUS): libAeon.c continuous_demo.c
+	$(CC) $(CFLAGS) $(DEFINES) -o $@ $^ $(LDFLAGS)
+	@echo "✓ Compilado: $(CONTINUOUS)"
+	@echo "  Uso: ./$(CONTINUOUS) [epochs] [save_interval] [samples]"
+
+continuous: $(CONTINUOUS)
+	@./$(CONTINUOUS) 10 2 500
 
 # Compilación con float (para comparación)
 float: DEFINES = -DAEON_RESERVOIR_SIZE=$(RESERVOIR_SIZE) \

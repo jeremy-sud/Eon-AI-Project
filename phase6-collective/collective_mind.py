@@ -97,8 +97,8 @@ class AeonNode:
     
     def predict(self, input_value: float) -> float:
         """Predice siguiente valor."""
-        self.esn.update(np.array([[input_value]]))
-        return float(self.esn.predict(np.array([[input_value]]))[0, 0])
+        input_arr = np.array([[input_value]])
+        return float(self.esn.predict(input_arr)[0, 0])
     
     def export_weights(self) -> Dict:
         """
@@ -159,6 +159,98 @@ class AeonNode:
             'peers_count': len(self.peers),
             'peers': self.peers
         }
+    
+    def export_weights_1bit(self, scale: float = 0.5) -> Dict:
+        """
+        Exporta pesos W_out con cuantización 1-bit (Protocolo Eón).
+        
+        Solo se transmite el signo de cada peso, logrando compresión 17x.
+        
+        Args:
+            scale: Magnitud para reconstrucción (default: 0.5)
+            
+        Returns:
+            dict con metadatos y payload binario
+        """
+        w_out = self.esn.W_out.flatten()
+        
+        # Cuantizar a 1-bit (solo signos)
+        n_weights = len(w_out)
+        n_bytes = (n_weights + 7) // 8
+        payload = bytearray(n_bytes)
+        
+        for i, w in enumerate(w_out):
+            if w >= 0:
+                byte_idx = i // 8
+                bit_idx = i % 8
+                payload[byte_idx] |= (1 << bit_idx)
+        
+        # Construir paquete según protocolo
+        return {
+            'magic': 'EON',
+            'type': 0x01,  # W_OUT_UPDATE
+            'seed': hash(self.node_id) & 0xFFFFFFFF,
+            'count': n_weights,
+            'scale': scale,
+            'payload': bytes(payload),
+            'node_id': self.node_id,
+            'samples_learned': self.samples_learned,
+            'timestamp': datetime.utcnow().isoformat(),
+            # Estadísticas de compresión
+            'original_bytes': n_weights * 4,  # float32
+            'compressed_bytes': n_bytes + 10,  # payload + header
+            'compression_ratio': (n_weights * 4) / (n_bytes + 10)
+        }
+    
+    def import_weights_1bit(self, packet: Dict, merge_ratio: float = 0.5) -> bool:
+        """
+        Importa pesos cuantizados 1-bit y los mezcla con los locales.
+        
+        Args:
+            packet: Paquete del export_weights_1bit
+            merge_ratio: Peso del conocimiento externo (0-1)
+            
+        Returns:
+            True si éxito
+        """
+        if packet.get('magic') != 'EON':
+            raise ValueError("Paquete inválido: magic incorrecto")
+        
+        n_weights = packet['count']
+        scale = packet.get('scale', 0.5)
+        payload = packet['payload']
+        
+        # Verificar tamaño
+        expected_bytes = (n_weights + 7) // 8
+        if len(payload) != expected_bytes:
+            raise ValueError(f"Payload size mismatch: {len(payload)} vs {expected_bytes}")
+        
+        # Dequantizar
+        external_weights = np.zeros(n_weights)
+        for i in range(n_weights):
+            byte_idx = i // 8
+            bit_idx = i % 8
+            if payload[byte_idx] & (1 << bit_idx):
+                external_weights[i] = scale
+            else:
+                external_weights[i] = -scale
+        
+        # Reshape para coincidir con W_out
+        external_weights = external_weights.reshape(self.esn.W_out.shape)
+        
+        # Mezclar
+        self.esn.W_out = (
+            self.esn.W_out * (1 - merge_ratio) +
+            external_weights * merge_ratio
+        )
+        
+        self.sync_count += 1
+        self.last_sync = datetime.utcnow().isoformat()
+        
+        if packet.get('node_id') and packet['node_id'] not in self.peers:
+            self.peers.append(packet['node_id'])
+        
+        return True
 
 
 class CollectiveMind:
@@ -298,7 +390,42 @@ if __name__ == "__main__":
     
     # Exterior comparte con todos
     mind.broadcast_knowledge("sensor-exterior", merge_ratio=0.2)
-    print(f"      ✓ sensor-exterior -> broadcast a todos")
+    print("      ✓ sensor-exterior -> broadcast a todos")
+    
+    # === DEMO PROTOCOLO 1-BIT ===
+    print("\n[5/6] Demostración Protocolo 1-Bit:")
+    
+    # Simular que sensor-cocina actualiza sus pesos y los transmite
+    packet_1bit = node_a.export_weights_1bit(scale=0.5)
+    
+    print(f"      📡 SENSOR-COCINA exporta conocimiento:")
+    print(f"         • Magic: {packet_1bit['magic']}")
+    print(f"         • Tipo: W_OUT_UPDATE (0x{packet_1bit['type']:02x})")
+    print(f"         • Pesos: {packet_1bit['count']}")
+    print(f"         • Bytes originales: {packet_1bit['original_bytes']} (float32)")
+    print(f"         • Bytes comprimidos: {packet_1bit['compressed_bytes']} (1-bit)")
+    print(f"         • Ratio de compresión: {packet_1bit['compression_ratio']:.1f}x")
+    
+    # Simular transmisión por MQTT/LoRa (aquí es instantáneo)
+    print("\n      📤 Transmitiendo via MQTT topic 'eon/hive/update'...")
+    
+    # sensor-sala recibe y fusiona
+    print("      📥 SENSOR-SALA recibe paquete...")
+    node_b.import_weights_1bit(packet_1bit, merge_ratio=0.4)
+    print(f"         ✓ Pesos fusionados con ratio 0.4")
+    print(f"         ✓ Syncs: {node_b.sync_count}, Peers: {node_b.peers}")
+    
+    # Verificar que el conocimiento se transfirió
+    print("\n[6/6] Verificación de transferencia de conocimiento:")
+    
+    # Predecir con sensor-sala después de recibir conocimiento de cocina
+    test_value = 24.0  # Temperatura típica de cocina
+    pred_before = node_c.predict(test_value)  # exterior (no recibió 1-bit)
+    pred_after = node_b.predict(test_value)   # sala (recibió 1-bit)
+    
+    print(f"      • Predicción SALA (con 1-bit): {pred_after:.4f}")
+    print(f"      • Predicción EXTERIOR (sin 1-bit): {pred_before:.4f}")
+    print(f"      • Diferencia: {abs(pred_after - pred_before):.4f}")
     
     print("\n[4/4] Estado de la Mente Colectiva:")
     status = mind.global_status()

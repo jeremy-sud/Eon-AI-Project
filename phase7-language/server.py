@@ -58,7 +58,51 @@ TRAINING_TEXTS = {
     La música del alma nunca deja de sonar.
     Las palabras pintan paisajes en la mente.
     El tiempo pasa dejando huellas en el corazón.
-    """ * 15
+    """ * 15,
+    'robotica': """
+    El robot manipulador ejecuta trayectorias precisas con seis grados de libertad.
+    El sensor LIDAR escanea el entorno para mapear obstáculos cercanos.
+    La cinemática inversa calcula los ángulos de cada articulación del brazo.
+    El controlador PID ajusta la velocidad del motor para minimizar el error.
+    La odometría estima la posición del robot usando encoders en las ruedas.
+    El actuador servo mueve el efector final hacia la posición objetivo.
+    La fusión sensorial combina datos de IMU, GPS y cámara para localización.
+    El algoritmo SLAM construye mapas mientras el robot navega simultáneamente.
+    El planificador de rutas genera trayectorias libres de colisiones.
+    La visión por computador detecta objetos usando redes neuronales convolucionales.
+    El gripper neumático agarra piezas con fuerza controlada por presión.
+    La retroalimentación háptica permite al operador sentir las fuerzas de contacto.
+    El bus CAN comunica todos los nodos del sistema robótico en tiempo real.
+    La calibración del sensor garantiza mediciones precisas y repetibles.
+    El torque del motor determina la capacidad de carga del manipulador.
+    La velocidad angular se mide en radianes por segundo con giroscopios.
+    El acelerómetro detecta cambios de velocidad lineal en tres ejes.
+    La batería de litio proporciona autonomía para operación móvil.
+    El firmware embebido controla los actuadores con latencia mínima.
+    La interfaz ROS facilita la comunicación entre módulos del sistema.
+    """ * 10,
+    'programacion': """
+    La función recursiva se llama a sí misma hasta alcanzar el caso base.
+    El algoritmo de ordenamiento quicksort divide y conquista eficientemente.
+    La estructura de datos árbol binario permite búsquedas logarítmicas rápidas.
+    El puntero almacena la dirección de memoria de otra variable.
+    La clase encapsula datos y métodos en un objeto coherente.
+    El compilador transforma código fuente en instrucciones ejecutables.
+    La pila de llamadas gestiona el contexto de cada función invocada.
+    El garbage collector libera memoria automáticamente cuando no se usa.
+    El hilo de ejecución permite procesar tareas en paralelo.
+    El mutex sincroniza acceso a recursos compartidos entre hilos.
+    La API REST expone endpoints para operaciones CRUD en el servidor.
+    El framework web maneja rutas, sesiones y renderizado de plantillas.
+    La base de datos indexa columnas para acelerar las consultas.
+    El ORM mapea tablas relacionales a objetos del lenguaje.
+    El contenedor Docker encapsula la aplicación con sus dependencias.
+    El sistema de control de versiones rastrea cambios en el código.
+    La prueba unitaria verifica el comportamiento de funciones aisladas.
+    El patrón de diseño singleton garantiza una única instancia global.
+    La inyección de dependencias desacopla componentes del sistema.
+    El debugger permite inspeccionar el estado del programa paso a paso.
+    """ * 10
 }
 
 HTML = """
@@ -106,6 +150,8 @@ HTML = """
                     <option value="filosofia">Filosofía Eón</option>
                     <option value="tecnologia">Tecnología</option>
                     <option value="poesia">Poesía</option>
+                    <option value="robotica">Robótica</option>
+                    <option value="programacion">Programación</option>
                 </select>
                 <label>Neuronas: <input type="number" id="neurons" value="256" min="64" max="512" style="width:80px"></label>
                 <button class="btn" onclick="train()">▶ ENTRENAR</button>

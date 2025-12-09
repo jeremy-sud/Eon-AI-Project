@@ -230,6 +230,14 @@ class EonChat:
         'interaction_count': 0,
     }
     
+    # Memoria factual con timestamps (para resolver ambigüedades)
+    # Almacena hechos que pueden cambiar con el tiempo
+    _factual_memory = {}  # {topic: [(timestamp, fact), ...]}
+    
+    # Cache de documentos para RAG ligero
+    _docs_cache = None
+    _docs_loaded_time = 0
+    
     # Respuestas basadas en patrones - expandidas
     RESPONSES = {
         'saludo': [
@@ -973,6 +981,183 @@ El subsistema de {subsystem} ha reportado una anomalía.
         return f"'{message.strip('.')}' {random.choice(generic_completions)}"
     
     @classmethod
+    def _store_factual_update(cls, topic: str, fact: str, user_id: str = 'default') -> str:
+        """Almacena una actualización factual con timestamp para resolver ambigüedades temporales.
+        
+        Ejemplo: 'el motor falló' → 'el motor se recuperó' → preguntar '¿estado del motor?' → última info
+        """
+        import time
+        
+        if topic not in cls._factual_memory:
+            cls._factual_memory[topic] = []
+        
+        timestamp = time.time()
+        cls._factual_memory[topic].append((timestamp, fact))
+        
+        # Mantener solo últimos 10 hechos por topic para no consumir memoria
+        if len(cls._factual_memory[topic]) > 10:
+            cls._factual_memory[topic] = cls._factual_memory[topic][-10:]
+        
+        return f"Actualización registrada: **{topic}** → {fact} 📋"
+    
+    @classmethod
+    def _query_factual_state(cls, topic: str, user_id: str = 'default') -> str:
+        """Consulta el estado más reciente de un topic en la memoria factual."""
+        import time
+        
+        if topic not in cls._factual_memory or not cls._factual_memory[topic]:
+            return f"No tengo información registrada sobre '{topic}'. 🤔"
+        
+        # Obtener el hecho más reciente
+        latest_timestamp, latest_fact = cls._factual_memory[topic][-1]
+        
+        # Calcular hace cuánto tiempo
+        elapsed = time.time() - latest_timestamp
+        if elapsed < 60:
+            time_str = f"hace {int(elapsed)} segundos"
+        elif elapsed < 3600:
+            time_str = f"hace {int(elapsed/60)} minutos"
+        else:
+            time_str = f"hace {int(elapsed/3600)} horas"
+        
+        # Mostrar histórico si hay múltiples estados
+        history_len = len(cls._factual_memory[topic])
+        if history_len > 1:
+            history_note = f"\n\n📜 *Historial: {history_len} actualizaciones registradas*"
+        else:
+            history_note = ""
+        
+        return f"**Estado actual de {topic}:** {latest_fact}\n\n⏱️ *Última actualización: {time_str}*{history_note}"
+    
+    @classmethod
+    def _load_docs_for_rag(cls) -> dict:
+        """Carga documentos de la carpeta docs/ para RAG ligero."""
+        import os
+        import time
+        
+        # Cache de 5 minutos
+        if cls._docs_cache is not None and (time.time() - cls._docs_loaded_time) < 300:
+            return cls._docs_cache
+        
+        docs = {}
+        docs_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'docs')
+        
+        if not os.path.exists(docs_dir):
+            return docs
+        
+        for root, dirs, files in os.walk(docs_dir):
+            for filename in files:
+                if filename.endswith('.md'):
+                    filepath = os.path.join(root, filename)
+                    try:
+                        with open(filepath, 'r', encoding='utf-8') as f:
+                            content = f.read()
+                            # Usar nombre relativo como clave
+                            rel_path = os.path.relpath(filepath, docs_dir)
+                            docs[rel_path] = {
+                                'content': content,
+                                'lines': content.split('\n'),
+                                'title': filename.replace('.md', '').replace('_', ' ').title()
+                            }
+                    except Exception:
+                        pass
+        
+        cls._docs_cache = docs
+        cls._docs_loaded_time = time.time()
+        return docs
+    
+    @classmethod
+    def _search_docs(cls, query: str) -> str:
+        """Busca información relevante en los documentos cargados (RAG ligero)."""
+        docs = cls._load_docs_for_rag()
+        
+        if not docs:
+            return None
+        
+        query_lower = query.lower()
+        query_words = set(query_lower.split())
+        
+        # Buscar coincidencias
+        best_match = None
+        best_score = 0
+        best_context = ""
+        
+        for doc_name, doc_info in docs.items():
+            content_lower = doc_info['content'].lower()
+            lines = doc_info['lines']
+            
+            # Calcular score basado en palabras coincidentes
+            score = sum(1 for word in query_words if len(word) > 2 and word in content_lower)
+            
+            if score > best_score:
+                best_score = score
+                best_match = doc_name
+                
+                # Extraer contexto relevante (primeras líneas que contienen las palabras clave)
+                relevant_lines = []
+                for i, line in enumerate(lines):
+                    line_lower = line.lower()
+                    if any(word in line_lower for word in query_words if len(word) > 2):
+                        # Incluir línea anterior y posterior para contexto
+                        start = max(0, i - 1)
+                        end = min(len(lines), i + 3)
+                        context_lines = lines[start:end]
+                        relevant_lines.extend(context_lines)
+                        if len(relevant_lines) >= 10:
+                            break
+                
+                # Limpiar y limitar contexto
+                best_context = '\n'.join(relevant_lines[:10])
+        
+        if best_score >= 2 and best_context:
+            # Limpiar formato markdown excesivo
+            best_context = best_context.replace('```', '').strip()
+            return f"📚 **Encontrado en {best_match}:**\n\n{best_context[:500]}..."
+        
+        return None
+    
+    @classmethod
+    def _handle_factual_message(cls, message: str) -> str:
+        """Detecta y maneja mensajes sobre estados/hechos que pueden cambiar."""
+        import re
+        
+        message_lower = message.lower()
+        
+        # Patrones para reportar cambios de estado
+        state_patterns = [
+            (r'(?:el|la|los|las)\s+(\w+)\s+(?:falló|fallo|se\s+averió|tiene\s+error|está?\s+mal)', 'falla'),
+            (r'(?:el|la|los|las)\s+(\w+)\s+(?:se\s+recuperó|funciona|está?\s+bien|volvió|arreglado)', 'operativo'),
+            (r'(?:el|la|los|las)\s+(\w+)\s+está?\s+(?:en|con)\s+(\w+)', 'estado'),
+        ]
+        
+        for pattern, state_type in state_patterns:
+            match = re.search(pattern, message_lower)
+            if match:
+                topic = match.group(1)
+                if state_type == 'falla':
+                    fact = "⚠️ Reportado con falla/error"
+                elif state_type == 'operativo':
+                    fact = "✅ Operativo/Funcionando"
+                else:
+                    fact = f"Estado: {match.group(2) if len(match.groups()) > 1 else 'actualizado'}"
+                
+                return cls._store_factual_update(topic, fact)
+        
+        # Patrones para consultar estado
+        query_patterns = [
+            r'(?:cuál|cual|qué|que)\s+(?:es\s+)?(?:el\s+)?estado\s+(?:del?|de\s+la)?\s*(\w+)',
+            r'(?:cómo|como)\s+está?\s+(?:el|la)\s+(\w+)',
+        ]
+        
+        for pattern in query_patterns:
+            match = re.search(pattern, message_lower)
+            if match:
+                topic = match.group(1)
+                return cls._query_factual_state(topic)
+        
+        return None
+
+    @classmethod
     def get_response(cls, message: str, aeon_status: dict, use_lm: bool = True) -> str:
         """Genera una respuesta basada en el mensaje y contexto."""
         import random
@@ -983,6 +1168,18 @@ El subsistema de {subsystem} ha reportado una anomalía.
         extracted_name = cls.extract_name(message)
         if extracted_name:
             cls._context['user_name'] = extracted_name
+        
+        # NUEVO: Primero intentar manejar mensajes factuales (estados que cambian)
+        factual_response = cls._handle_factual_message(message)
+        if factual_response:
+            return factual_response
+        
+        # NUEVO: Intentar buscar en documentación (RAG ligero)
+        message_lower = message.lower()
+        if any(keyword in message_lower for keyword in ['protocolo', 'protocol', '1-bit', 'p2p', 'mqtt', 'arquitectura', 'whitepaper']):
+            doc_response = cls._search_docs(message)
+            if doc_response:
+                return doc_response
         
         intent = cls.get_intent(message)
         cls._context['last_intent'] = intent

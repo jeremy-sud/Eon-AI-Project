@@ -17,7 +17,7 @@
       "fact": "soy jeremy",
       "hash": "271a0a4d",
       "source": "conversation",
-      "confidence": 0.5639051904523876,
+      "confidence": 0.39667780642202527,
       "learned_at": 1765255187.3528864,
       "last_confirmed": 1765255302.3866065
     }
@@ -25,20 +25,17 @@
   "summaries": [],
   "preferences": {},
   "interactions": {
-    "total": 21,
+    "total": 10,
     "by_intent": {
       "creador_usuario": 3,
-      "secuencia": 5,
+      "secuencia": 2,
       "afirmacion": 1,
       "memoria_personal": 1,
       "conocimiento_tecnico": 2,
-      "sensor": 1,
-      "saludo": 1,
-      "default": 6,
-      "historia": 1
+      "sensor": 1
     },
     "by_hour": [
-      8,
+      0,
       0,
       0,
       0,
@@ -61,10 +58,10 @@
       0,
       0,
       3,
-      10
+      7
     ]
   },
   "emotional_memory": [],
   "created_at": 1765255170.0615954,
-  "last_updated": 1765261339.6395454
+  "last_updated": 1765262773.6585574
 }

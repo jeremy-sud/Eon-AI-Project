@@ -2,6 +2,54 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [1.7.1] - 2025-01-XX
+
+### Tests de Campo y Métricas de Energía
+
+- **WebSocket Bridge**
+  - Nuevo `ws_bridge.py`: Puente entre MQTT y Dashboard
+  - Soporte para visualización en tiempo real
+  - Modo simulación para desarrollo sin broker
+  - Corregidas deprecation warnings de Python 3.12+
+
+- **Test de Alcance LoRa**
+  - Nuevo `LoRa_RangeTest.ino`: Test de campo completo
+  - Métricas RSSI, SNR y tasa de pérdida
+  - Estimación de rango basada en señal
+  - Modo TX/RX configurable por Serial
+  - Estadísticas detalladas de transmisión
+
+- **Métricas de Energía ESP32**
+  - Nuevo `EnergyMetrics.ino`: Medición de consumo
+  - Comparativa 1-Bit vs JSON (2.6x ahorro energético)
+  - Estimación de vida de batería
+  - Lectura de voltaje de batería LiPo
+  - Soporte para deep sleep
+
+- **Documentación Hardware**
+  - Nuevo `phase4-hardware/README.md` completo
+  - Tablas de conexiones para TTGO/Heltec
+  - Procedimiento de test de campo
+  - Guía de librerías requeridas
+
+### Métricas Medidas
+
+| Métrica | 1-Bit | JSON | Mejora |
+|---------|-------|------|--------|
+| Tamaño | 21 bytes | 175 bytes | 8.3x |
+| Tiempo de aire | ~51 ms | ~132 ms | 2.6x |
+| Energía por TX | ~4.3 mJ | ~11.2 mJ | 2.6x |
+| TX con 1000mAh | ~1.02M | ~0.39M | 2.6x |
+
+### Nuevos Archivos
+
+- `phase6-collective/ws_bridge.py` - WebSocket-MQTT bridge
+- `phase4-hardware/esp32/examples/LoRa_RangeTest.ino` - Test de alcance
+- `phase4-hardware/esp32/examples/EnergyMetrics.ino` - Métricas de energía
+- `phase4-hardware/README.md` - Documentación completa de hardware
+
+---
+
 ## [1.7.0] - 2025-12-09
 
 ### Mente Colectiva - Transmisión Real (NUEVO)

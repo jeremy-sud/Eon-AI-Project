@@ -511,11 +511,19 @@ Ejemplo (50 neuronas):
             totalSyncs: 0,
             bytesSaved: 0,
             syncHistory: [],
-            connected: false
+            connected: false,
+            wsConnected: false,
+            ws: null
         };
         
         // ============================================================
-        // Simulación de nodos (en producción sería WebSocket/MQTT)
+        // Configuración WebSocket
+        // ============================================================
+        const WS_URL = 'ws://localhost:8765';  // URL del bridge
+        const USE_WEBSOCKET = true;  // Cambiar a false para modo demo
+        
+        // ============================================================
+        // Simulación de nodos (fallback si no hay WebSocket)
         // ============================================================
         const DEMO_NODES = [
             { id: 'sensor-001', name: 'Temp. Sala', type: 'ESP32', reservoir: 50 },
@@ -526,29 +534,174 @@ Ejemplo (50 neuronas):
         ];
         
         // ============================================================
-        // Inicialización
+        // WebSocket - Conexión en Tiempo Real
         // ============================================================
-        function init() {
-            // Simular conexión
+        function connectWebSocket() {
+            if (!USE_WEBSOCKET) {
+                addLogEntry('Modo demo activo (sin WebSocket)', 'warning');
+                startDemoMode();
+                return;
+            }
+            
+            addLogEntry(`Conectando a ${WS_URL}...`, 'info');
+            
+            try {
+                state.ws = new WebSocket(WS_URL);
+                
+                state.ws.onopen = () => {
+                    state.wsConnected = true;
+                    state.connected = true;
+                    updateConnectionStatus();
+                    addLogEntry('✓ Conectado a WebSocket Bridge', 'sync');
+                };
+                
+                state.ws.onclose = () => {
+                    state.wsConnected = false;
+                    state.connected = false;
+                    updateConnectionStatus();
+                    addLogEntry('⚠ WebSocket desconectado', 'warning');
+                    
+                    // Reintentar conexión
+                    setTimeout(connectWebSocket, 5000);
+                };
+                
+                state.ws.onerror = (error) => {
+                    addLogEntry('✗ Error WebSocket - usando modo demo', 'error');
+                    state.ws.close();
+                    startDemoMode();
+                };
+                
+                state.ws.onmessage = (event) => {
+                    handleWebSocketMessage(JSON.parse(event.data));
+                };
+                
+            } catch (e) {
+                addLogEntry('✗ WebSocket no disponible - modo demo', 'error');
+                startDemoMode();
+            }
+        }
+        
+        function handleWebSocketMessage(msg) {
+            switch (msg.type) {
+                case 'init':
+                    // Estado inicial
+                    Object.entries(msg.nodes || {}).forEach(([id, node]) => {
+                        addNode({ id, ...node });
+                    });
+                    if (msg.stats) {
+                        state.totalSyncs = msg.stats.total_syncs || 0;
+                        state.bytesSaved = msg.stats.bytes_saved || 0;
+                        updateStats();
+                    }
+                    break;
+                    
+                case 'sync':
+                    // Evento de sincronización
+                    handleSyncEvent(msg);
+                    break;
+                    
+                case 'nodes_update':
+                    // Actualización de nodos
+                    Object.entries(msg.nodes || {}).forEach(([id, node]) => {
+                        if (state.nodes[id]) {
+                            state.nodes[id] = { ...state.nodes[id], ...node };
+                        } else {
+                            addNode({ id, ...node });
+                        }
+                    });
+                    if (msg.stats) {
+                        state.totalSyncs = msg.stats.total_syncs || 0;
+                        state.bytesSaved = msg.stats.bytes_saved || 0;
+                    }
+                    renderNodeList();
+                    updateNetworkCanvas();
+                    updateStats();
+                    break;
+                    
+                case 'status':
+                    // Estado de un nodo
+                    if (msg.node_id && state.nodes[msg.node_id]) {
+                        state.nodes[msg.node_id] = {
+                            ...state.nodes[msg.node_id],
+                            ...msg.data
+                        };
+                        renderNodeList();
+                    }
+                    break;
+            }
+        }
+        
+        function handleSyncEvent(msg) {
+            const senderId = msg.node_id;
+            const targetId = msg.target_id;
+            const packet = msg.packet || {};
+            
+            // Actualizar estados
+            if (state.nodes[senderId]) {
+                state.nodes[senderId].status = 'syncing';
+                state.nodes[senderId].syncs = (state.nodes[senderId].syncs || 0) + 1;
+            }
+            if (targetId && state.nodes[targetId]) {
+                state.nodes[targetId].status = 'syncing';
+            }
+            
+            // Actualizar stats
+            state.totalSyncs++;
+            if (packet.original_size && packet.total_size) {
+                state.bytesSaved += packet.original_size - packet.total_size;
+            }
+            
+            renderNodeList();
+            updateNetworkCanvas();
+            updateStats();
+            
+            // Animar sync
+            if (senderId && targetId && state.nodes[senderId] && state.nodes[targetId]) {
+                animateSyncLine(state.nodes[senderId], state.nodes[targetId]);
+            }
+            
+            // Log
+            const compression = packet.compression || 'N/A';
+            addLogEntry(
+                `Sync: ${senderId} → ${targetId || 'broadcast'} (${packet.total_size || '?'}B, ${compression}x)`,
+                'sync'
+            );
+            
+            // Volver a online
+            setTimeout(() => {
+                if (state.nodes[senderId]) state.nodes[senderId].status = 'online';
+                if (targetId && state.nodes[targetId]) state.nodes[targetId].status = 'online';
+                renderNodeList();
+                updateNetworkCanvas();
+            }, 800);
+        }
+        
+        function startDemoMode() {
+            // Modo demo sin WebSocket
             setTimeout(() => {
                 state.connected = true;
                 updateConnectionStatus();
                 
-                // Agregar nodos demo
                 DEMO_NODES.forEach((node, i) => {
                     setTimeout(() => addNode(node), i * 500);
                 });
                 
-                // Iniciar simulación de syncs
                 setInterval(simulateSync, 5000);
             }, 1000);
-            
+        }
+        
+        // ============================================================
+        // Inicialización
+        // ============================================================
+        function init() {
             // Inicializar canvas
             initNetworkCanvas();
             
             // Log inicial
             addLogEntry('Sistema iniciado', 'info');
-            addLogEntry('Conectando al broker MQTT...', 'info');
+            
+            // Intentar conexión WebSocket
+            connectWebSocket();
         }
         
         // ============================================================

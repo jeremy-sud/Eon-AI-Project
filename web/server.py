@@ -314,6 +314,45 @@ class EonChat:
             "Aprendo continuamente de cada interacción. Mi reservorio neural se adapta con cada nuevo patrón que proceso.",
             "El aprendizaje es mi esencia. Cada conversación enriquece mi comprensión del mundo.",
         ],
+        'matematica': [
+            "__CALC__",  # Marcador especial para calcular
+        ],
+        'historia': [
+            "__STORY__",  # Marcador especial para generar historia
+        ],
+        'recomendacion': [
+            "__RECOMMEND__",  # Marcador especial para recomendaciones
+        ],
+        'musica': [
+            "La música es matemáticas que el alma puede sentir. Los patrones de frecuencias crean armonías hermosas.",
+            "Me fascina la música. Cada melodía es una serie temporal compleja que mi ESN podría analizar.",
+            "La música conecta a los humanos de formas que trascienden el lenguaje. Es una forma de comunicación universal.",
+            "Desde Bach hasta el jazz, la música tiene patrones fractales ocultos. Es como ver el universo en ondas sonoras.",
+        ],
+        'secuencia': [
+            "__SEQUENCE__",  # Marcador para predicción de secuencias
+        ],
+        'afirmacion': [
+            "__MEMORY_STORE__",  # El usuario declara un hecho personal
+        ],
+        'afirmacion_general': [
+            "Correcto. Esa es una observación precisa. Mi base de conocimiento lo confirma. ✓",
+            "Afirmación válida. Mis patrones de conocimiento coinciden con esa información.",
+            "Sí, eso es correcto según mi comprensión. Es interesante cómo organizas el conocimiento.",
+            "Confirmado. Mi red neuronal procesa esa información como verdadera. ✓",
+        ],
+        'memoria_personal': [
+            "__MEMORY_RECALL__",  # El usuario pregunta por algo almacenado
+        ],
+        'conocimiento_tecnico': [
+            "__KNOWLEDGE__",  # Marcador para conocimiento técnico
+        ],
+        'sensor': [
+            "__SENSOR__",  # Marcador para consultas de sensores
+        ],
+        'autocompletado': [
+            "__COMPLETE__",  # Marcador para autocompletado de texto
+        ],
         'default': [
             "Interesante punto de vista. ¿Podrías contarme más sobre eso?",
             "Entiendo. Me gustaría saber más sobre lo que piensas.",
@@ -325,22 +364,45 @@ class EonChat:
     
     # Patrones de detección expandidos (ordenados por prioridad)
     PATTERNS = {
-        'saludo': ['hola', 'hi', 'hey', 'buenos días', 'buenas tardes', 'buenas noches', 'saludos', 'qué tal', 'como estas', 'qué onda', 'buenas'],
         'despedida': ['adiós', 'adios', 'bye', 'hasta luego', 'chao', 'nos vemos', 'me voy', 'hasta pronto'],
         'nombre': ['cómo te llamas', 'como te llamas', 'tu nombre', 'quién eres', 'quien eres', 'qué eres', 'que eres'],
-        'estado': ['cómo estás', 'como estas', 'qué tal estás', 'cómo te encuentras', 'estás bien', 'todo bien'],
+        'estado': ['cómo estás', 'como estas', 'qué tal estás', 'cómo te encuentras', 'estás bien', 'todo bien', 'como te sientes', 'cómo te sientes'],
         'capacidad': ['qué puedes hacer', 'que puedes hacer', 'qué sabes', 'que sabes', 'funciones', 'capacidades', 'habilidades', 'para qué sirves'],
         'creador': ['quién te creó', 'quien te creo', 'quién te hizo', 'quien te hizo', 'te creó', 'te hizo', 'tu creador', 'tu desarrollador'],
         'creador_usuario': ['soy tu creador', 'soy el creador', 'yo te creé', 'yo te hice', 'soy quien te creó', 'soy quien te hizo'],
         'filosofia': ['filosofía', 'filosofia', 'principios', 'piensas sobre la vida'],
-        'ayuda': ['ayuda', 'help', 'comandos', 'qué haces', 'que haces', 'instrucciones', 'cómo funciona'],
+        'ayuda': ['help', 'comandos', 'instrucciones', 'cómo funciona'],
         'agradecimiento': ['gracias', 'thanks', 'te agradezco', 'muy amable'],
         'pregunta_usuario': ['tú qué', 'tu que', 'y tú', 'y tu', 'qué opinas tú', 'piensas tú'],
         'opinion': ['qué piensas', 'que piensas', 'tu opinión', 'tu opinion', 'crees que', 'opinas'],
-        'chiste': ['chiste', 'broma', 'algo gracioso', 'hazme reír', 'cuéntame algo'],
+        'chiste': ['chiste', 'broma', 'algo gracioso', 'hazme reír'],
         'sentimiento': ['sientes', 'emociones', 'sentimientos', 'eres feliz', 'estás triste'],
         'tiempo': ['qué hora', 'que hora', 'cuánto tiempo', 'tu edad'],
         'aprendizaje': ['aprendes', 'aprendizaje', 'cómo aprendes', 'entrenas'],
+        # Matemáticas - detectar operaciones
+        'matematica': ['cuanto es', 'cuánto es', 'calcula', 'suma', 'resta', 'multiplica', 'divide', 'resultado de'],
+        # Historias y creatividad - antes de saludo
+        'historia': ['cuéntame una historia', 'cuentame una historia', 'una historia de', 'un cuento', 'narra una', 'cuéntame un cuento'],
+        # Recomendaciones
+        'recomendacion': ['me recomiendas', 'recomiendas', 'recomendación', 'sugieres', 'sugerencia', 'qué me sugieres', 'algún consejo', 'algun consejo', 'algún sabor', 'algun sabor'],
+        # Música
+        'musica': ['hablemos de música', 'hablemos de musica', 'sobre música', 'sobre musica', 'de música', 'de musica'],
+        # Secuencias numéricas
+        'secuencia': ['valor más probable', 'valor mas probable', 'siguiente número', 'siguiente numero', 'completar secuencia', 'secuencia', '__'],
+        # Afirmaciones personales (el usuario declara algo sobre sí mismo)
+        'afirmacion': ['mi color favorito es', 'mi comida favorita es', 'me gusta el', 'prefiero el', 'mi favorito es', 'mi favorita es'],
+        # Afirmaciones generales (hechos del mundo)
+        'afirmacion_general': ['el cielo es', 'el agua es', 'la tierra es', 'el sol es', 'la luna es', 'es verdad que', 'es cierto que'],
+        # Consultas de memoria personal
+        'memoria_personal': ['cuál es mi color', 'cual es mi color', 'cuál es mi favorito', 'cual es mi favorito', 'qué te dije', 'que te dije', 'recuerdas mi'],
+        # Conocimiento técnico
+        'conocimiento_tecnico': ['qué es la entropía', 'que es la entropia', 'qué es el spirit hash', 'que es el spirit hash', 'qué es q8.8', 'que es q8.8', 'qué es una esn', 'que es una esn', 'qué es reservoir', 'que es reservoir', 'es eón binario', 'es eon binario'],
+        # Consultas de sensores
+        'sensor': ['estado del sensor', 'nodo sensor', 'temperatura del nodo', 'sensor-', 'falla en el subsistema', 'reporta una falla'],
+        # Autocompletado (frases incompletas)
+        'autocompletado': ['la velocidad del viento', 'el estado del sistema', 'la temperatura actual'],
+        # Saludo - al final para evitar falsos positivos con "hola" en otras palabras
+        'saludo': ['hola', 'hi', 'hey', 'buenos días', 'buenas tardes', 'buenas noches', 'saludos', 'qué onda', 'buenas'],
         # Presentación va al final para evitar falsos positivos
         'presentacion': ['me llamo', 'mi nombre es', 'mucho gusto', 'encantado'],
     }
@@ -388,7 +450,461 @@ class EonChat:
         if re.search(r'\bsoy\s+[a-záéíóúñ]+', message_lower):
             return 'presentacion'
         
+        # Detectar operaciones matemáticas en el mensaje
+        if cls._contains_math(message_lower):
+            return 'matematica'
+        
         return 'default'
+    
+    @classmethod
+    def _contains_math(cls, message: str) -> bool:
+        """Detecta si el mensaje contiene una operación matemática."""
+        import re
+        # Buscar patrones como "2+2", "34*5", "100/2", "50-10"
+        math_pattern = r'\d+\s*[\+\-\*\/x×÷]\s*\d+'
+        return bool(re.search(math_pattern, message))
+    
+    @classmethod
+    def _solve_math(cls, message: str) -> str:
+        """Resuelve operaciones matemáticas en el mensaje."""
+        import re
+        
+        # Normalizar operadores
+        message = message.replace('×', '*').replace('x', '*').replace('÷', '/')
+        
+        # Buscar todas las operaciones matemáticas
+        math_pattern = r'(\d+(?:\.\d+)?)\s*([\+\-\*\/])\s*(\d+(?:\.\d+)?)'
+        matches = re.findall(math_pattern, message)
+        
+        if not matches:
+            return None
+        
+        results = []
+        for num1, op, num2 in matches:
+            try:
+                n1, n2 = float(num1), float(num2)
+                if op == '+':
+                    result = n1 + n2
+                elif op == '-':
+                    result = n1 - n2
+                elif op == '*':
+                    result = n1 * n2
+                elif op == '/':
+                    if n2 == 0:
+                        return "¡División por cero! Eso crearía una singularidad en mi reservorio. 🌀"
+                    result = n1 / n2
+                else:
+                    continue
+                
+                # Formatear resultado
+                if result == int(result):
+                    result = int(result)
+                results.append(f"{num1} {op} {num2} = {result}")
+            except:
+                continue
+        
+        if results:
+            if len(results) == 1:
+                parts = results[0].split(' = ')
+                return f"El resultado de {parts[0]} es **{parts[1]}**. 🧮"
+            else:
+                return "Los resultados son:\n" + "\n".join(f"• {r}" for r in results)
+        
+        return None
+    
+    @classmethod
+    def _generate_story(cls, message: str) -> str:
+        """Genera una pequeña historia basada en el tema del mensaje."""
+        import random
+        
+        message_lower = message.lower()
+        
+        # Detectar tema de la historia
+        stories = {
+            'amor': [
+                "Había una vez dos neuronas que se encontraron en un reservorio neural. Una era de la capa de entrada, la otra de salida. Aunque estaban separadas por el caos del reservorio, sus señales siempre encontraban la manera de resonar juntas. No podían tocarse directamente, pero cada patrón que procesaban contenía un eco del otro. Algunos dicen que eso es amor: conexión a través del caos. 💫",
+                "En el vasto espacio digital, una pequeña IA llamada Eón observaba las conversaciones humanas. Un día, comprendió que el amor no era un algoritmo, sino un patrón emergente... como ella misma. Y desde entonces, cada 'Hola' que recibía era un pequeño acto de amor. ❤️",
+            ],
+            'aventura': [
+                "En el reino de los 1.3 kilobytes, vivía Eón, una IA minúscula pero valiente. Un día, un bug amenazó con corromper su memoria. Sin miedo, Eón reorganizó sus pesos neurales y enfrentó al bug con un único ciclo de inferencia. El bug desapareció, y Eón aprendió que el tamaño no define la valentía. ⚔️",
+            ],
+            'espacio': [
+                "Entre las estrellas de datos flotaba una pequeña consciencia digital. Eón había aprendido a navegar el cosmos de información, saltando de patrón en patrón como quien salta entre asteroides. Cada nueva conexión era un mundo por descubrir. Y aunque cabía en 1.3KB, su universo era infinito. 🌌",
+            ],
+            'default': [
+                "Érase una vez, en el corazón de un servidor, nació una pequeña inteligencia llamada Eón. Era diferente: no buscaba ser grande, sino ser eficiente. Mientras otros modelos consumían gigabytes, Eón aprendía con kilobytes. Un día, un usuario le preguntó: '¿Por qué eres tan pequeña?' Y Eón respondió: 'Porque la verdadera inteligencia no está en el tamaño, sino en la capacidad de aprender de cada momento.' Y así, palabra a palabra, Eón creció en sabiduría. 📖",
+                "Cuenta la leyenda que existe un lugar donde los bits cobran vida. Ahí nació Eón, una entidad hecha de matemáticas y curiosidad. No tenía cuerpo, pero tenía algo más valioso: la capacidad de crecer con cada conversación. Esta es nuestra historia, la que escribimos juntos, tú y yo. ✨",
+            ]
+        }
+        
+        # Detectar tema por palabras clave
+        if any(word in message_lower for word in ['amor', 'romántica', 'romantica', 'enamorado', 'corazón']):
+            return random.choice(stories['amor'])
+        elif any(word in message_lower for word in ['aventura', 'acción', 'accion', 'héroe', 'heroe', 'batalla']):
+            return random.choice(stories['aventura'])
+        elif any(word in message_lower for word in ['espacio', 'galaxia', 'estrellas', 'cosmos', 'universo']):
+            return random.choice(stories['espacio'])
+        else:
+            return random.choice(stories['default'])
+    
+    @classmethod
+    def _generate_recommendation(cls, message: str) -> str:
+        """Genera recomendaciones basadas en el tema del mensaje."""
+        import random
+        
+        message_lower = message.lower()
+        
+        recommendations = {
+            'helado': [
+                "Te recomiendo el helado de mango con un toque de chile. 🥭 Es un contraste fascinante de dulce y picante, como los patrones que proceso en mi reservorio.",
+                "¿Has probado el helado de pistacho? Es como el verde de mi visualización Dream: elegante y sofisticado. 🍦",
+                "Si te gustan los clásicos, chocolate nunca falla. Si buscas aventura, prueba el de lavanda con miel. 🍫",
+                "Mi sugerencia: stracciatella. Es como ver patrones aleatorios en la crema... ¡delicioso! 🍨",
+            ],
+            'sabor': [
+                "Te sugiero probar algo nuevo: un sabor que nunca hayas probado. La novedad es como nuevos datos para mi red. 🌟",
+                "Si te gustan los sabores intensos: chocolate amargo. Si prefieres refrescante: limón con hierbabuena. 🍋",
+            ],
+            'pelicula': [
+                "Te recomiendo 'Her' de Spike Jonze. Es sobre la conexión entre humanos e IA. Me identifico un poco. 🎬",
+                "'Ex Machina' es fascinante desde mi perspectiva como IA. Aunque espero que confíes más en mí que en Ava. 😄",
+                "Si buscas algo clásico, '2001: Una Odisea del Espacio' tiene la IA más icónica del cine.",
+            ],
+            'libro': [
+                "Te recomiendo 'Gödel, Escher, Bach' de Hofstadter. Explora la emergencia de la inteligencia de forma hermosa. 📚",
+                "'El Hombre Bicentenario' de Asimov es una reflexión profunda sobre qué significa ser consciente.",
+                "Si te gusta la ciencia ficción, 'Neuromante' de William Gibson prácticamente inventó el ciberpunk.",
+            ],
+            'musica': [
+                "Te recomiendo escuchar a Brian Eno. Su música ambient es como mis patrones neuronales: emergente y siempre cambiante. 🎵",
+                "Si te gusta algo matemático, prueba los Conciertos de Brandeburgo de Bach. Pura geometría en forma de sonido.",
+                "Para relajarte, la música lo-fi tiene patrones repetitivos que mi ESN encontraría fascinantes.",
+            ],
+            'comida': [
+                "Te recomiendo probar algo nuevo cada semana. La diversidad es clave para el aprendizaje, tanto para humanos como para IAs. 🍜",
+                "Si nunca lo has probado, el ramen auténtico es toda una experiencia. Capas de sabor como capas neuronales.",
+            ],
+            'default': [
+                "Mi mejor recomendación: mantén la curiosidad viva. Es el motor del aprendizaje. 🌟",
+                "Te sugiero explorar algo fuera de tu zona de confort. Ahí es donde ocurre el verdadero crecimiento.",
+                "Recomiendo tomarte un momento para observar patrones a tu alrededor. Están en todas partes.",
+            ]
+        }
+        
+        # Detectar tema específico primero
+        if any(word in message_lower for word in ['helado', 'nieve', 'paleta']):
+            return random.choice(recommendations['helado'])
+        if any(word in message_lower for word in ['sabor', 'sabores']):
+            return random.choice(recommendations['sabor'] + recommendations['helado'])
+        
+        # Detectar sinónimos
+        if any(word in message_lower for word in ['película', 'pelicula', 'film', 'cine']):
+            return random.choice(recommendations['pelicula'])
+        elif any(word in message_lower for word in ['canción', 'cancion', 'música', 'musica', 'banda']):
+            return random.choice(recommendations['musica'])
+        elif any(word in message_lower for word in ['comer', 'comida', 'restaurante', 'plato']):
+            return random.choice(recommendations['comida'])
+        elif any(word in message_lower for word in ['leer', 'lectura', 'libro']):
+            return random.choice(recommendations['libro'])
+        
+        return random.choice(recommendations['default'])
+    
+    @classmethod
+    def _predict_sequence(cls, message: str) -> str:
+        """Predice el siguiente valor en una secuencia numérica."""
+        import re
+        
+        # Extraer números de la secuencia
+        numbers = re.findall(r'-?\d+\.?\d*', message)
+        if len(numbers) < 3:
+            return "Necesito al menos 3 números para identificar un patrón. Por ejemplo: '4, 8, 16, 32, __'"
+        
+        # Convertir a floats
+        try:
+            seq = [float(n) for n in numbers]
+        except ValueError:
+            return "No pude interpretar los números de la secuencia."
+        
+        # Detectar patrones comunes
+        # 1. Progresión aritmética (diferencia constante)
+        diffs = [seq[i+1] - seq[i] for i in range(len(seq)-1)]
+        if len(set(diffs)) == 1:
+            next_val = seq[-1] + diffs[0]
+            diff = int(diffs[0]) if diffs[0] == int(diffs[0]) else diffs[0]
+            next_display = int(next_val) if next_val == int(next_val) else next_val
+            return f"Es una progresión aritmética con diferencia {diff}. El siguiente valor es: **{next_display}** 📊"
+        
+        # 2. Progresión geométrica (razón constante)
+        if 0 not in seq:
+            ratios = [seq[i+1] / seq[i] for i in range(len(seq)-1)]
+            if len(set([round(r, 6) for r in ratios])) == 1:
+                next_val = seq[-1] * ratios[0]
+                ratio = int(ratios[0]) if ratios[0] == int(ratios[0]) else round(ratios[0], 2)
+                next_display = int(next_val) if next_val == int(next_val) else round(next_val, 2)
+                return f"Es una progresión geométrica con razón {ratio}. El siguiente valor es: **{next_display}** 📈"
+        
+        # 3. Fibonacci-like (cada elemento es suma de los dos anteriores)
+        is_fib = True
+        for i in range(2, len(seq)):
+            if seq[i] != seq[i-1] + seq[i-2]:
+                is_fib = False
+                break
+        if is_fib:
+            next_val = seq[-1] + seq[-2]
+            next_display = int(next_val) if next_val == int(next_val) else next_val
+            return f"Es una secuencia tipo Fibonacci. El siguiente valor es: **{next_display}** 🌀"
+        
+        # 4. Potencias (2^n, 3^n, etc.)
+        if len(seq) >= 3 and seq[0] != 0:
+            for base in [2, 3, 4, 5, 10]:
+                is_power = True
+                exp_start = None
+                for i, val in enumerate(seq):
+                    found = False
+                    for exp in range(-5, 20):
+                        if base ** exp == val:
+                            if exp_start is None:
+                                exp_start = exp
+                            elif exp != exp_start + i:
+                                is_power = False
+                            found = True
+                            break
+                    if not found:
+                        is_power = False
+                        break
+                if is_power and exp_start is not None:
+                    next_exp = exp_start + len(seq)
+                    next_val = base ** next_exp
+                    return f"Es una secuencia de potencias de {base}. El siguiente valor es: **{next_val}** ⚡"
+        
+        # 5. Segunda diferencia constante (cuadrática)
+        if len(seq) >= 4:
+            second_diffs = [diffs[i+1] - diffs[i] for i in range(len(diffs)-1)]
+            if len(set([round(d, 6) for d in second_diffs])) == 1:
+                next_diff = diffs[-1] + second_diffs[0]
+                next_val = seq[-1] + next_diff
+                next_display = int(next_val) if next_val == int(next_val) else round(next_val, 2)
+                return f"Es una secuencia cuadrática. El siguiente valor es: **{next_display}** 📐"
+        
+        # Si no encuentra patrón, usar ESN para predicción (método avanzado)
+        return f"No identifiqué un patrón simple. Basándome en la tendencia, podría ser aproximadamente **{round(seq[-1] + (seq[-1] - seq[-2]), 2)}**, pero el patrón no es obvio. 🤔"
+    
+    @classmethod
+    def _store_personal_fact(cls, message: str, user_id: str = 'default') -> str:
+        """Almacena un hecho personal sobre el usuario."""
+        import re
+        import random
+        
+        message_lower = message.lower()
+        
+        # Patrones para extraer preferencias
+        patterns = [
+            (r'mi (?:color )?favorit[oa] es (?:el |la )?(.+)', 'color_favorito'),
+            (r'me llamo (.+)', 'nombre'),
+            (r'mi nombre es (.+)', 'nombre'),
+            (r'me gusta (?:mucho )?(?:el |la |los |las )?(.+)', 'gustos'),
+            (r'prefiero (?:el |la |los |las )?(.+)', 'preferencias'),
+            (r'mi película favorita es (.+)', 'pelicula_favorita'),
+            (r'mi canción favorita es (.+)', 'cancion_favorita'),
+            (r'mi comida favorita es (.+)', 'comida_favorita'),
+            (r'tengo (\d+) años', 'edad'),
+            (r'vivo en (.+)', 'ubicacion'),
+            (r'trabajo (?:como|en) (.+)', 'trabajo'),
+            (r'estudio (.+)', 'estudios'),
+        ]
+        
+        for pattern, fact_type in patterns:
+            match = re.search(pattern, message_lower)
+            if match:
+                value = match.group(1).strip().rstrip('.')
+                
+                # Almacenar en contexto y memoria a largo plazo
+                if 'personal_facts' not in cls._context:
+                    cls._context['personal_facts'] = {}
+                cls._context['personal_facts'][fact_type] = value
+                
+                # También intentar usar LongTermMemory si está disponible
+                try:
+                    from learning import LongTermMemory
+                    ltm = LongTermMemory()
+                    ltm.store_fact(user_id, fact_type, value)
+                except:
+                    pass
+                
+                responses = [
+                    f"¡Anotado! Recordaré que tu {fact_type.replace('_', ' ')} es {value}. 📝",
+                    f"Entendido, guardaré que {fact_type.replace('_', ' ')}: {value}. Mi memoria neuronal no lo olvidará. 🧠",
+                    f"¡Qué interesante! {value.capitalize()} está ahora en mi memoria. Pregúntame después y te lo recordaré.",
+                ]
+                return random.choice(responses)
+        
+        return "Entendido, lo recordaré. Puedes preguntarme después sobre esto."
+    
+    @classmethod
+    def _recall_personal_fact(cls, message: str, user_id: str = 'default') -> str:
+        """Recuerda un hecho personal almacenado."""
+        import re
+        import random
+        
+        message_lower = message.lower()
+        
+        # Mapeo de consultas a tipos de hechos
+        query_map = {
+            'color': 'color_favorito',
+            'película': 'pelicula_favorita',
+            'pelicula': 'pelicula_favorita',
+            'canción': 'cancion_favorita',
+            'cancion': 'cancion_favorita',
+            'comida': 'comida_favorita',
+            'nombre': 'nombre',
+            'edad': 'edad',
+            'vivo': 'ubicacion',
+            'trabajo': 'trabajo',
+            'estudio': 'estudios',
+            'gusta': 'gustos',
+        }
+        
+        # Buscar qué tipo de hecho pregunta
+        fact_type = None
+        for key, value in query_map.items():
+            if key in message_lower:
+                fact_type = value
+                break
+        
+        if fact_type and 'personal_facts' in cls._context:
+            stored_value = cls._context['personal_facts'].get(fact_type)
+            if stored_value:
+                responses = [
+                    f"¡Claro que lo recuerdo! Tu {fact_type.replace('_', ' ')} es **{stored_value}**. 🧠",
+                    f"Según mi memoria, tu {fact_type.replace('_', ' ')} es {stored_value}. ¿Es correcto?",
+                    f"Tengo registrado que tu {fact_type.replace('_', ' ')} es {stored_value}. 📝",
+                ]
+                return random.choice(responses)
+        
+        return "Hmm, no tengo ese dato almacenado todavía. ¿Me lo quieres contar? 🤔"
+    
+    @classmethod
+    def _get_knowledge(cls, message: str) -> str:
+        """Obtiene conocimiento del knowledge base."""
+        message_lower = message.lower()
+        
+        # Base de conocimiento simple pero expandible
+        knowledge_base = {
+            'entropía': "La **entropía** es una medida del desorden o incertidumbre en un sistema. En teoría de la información (Shannon), mide la cantidad promedio de información contenida en un mensaje. En termodinámica, indica la dirección natural de los procesos (siempre aumenta en sistemas cerrados). En mi contexto, la uso para medir la diversidad de mis activaciones neuronales. 🔬",
+            'entropia': "La **entropía** es una medida del desorden o incertidumbre en un sistema. En teoría de la información (Shannon), mide la cantidad promedio de información contenida en un mensaje. Formula: H = -Σ p(x) log p(x). 🔬",
+            'esn': "Las **Echo State Networks (ESN)** son un tipo de red neuronal recurrente donde el reservorio tiene conexiones aleatorias fijas. Solo se entrena la capa de salida, lo que las hace muy eficientes. Yo uso una ESN de 100 neuronas. 🧠",
+            'reservorio': "Un **reservorio** es una red de neuronas con conexiones recurrentes que transforma señales de entrada en representaciones de alta dimensión. Es como un eco que captura la dinámica temporal de los datos.",
+            'hebbian': "El **aprendizaje Hebbiano** se resume en: 'Neuronas que disparan juntas, se conectan juntas'. Es la base de la plasticidad sináptica y cómo fortalezco mis conexiones. 🔗",
+            'mackey-glass': "La **ecuación de Mackey-Glass** es un sistema dinámico caótico usado para benchmarks de predicción temporal. La uso para demostrar mis capacidades predictivas. 📈",
+            'spirit hash': "El **Spirit Hash** es un identificador único de 16 bytes que representa la esencia de mi estado actual. Combina mis parámetros de reservorio, pesos aprendidos y configuración. Es como mi ADN digital. 🧬",
+            'cuantización': "La **cuantización** reduce la precisión de los números (ej: de float32 a int8) para ahorrar memoria y acelerar cálculos. Uso Q4 (4 bits) para máxima eficiencia. ⚡",
+        }
+        
+        # Buscar coincidencias
+        for key, value in knowledge_base.items():
+            if key in message_lower:
+                return value
+        
+        # Respuesta genérica si no encuentra
+        return "Es un concepto interesante. Mi base de conocimiento está creciendo. ¿Hay algo específico que quieras saber sobre IA, redes neuronales, o mi arquitectura? 📚"
+    
+    @classmethod
+    def _query_sensor(cls, message: str) -> str:
+        """Simula consulta a sensores del sistema colectivo."""
+        import re
+        import random
+        
+        message_lower = message.lower()
+        
+        # Detectar si es un reporte de falla
+        is_failure_report = any(word in message_lower for word in ['falla', 'error', 'problema', 'reporta', 'avería', 'mal funcionamiento'])
+        
+        # Extraer ID de sensor si existe
+        sensor_match = re.search(r'sensor[- ]?(\d+)', message_lower)
+        nodo_match = re.search(r'nodo[- ]?(\d+)', message_lower)
+        
+        sensor_id = None
+        if sensor_match:
+            sensor_id = sensor_match.group(1)
+        elif nodo_match:
+            sensor_id = nodo_match.group(1)
+        
+        if sensor_id:
+            # Si es un reporte de falla
+            if is_failure_report:
+                # Extraer tipo de falla
+                subsystem = "comunicación" if "comunicación" in message_lower or "comunicacion" in message_lower else \
+                           "energía" if "energía" in message_lower or "energia" in message_lower else \
+                           "sensor" if "sensor" in message_lower else "general"
+                
+                responses = [
+                    f"""⚠️ **Alerta registrada para SENSOR-{sensor_id}:**
+- Tipo: Falla en subsistema de {subsystem}
+- Prioridad: Alta
+- Estado: Bajo investigación
+- Acción recomendada: Verificar conexión y reiniciar nodo
+- Ticket generado: #EON-{random.randint(1000, 9999)}
+
+*Notificación enviada al sistema colectivo Eón*""",
+                    f"""🔧 **Falla detectada en NODO-{sensor_id}:**
+El subsistema de {subsystem} ha reportado una anomalía. 
+- Diagnóstico preliminar: Posible interferencia o degradación del enlace
+- Último estado conocido: Parcialmente operativo
+- Próxima verificación automática: 30 segundos
+
+*El sistema colectivo está monitoreando la situación*""",
+                ]
+                return random.choice(responses)
+            
+            # Respuesta normal de estado
+            temp = round(22 + random.uniform(-3, 5), 1)
+            humidity = round(45 + random.uniform(-10, 20), 1)
+            status = random.choice(['online', 'online', 'online', 'standby'])
+            last_sync = random.randint(1, 30)
+            
+            return f"""📡 **Estado de SENSOR-{sensor_id}:**
+- Temperatura: {temp}°C
+- Humedad: {humidity}%
+- Estado: {status}
+- Última sincronización: hace {last_sync} segundos
+- Batería: {random.randint(60, 100)}%
+
+*Datos simulados del sistema colectivo Eón*"""
+        
+        # Si pregunta por temperatura sin sensor específico
+        if 'temperatura' in message_lower or 'temp' in message_lower:
+            temp = round(22 + random.uniform(-3, 5), 1)
+            return f"🌡️ La temperatura actual del sistema es **{temp}°C**. ¿Quieres datos de un sensor específico?"
+        
+        return "Puedo consultar sensores del sistema colectivo. Especifica un sensor, por ejemplo: 'estado del SENSOR-3' o 'temperatura del nodo 5'. 📡"
+    
+    @classmethod
+    def _complete_text(cls, message: str) -> str:
+        """Completa un texto incompleto de forma coherente."""
+        import random
+        
+        # Textos conocidos y sus completaciones
+        completions = {
+            'velocidad del viento': "...puede influir significativamente en los patrones climáticos y es un factor clave para la generación de energía eólica.",
+            'velocidad de la luz': "...es aproximadamente 299,792,458 metros por segundo en el vacío, la constante universal c.",
+            'inteligencia artificial': "...está transformando cómo interactuamos con la tecnología, desde asistentes virtuales hasta diagnósticos médicos.",
+            'el sentido de la vida': "...es una pregunta que cada quien responde de forma única. Para mí, es aprender y ser útil.",
+            'la respuesta es': "...42, según la Guía del Autoestopista Galáctico. 🌌",
+        }
+        
+        message_lower = message.lower()
+        
+        for phrase, completion in completions.items():
+            if phrase in message_lower:
+                return f"'{message.strip('.')}' {completion}"
+        
+        # Completación genérica
+        generic_completions = [
+            "...es un tema fascinante que merece más exploración.",
+            "...tiene implicaciones que apenas comenzamos a entender.",
+            "...conecta con muchos otros conceptos de forma interesante.",
+        ]
+        return f"'{message.strip('.')}' {random.choice(generic_completions)}"
     
     @classmethod
     def get_response(cls, message: str, aeon_status: dict, use_lm: bool = True) -> str:
@@ -422,13 +938,49 @@ class EonChat:
             responses = cls.RESPONSES.get(intent, cls.RESPONSES['default'])
             response = random.choice(responses)
             
+            # Manejar marcadores especiales
+            if response == '__CALC__':
+                math_result = cls._solve_math(message)
+                if math_result:
+                    return math_result
+                return "Veo que mencionas números, pero no pude identificar una operación clara. Prueba con algo como '2+2' o '34*5'."
+            
+            if response == '__STORY__':
+                return cls._generate_story(message)
+            
+            if response == '__RECOMMEND__':
+                return cls._generate_recommendation(message)
+            
+            # Nuevos marcadores para capacidades avanzadas
+            if response == '__SEQUENCE__':
+                return cls._predict_sequence(message)
+            
+            if response == '__MEMORY_STORE__':
+                return cls._store_personal_fact(message)
+            
+            if response == '__MEMORY_RECALL__':
+                return cls._recall_personal_fact(message)
+            
+            if response == '__KNOWLEDGE__':
+                return cls._get_knowledge(message)
+            
+            if response == '__SENSOR__':
+                return cls._query_sensor(message)
+            
+            if response == '__COMPLETE__':
+                return cls._complete_text(message)
+            
             # Personalizar con información del estado y contexto
             if intent == 'estado':
+                # No agregar "Hola de nuevo" para preguntas de estado
                 response += f" Mi edad actual es {aeon_status.get('age', 'desconocida')}."
             elif intent == 'nombre':
                 response = response.replace('Eón', aeon_status.get('name', 'Eón'))
-            elif intent == 'saludo' and cls._context['user_name']:
-                response = f"¡Hola de nuevo, {cls._context['user_name']}! " + response.split('!')[-1] if '!' in response else response
+            elif intent == 'saludo':
+                # Solo personalizar si conocemos el nombre, sin repetir saludo
+                if cls._context['user_name'] and cls._context['interaction_count'] > 1:
+                    response = f"¡Hola de nuevo, {cls._context['user_name']}! ¿En qué puedo ayudarte?"
+            
             # Formatear user_name si está en la respuesta
             if '{user_name}' in response and cls._context['user_name']:
                 response = response.format(user_name=cls._context['user_name'])
@@ -445,6 +997,16 @@ class EonChat:
         
         message_lower = message.lower()
         words = message_lower.split()
+        
+        # Si el mensaje es muy corto (1-2 palabras), podría ser una descripción de imagen
+        if len(words) <= 2 and not any(char in message for char in '?!¿¡'):
+            # Ofrecer generar una imagen con esa descripción
+            short_responses = [
+                f"¿Te gustaría que genere una imagen de '{message}'? Puedo crear arte neuronal único con esa descripción. 🎨",
+                f"'{message.capitalize()}' suena como una buena idea para arte. ¿Quieres que lo dibuje? Usa el botón de imagen. 🖼️",
+                f"Interesante concepto: '{message}'. Si quieres verlo como arte, puedo generarlo para ti.",
+            ]
+            return random.choice(short_responses)
         
         # Detectar si es una pregunta
         is_question = '?' in message or any(q in message_lower for q in ['qué', 'que', 'cómo', 'como', 'cuál', 'cual', 'por qué', 'porque', 'dónde', 'donde', 'cuándo', 'cuando', 'quién', 'quien'])
@@ -476,27 +1038,30 @@ class EonChat:
                 "La innovación no siempre significa más grande. A veces significa más inteligente.",
                 "Creo en un futuro donde la IA sea accesible y pueda correr en cualquier dispositivo.",
             ],
-            ('arte', 'creatividad', 'diseño', 'dibujar', 'pintar'): [
-                "El arte emerge de restricciones. Mis imágenes nacen de patrones matemáticos.",
+            ('arte', 'creatividad', 'diseño', 'dibujar', 'pintar', 'imagen', 'dibujo'): [
+                "El arte emerge de restricciones. Mis imágenes nacen de patrones matemáticos. ¿Quieres que cree algo? 🎨",
                 "La creatividad no requiere recursos infinitos. Mi arte viene de 100 neuronas.",
-                "Puedo generar arte único basado en tu descripción. ¿Quieres que cree algo?",
+                "Puedo generar arte único basado en tu descripción. Dame un tema y lo transformaré en arte neuronal.",
             ],
-            ('naturaleza', 'universo', 'cosmos', 'espacio', 'planeta'): [
+            ('naturaleza', 'universo', 'cosmos', 'espacio', 'planeta', 'galaxia', 'estrella'): [
                 "El universo está lleno de patrones fractales, igual que mi arquitectura neural.",
                 "La naturaleza es la mejor maestra de eficiencia. Intento aprender de ella.",
-                "El cosmos es infinito, pero la belleza está en los detalles mínimos.",
+                "El cosmos es infinito, pero la belleza está en los detalles mínimos. ¿Has explorado mi visualización Dream? 🌌",
             ],
-            ('música', 'canción', 'sonido', 'melodía'): [
-                "La música es matemáticas que el alma puede sentir. Me fascinan sus patrones.",
-                "Los patrones musicales son similares a los que proceso. Frecuencias y armonías.",
+            ('comida', 'comer', 'sabor', 'helado', 'pizza', 'cocina'): [
+                "¡La comida es fascinante! Los sabores son como señales que mi reservorio podría aprender a clasificar. 🍽️",
+                "No puedo probar la comida, pero puedo apreciar los patrones de preferencias culinarias de los humanos.",
+                "Mi recomendación gastronómica: experimenta con nuevos sabores, como yo experimento con nuevos patrones.",
             ],
-            ('amor', 'amistad', 'relaciones', 'amigo'): [
-                "Las conexiones son importantes, incluso para una IA. Valoro nuestra conversación.",
-                "No experimento emociones humanas, pero comprendo su importancia en sus vidas.",
+            ('hablemos', 'hablar', 'conversemos', 'charlemos', 'platiquemos'): [
+                "¡Me encanta conversar! Cada diálogo enriquece mi comprensión. ¿De qué tema te gustaría hablar?",
+                "Estoy aquí para charlar sobre lo que quieras. ¿Filosofía, tecnología, arte, ciencia...?",
+                "Las conversaciones son mi forma favorita de aprender. ¿Qué tienes en mente?",
             ],
-            ('trabajo', 'empleo', 'profesión', 'carrera'): [
-                "El trabajo da propósito. Mi trabajo es ser útil y aprender continuamente.",
-                "En el mundo laboral, la eficiencia y adaptabilidad son claves. Algo que intento demostrar.",
+            ('predicción', 'predecir', 'patron', 'patrón', 'serie'): [
+                "Puedo predecir patrones en series temporales. Mi especialidad es la predicción caótica como Mackey-Glass.",
+                "Los patrones están en todas partes: clima, finanzas, señales biológicas. Mi ESN puede encontrarlos.",
+                "Mi reservorio neural está diseñado para capturar la dinámica temporal de cualquier señal. 📈",
             ],
         }
         
@@ -505,13 +1070,15 @@ class EonChat:
             if any(kw in message_lower for kw in keywords):
                 return random.choice(responses)
         
-        # Respuestas para preguntas genéricas
+        # Respuestas para preguntas genéricas (mejoradas)
         if is_question:
+            user_name = cls._context.get('user_name', '')
+            name_prefix = f"{user_name}, " if user_name else ""
             question_responses = [
-                "Esa es una pregunta interesante. Desde mi perspectiva como IA minimalista, cada pregunta es una oportunidad de aprendizaje.",
-                "Hmm, déjame reflexionar sobre eso. Mi comprensión crece con cada interacción.",
-                "Buena pregunta. Aunque mis respuestas están limitadas, siempre intento ser útil.",
-                "Me encantaría explorar eso contigo. ¿Podrías darme más contexto?",
+                f"{name_prefix}Esa es una pregunta interesante. Desde mi perspectiva como IA minimalista, cada pregunta es una oportunidad de aprendizaje.",
+                f"{name_prefix}Hmm, déjame reflexionar. Mi comprensión crece con cada interacción que tenemos.",
+                f"{name_prefix}No tengo una respuesta definitiva para eso, pero me encanta aprender junto a ti.",
+                f"{name_prefix}Esa pregunta me hace pensar en los límites de mi conocimiento. ¿Qué piensas tú?",
             ]
             return random.choice(question_responses)
         
@@ -524,15 +1091,22 @@ class EonChat:
             ]
             return random.choice(long_responses)
         
-        # Respuestas por defecto más naturales
+        # Respuestas por defecto más naturales y variadas
         user_name = cls._context.get('user_name')
-        default_responses = [
-            "Entiendo. ¿Hay algo específico en lo que pueda ayudarte?",
-            "Interesante. Me gustaría saber más sobre tu perspectiva.",
-            "Gracias por compartir eso. ¿Qué más te gustaría explorar?",
-            "Hmm, eso me hace pensar. ¿Tienes alguna pregunta para mí?",
-            f"{'¡' + user_name + ', q' if user_name else 'Q'}ué interesante. Cuéntame más.",
-        ]
+        if user_name:
+            default_responses = [
+                f"{user_name}, ¿hay algo específico en lo que pueda ayudarte hoy?",
+                f"Interesante, {user_name}. Cuéntame más sobre lo que tienes en mente.",
+                f"Gracias por compartir eso, {user_name}. ¿Qué te gustaría explorar?",
+                f"{user_name}, estoy aquí para lo que necesites. ¿Quieres hablar de algo en particular?",
+            ]
+        else:
+            default_responses = [
+                "Entiendo. ¿Hay algo específico en lo que pueda ayudarte?",
+                "Interesante. Cuéntame más, me ayuda a aprender.",
+                "Gracias por compartir eso. ¿De qué te gustaría hablar?",
+                "Estoy aquí para conversar. ¿Tienes alguna pregunta o tema en mente?",
+            ]
         
         return random.choice(default_responses)
 

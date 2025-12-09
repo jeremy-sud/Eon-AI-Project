@@ -3,14 +3,13 @@
     "jeremy": {
       "name": "Jeremy",
       "first_seen": 1765255187.3524423,
-      "interaction_count": 5,
+      "interaction_count": 3,
       "topics": [
-        "creador_usuario",
-        "saludo"
+        "creador_usuario"
       ],
-      "is_creator": false,
+      "is_creator": true,
       "preferences": {},
-      "last_seen": 1765255486.753327
+      "last_seen": 1765255302.3863878
     }
   },
   "facts": [
@@ -18,21 +17,26 @@
       "fact": "soy jeremy",
       "hash": "271a0a4d",
       "source": "conversation",
-      "confidence": 0.8097278682212583,
+      "confidence": 0.6426116020847181,
       "learned_at": 1765255187.3528864,
-      "last_confirmed": 1765255486.754014
+      "last_confirmed": 1765255302.3866065
     }
   ],
   "summaries": [],
   "preferences": {},
   "interactions": {
-    "total": 16,
+    "total": 20,
     "by_intent": {
-      "creador_usuario": 4,
-      "saludo": 3,
-      "default": 7,
-      "sentimiento": 1,
-      "capacidad": 1
+      "creador_usuario": 3,
+      "secuencia": 3,
+      "afirmacion": 2,
+      "memoria_personal": 2,
+      "conocimiento_tecnico": 4,
+      "sensor": 2,
+      "afirmacion_general": 1,
+      "autocompletado": 1,
+      "matematica": 1,
+      "historia": 1
     },
     "by_hour": [
       0,
@@ -57,11 +61,11 @@
       0,
       0,
       0,
-      16,
-      0
+      3,
+      17
     ]
   },
   "emotional_memory": [],
   "created_at": 1765255170.0615954,
-  "last_updated": 1765257217.8777258
+  "last_updated": 1765259274.7476106
 }

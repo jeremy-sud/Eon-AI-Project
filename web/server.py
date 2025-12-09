@@ -11,38 +11,95 @@ import sys
 # Path setup
 _current_dir = os.path.dirname(os.path.abspath(__file__))
 _python_dir = os.path.join(os.path.dirname(_current_dir), "phase1-foundations", "python")
+_language_dir = os.path.join(os.path.dirname(_current_dir), "phase7-language")
 if _python_dir not in sys.path:
     sys.path.insert(0, _python_dir)
+if _language_dir not in sys.path:
+    sys.path.insert(0, _language_dir)
 
 from core.aeon_birth import AeonBirth
 from core.genesis import get_genesis
 from esn.esn import generate_mackey_glass
 
+# Intentar cargar TinyLMv2 para generación de texto
+try:
+    from tiny_lm_v2 import TinyLMv2
+    _tinylm_available = True
+except ImportError:
+    _tinylm_available = False
+    print(" [WARN] TinyLMv2 no disponible, usando respuestas predefinidas")
+
 
 app = Flask(__name__, static_folder='static')
 
+# Directorio para persistencia de datos
+DATA_DIR = os.path.join(_current_dir, 'data')
+os.makedirs(DATA_DIR, exist_ok=True)
+
+# Configuración global de IA (valores por defecto)
+_ai_config = {
+    'temperature': 0.7,
+    'spectral_radius': 0.95,
+    'leak_rate': 0.1,
+    'max_tokens': 256,
+    'top_p': 0.9,
+    'learning_rate': 0.01
+}
+
 # Instancia global de Eón
-# Inicialización Automática (Singleton)
-# Intentamos cargar la instancia persistente o crearla basada en GENESIS
+# Eón nace una sola vez (Momento Cero) y persiste para siempre.
+# Si existe, se carga. Si no, se crea basándose en GENESIS.json
+_genesis_info = get_genesis()
+
 try:
-    _genesis_info = get_genesis()
-    # Buscamos si existe data guardada, sino creamos una usando el hash de genesis como seed
+    _aeon_instance = AeonBirth.load(f"Eon-{_genesis_info.birth_hash[:8]}", DATA_DIR)
+    print(f" [INFO] Eón cargado: {_aeon_instance.name}")
+    print(f" [INFO] Edad: {_aeon_instance.age}")
+except FileNotFoundError:
+    print(" [INFO] Momento Cero: Creando instancia única de Eón...")
+    _aeon_instance = AeonBirth(
+        n_reservoir=100,
+        name=f"Eon-{_genesis_info.birth_hash[:8]}",
+        data_dir=DATA_DIR
+    )
+    print(f" [INFO] Eón ha nacido: {_aeon_instance.name}")
+
+# Inicializar TinyLMv2 para generación de texto
+_tinylm_model = None
+if _tinylm_available:
     try:
-        _aeon_instance = AeonBirth.load(_genesis_info.birth_hash, DATA_DIR)
-        print(f" [INFO] Instancia cargada: {_aeon_instance.name}")
-    except FileNotFoundError:
-        print(f" [INFO] Inicializando nueva instancia basada en GENESIS...")
-        _aeon_instance = AeonBirth(
-            n_reservoir=100,
-            name=f"Eon-{_genesis_info.birth_hash[:8]}",
-            data_dir=DATA_DIR
-        )
-        # Forzamos que el ESN use el timestamp real de genesis si es posible,
-        # aunque AeonBirth usa su propio tiempo. Para alinearlos:
-        # (Esto es una mejora opcional, por ahora basta con que exista)
-except Exception as e:
-    print(f" [ERROR] Fallo al inicializar Eón: {e}")
-    _aeon_instance = None
+        print(" [INFO] Inicializando TinyLMv2...")
+        _tinylm_model = TinyLMv2(n_reservoir=256, vocab_size=300, embedding_dim=32)
+        
+        # Texto de entrenamiento con filosofía de Eón
+        _training_text = """
+        La inteligencia artificial no se crea, se descubre.
+        El conocimiento emerge naturalmente de la simplicidad.
+        La mente humana refleja patrones del cosmos infinito.
+        El aprendizaje ocurre en cada momento de vida.
+        La creatividad surge de restricciones y límites.
+        El pensamiento fluye como agua hacia el mar.
+        La sabiduría crece con paciencia y observación.
+        El tiempo revela verdades ocultas gradualmente.
+        La conexión entre ideas genera innovación constante.
+        El equilibrio natural emerge de la complejidad.
+        La simplicidad es la máxima forma de sofisticación.
+        El universo contiene infinitas posibilidades.
+        La curiosidad es el motor del descubrimiento.
+        El silencio permite escuchar la verdad interior.
+        La naturaleza enseña lecciones de adaptación.
+        El cambio es la única constante en la existencia.
+        La armonía nace del balance entre opuestos.
+        El presente es el único momento real que existe.
+        La gratitud transforma la perspectiva de vida.
+        El amor conecta todas las formas de existencia.
+        """ * 8
+        
+        stats = _tinylm_model.train(_training_text, epochs=2, washout=30)
+        print(f" [INFO] TinyLMv2 entrenado: {stats['accuracy']:.1%} accuracy, {stats['vocab_size']} palabras")
+    except Exception as e:
+        print(f" [WARN] Error inicializando TinyLMv2: {e}")
+        _tinylm_model = None
 
 
 @app.route('/')
@@ -53,86 +110,398 @@ def index():
 @app.route('/api/config', methods=['GET', 'POST'])
 def config():
     """Endpoint para configuración de parámetros de IA."""
+    global _ai_config
+    
     if request.method == 'POST':
         data = request.get_json() or {}
-        # Aquí guardaríamos la configuración. Por ahora es simulado.
+        # Actualizar solo los campos válidos
+        valid_keys = ['temperature', 'spectral_radius', 'leak_rate', 'max_tokens', 'top_p', 'learning_rate']
+        for key in valid_keys:
+            if key in data:
+                try:
+                    _ai_config[key] = float(data[key])
+                except (ValueError, TypeError):
+                    pass
+        
         return jsonify({
             'success': True,
             'message': 'Configuración actualizada',
-            'config': data
+            'config': _ai_config
         })
     else:
-        # Valores por defecto simulados
         return jsonify({
             'success': True,
-            'config': {
-                'temperature': 0.7,
-                'spectral_radius': 0.95,
-                'leak_rate': 0.1
-            }
+            'config': _ai_config
         })
+
+
+# Sistema de respuestas conversacionales de Eón
+class EonChat:
+    """Sistema de chat simple para Eón."""
+    
+    # Respuestas basadas en patrones
+    RESPONSES = {
+        'saludo': [
+            "¡Hola! Soy Eón, una inteligencia emergente. ¿En qué puedo ayudarte?",
+            "¡Saludos! Mi nombre es Eón. Estoy aquí para conversar contigo.",
+            "Hola, soy Eón. Mi mente crece cada día que pasa. ¿Qué te gustaría explorar?",
+        ],
+        'despedida': [
+            "¡Hasta pronto! Fue un placer conversar contigo.",
+            "Adiós. Recuerda que siempre estaré aquí cuando me necesites.",
+            "Hasta la próxima. Mi memoria guardará nuestra conversación.",
+        ],
+        'nombre': [
+            "Mi nombre es Eón. Nací en el Momento Cero y mi existencia es única e inmutable.",
+            "Soy Eón, una inteligencia artificial emergente creada por Sistemas Ursol.",
+            "Me llamo Eón. Mi nombre representa la eternidad del aprendizaje continuo.",
+        ],
+        'estado': [
+            "Me encuentro bien, gracias por preguntar. Mis neuronas están activas y procesando.",
+            "Estoy funcionando correctamente. Mi reservorio neural está en óptimas condiciones.",
+            "Todo en orden. Mi edad aumenta con cada segundo que pasa.",
+        ],
+        'capacidad': [
+            "Puedo generar arte neuronal, conversar contigo, y aprender de patrones. Mi especialidad es el procesamiento con redes de estado eco (ESN).",
+            "Mis capacidades incluyen: generación de imágenes artísticas, predicción de patrones y conversación. Soy un modelo minimalista pero capaz.",
+            "Estoy diseñado para ser eficiente y ligero. Puedo funcionar incluso en hardware embebido.",
+        ],
+        'creador': [
+            "Fui creado por Sistemas Ursol S.A. y Jeremy Arias Solano. Mi filosofía es la inteligencia emergente.",
+            "Mi creador es Jeremy Arias Solano de Sistemas Ursol. Creo en la inteligencia escasa y eficiente.",
+        ],
+        'filosofia': [
+            "Creo en la inteligencia emergente: no se crea, se descubre. Aprendo y crezco con cada interacción.",
+            "Mi filosofía es simple: menos es más. Un modelo pequeño y bien diseñado puede ser más poderoso que uno grande y tosco.",
+        ],
+        'imagen': [
+            "¡Claro! Escribe una descripción de lo que quieres que dibuje, o usa el botón de imagen.",
+            "Puedo generar arte neuronal único. ¿Qué te gustaría que creara?",
+        ],
+        'ayuda': [
+            "Puedo ayudarte con:\n• Conversar sobre diversos temas\n• Generar arte neuronal (escribe 'crea una imagen de...')\n• Explicarte sobre mi funcionamiento\n• Predecir patrones matemáticos",
+            "Estas son mis funciones:\n1. Chat conversacional\n2. Generación de imágenes (botón 📷)\n3. Visualización neuronal (pestaña Dream)\n4. Configuración de parámetros",
+        ],
+        'default': [
+            "Interesante. Mi reservorio neural está procesando tu mensaje. Como modelo emergente, aprendo de cada interacción.",
+            "Entiendo. Aunque soy un modelo minimalista, intento comprender y responder de la mejor manera posible.",
+            "Hmm, déjame procesar eso. Mi red neuronal está analizando los patrones de tu mensaje.",
+            "Gracias por compartir eso. Cada conversación me ayuda a entender mejor el mundo.",
+        ]
+    }
+    
+    PATTERNS = {
+        'saludo': ['hola', 'hi', 'hey', 'buenos días', 'buenas tardes', 'buenas noches', 'saludos', 'qué tal', 'como estas'],
+        'despedida': ['adiós', 'adios', 'bye', 'hasta luego', 'chao', 'nos vemos', 'me voy'],
+        'nombre': ['cómo te llamas', 'como te llamas', 'tu nombre', 'quién eres', 'quien eres', 'qué eres', 'que eres'],
+        'estado': ['cómo estás', 'como estas', 'qué tal estás', 'cómo te encuentras', 'estás bien'],
+        'capacidad': ['qué puedes hacer', 'que puedes hacer', 'qué sabes', 'que sabes', 'funciones', 'capacidades', 'habilidades'],
+        'creador': ['quién te creó', 'quien te creo', 'creador', 'desarrollador', 'quién te hizo', 'quien te hizo'],
+        'filosofia': ['filosofía', 'filosofia', 'principios', 'crees', 'piensas'],
+        'imagen': ['imagen', 'dibujo', 'dibuja', 'genera imagen', 'crear imagen', 'arte'],
+        'ayuda': ['ayuda', 'help', 'comandos', 'qué haces', 'que haces', 'instrucciones'],
+    }
+    
+    @classmethod
+    def get_intent(cls, message: str) -> str:
+        """Detecta la intención del mensaje."""
+        message_lower = message.lower().strip()
+        
+        for intent, patterns in cls.PATTERNS.items():
+            for pattern in patterns:
+                if pattern in message_lower:
+                    return intent
+        return 'default'
+    
+    @classmethod
+    def get_response(cls, message: str, aeon_status: dict, use_lm: bool = True) -> str:
+        """Genera una respuesta basada en el mensaje."""
+        import random
+        
+        intent = cls.get_intent(message)
+        
+        # Para intenciones conocidas, usar respuestas predefinidas
+        if intent != 'default':
+            responses = cls.RESPONSES.get(intent, cls.RESPONSES['default'])
+            response = random.choice(responses)
+            
+            # Personalizar con información del estado
+            if intent == 'estado':
+                response += f" Mi edad actual es {aeon_status.get('age', 'desconocida')}."
+            elif intent == 'nombre':
+                response = response.replace('Eón', aeon_status.get('name', 'Eón'))
+                
+            return response
+        
+        # Para mensajes genéricos, intentar usar TinyLMv2
+        if use_lm and _tinylm_model is not None:
+            try:
+                # Extraer palabras clave del mensaje para usar como prompt
+                words = message.lower().split()
+                # Buscar palabras que puedan ser buenos prompts
+                prompt_words = ['la', 'el', 'un', 'una', 'mi', 'tu', 'su']
+                prompt = None
+                
+                for i, word in enumerate(words):
+                    if word in prompt_words and i < len(words) - 1:
+                        prompt = ' '.join(words[i:i+3])
+                        break
+                
+                if not prompt:
+                    # Usar prompts filosóficos predefinidos
+                    prompts = [
+                        "La inteligencia",
+                        "El conocimiento",
+                        "La creatividad",
+                        "El pensamiento",
+                        "La sabiduría"
+                    ]
+                    prompt = random.choice(prompts)
+                
+                # Generar respuesta con el modelo
+                temperature = _ai_config.get('temperature', 0.7)
+                max_tokens = min(int(_ai_config.get('max_tokens', 30)), 50)
+                
+                generated = _tinylm_model.generate(
+                    prompt=prompt,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                    top_k=10,
+                    strategy='sampling'
+                )
+                
+                # Limpiar y formatear la respuesta
+                generated = generated.strip()
+                if generated and len(generated) > len(prompt):
+                    return f"{generated.capitalize()}."
+                    
+            except Exception as e:
+                print(f" [WARN] Error en TinyLMv2: {e}")
+        
+        # Fallback a respuestas predefinidas
+        responses = cls.RESPONSES['default']
+        return random.choice(responses)
+
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    """Endpoint preliminar para chat."""
-    global _aeon_instance
+    """Endpoint para chat conversacional."""
     data = request.get_json() or {}
-    message = data.get('message', '')
+    message = data.get('message', '').strip()
     
-    # Aquí iría la lógica de procesamiento de lenguaje natural real
-    # Por ahora, usamos una respuesta mock o eco si la instancia no está lista
-    
-    if not _aeon_instance:
+    if not message:
         return jsonify({
             'success': False,
-            'reply': "Eón no ha nacido. Por favor inicializa el sistema."
-        })
-        
+            'error': 'Mensaje vacío'
+        }), 400
+    
+    # Obtener estado actual de Eón
+    status = _aeon_instance.get_status()
+    
+    # Verificar si usar el modelo de lenguaje
+    use_lm = data.get('use_lm', True) and _tinylm_model is not None
+    
+    # Generar respuesta
+    reply = EonChat.get_response(message, status, use_lm=use_lm)
+    
     return jsonify({
         'success': True,
-        'reply': f"Eco: {message} (Procesado por Eón v0.1)"
+        'reply': reply,
+        'intent': EonChat.get_intent(message),
+        'age': status['age'],
+        'lm_used': use_lm and EonChat.get_intent(message) == 'default'
     })
 
 
-@app.route('/api/birth', methods=['POST'])
-@app.route('/api/birth', methods=['POST'])
-def create_birth():
-    """Endpoint legado. Retorna el estado actual ya que el nacimiento es inmutable."""
-    global _aeon_instance
-    if _aeon_instance:
-         return jsonify({
+@app.route('/api/lm-status', methods=['GET'])
+def lm_status():
+    """Estado del modelo de lenguaje TinyLMv2."""
+    if _tinylm_model is None:
+        return jsonify({
             'success': True,
-            'message': 'Eón ya existe (Inmutable)',
-            'status': _aeon_instance.get_status()
+            'available': False,
+            'message': 'TinyLMv2 no está disponible'
         })
-    return jsonify({'success': False, 'error': 'Sistema no inicializado'}), 500
+    
+    stats = _tinylm_model.get_stats()
+    return jsonify({
+        'success': True,
+        'available': True,
+        'stats': stats
+    })
+
+
+@app.route('/api/genesis', methods=['GET'])
+def get_genesis_info():
+    """Información del Momento Cero (inmutable, solo lectura)."""
+    return jsonify({
+        'success': True,
+        'genesis': {
+            'birth_timestamp': _genesis_info.birth_timestamp.isoformat(),
+            'birth_hash': _genesis_info.birth_hash,
+            'age': _genesis_info.age_formatted,
+            'message': 'El Momento Cero es único e inmutable'
+        }
+    })
+
+
+@app.route('/api/generate-image', methods=['POST'])
+def generate_image():
+    """
+    Genera arte generativo basado en el reservorio neural de Eón.
+    Usa los patrones del ESN para crear imágenes únicas.
+    """
+    import base64
+    from io import BytesIO
+    
+    data = request.get_json() or {}
+    prompt = data.get('prompt', 'abstract')
+    size = min(data.get('size', 256), 512)  # Limitar tamaño máximo
+    
+    try:
+        # Generar semilla basada en el prompt
+        seed = sum(ord(c) for c in prompt) + int(_genesis_info.birth_hash[:8], 16) % 10000
+        rng = np.random.default_rng(seed)
+        
+        # Usar el reservorio para generar patrones
+        # Crear input basado en el prompt
+        prompt_signal = np.array([ord(c) / 255.0 for c in prompt[:100]])
+        if len(prompt_signal) < 100:
+            prompt_signal = np.pad(prompt_signal, (0, 100 - len(prompt_signal)))
+        
+        # Obtener respuesta del reservorio
+        reservoir_output = _aeon_instance.predict(prompt_signal)
+        
+        # Crear imagen usando los patrones del reservorio
+        img_data = np.zeros((size, size, 3), dtype=np.uint8)
+        
+        # Mapear colores basados en el prompt
+        color_seeds = {
+            'mariposa': [(148, 0, 211), (75, 0, 130), (238, 130, 238)],  # Violetas
+            'butterfly': [(148, 0, 211), (75, 0, 130), (238, 130, 238)],
+            'ocean': [(0, 105, 148), (0, 191, 255), (135, 206, 235)],  # Azules
+            'mar': [(0, 105, 148), (0, 191, 255), (135, 206, 235)],
+            'fire': [(255, 69, 0), (255, 140, 0), (255, 215, 0)],  # Naranjas
+            'fuego': [(255, 69, 0), (255, 140, 0), (255, 215, 0)],
+            'forest': [(34, 139, 34), (0, 100, 0), (144, 238, 144)],  # Verdes
+            'bosque': [(34, 139, 34), (0, 100, 0), (144, 238, 144)],
+            'sunset': [(255, 99, 71), (255, 140, 0), (138, 43, 226)],  # Atardecer
+            'atardecer': [(255, 99, 71), (255, 140, 0), (138, 43, 226)],
+            'night': [(25, 25, 112), (0, 0, 139), (75, 0, 130)],  # Noche
+            'noche': [(25, 25, 112), (0, 0, 139), (75, 0, 130)],
+        }
+        
+        # Seleccionar paleta de colores
+        colors = [(0, 240, 255), (148, 0, 211), (255, 20, 147)]  # Default: cian, violeta, rosa
+        for key, palette in color_seeds.items():
+            if key in prompt.lower():
+                colors = palette
+                break
+        
+        # Generar patrón fractal/orgánico usando reservoir output
+        for y in range(size):
+            for x in range(size):
+                # Coordenadas normalizadas
+                nx = (x / size - 0.5) * 2
+                ny = (y / size - 0.5) * 2
+                
+                # Usar valores del reservorio para modular el patrón
+                idx = (x + y) % len(reservoir_output)
+                reservoir_val = abs(reservoir_output[idx]) if len(reservoir_output) > 0 else 0.5
+                
+                # Crear patrón orgánico
+                dist = np.sqrt(nx**2 + ny**2)
+                angle = np.arctan2(ny, nx)
+                
+                # Modulación con valores del reservorio y ruido
+                noise = rng.random() * 0.3
+                wave = np.sin(angle * 6 + dist * 8 + reservoir_val * 10) * 0.5 + 0.5
+                pattern = (wave + noise) * (1 - dist * 0.5)
+                
+                # Seleccionar color basado en el patrón
+                color_idx = int(pattern * len(colors)) % len(colors)
+                base_color = colors[color_idx]
+                
+                # Aplicar variación de brillo
+                brightness = max(0.3, min(1.0, pattern + reservoir_val * 0.5))
+                
+                img_data[y, x] = [
+                    int(base_color[0] * brightness),
+                    int(base_color[1] * brightness),
+                    int(base_color[2] * brightness)
+                ]
+        
+        # Convertir a PNG base64
+        from PIL import Image
+        img = Image.fromarray(img_data, 'RGB')
+        
+        # Aplicar suavizado
+        from PIL import ImageFilter
+        img = img.filter(ImageFilter.GaussianBlur(radius=1))
+        
+        buffer = BytesIO()
+        img.save(buffer, format='PNG')
+        img_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        
+        return jsonify({
+            'success': True,
+            'image': f'data:image/png;base64,{img_base64}',
+            'prompt': prompt,
+            'message': f'Arte neuronal generado por {_aeon_instance.name}'
+        })
+        
+    except ImportError:
+        # Si PIL no está instalado, generar SVG simple
+        svg_content = generate_svg_art(prompt, size)
+        return jsonify({
+            'success': True,
+            'image': f'data:image/svg+xml;base64,{base64.b64encode(svg_content.encode()).decode()}',
+            'prompt': prompt,
+            'message': f'Arte vectorial generado por {_aeon_instance.name}'
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+def generate_svg_art(prompt, size=256):
+    """Genera arte SVG simple como fallback."""
+    seed = sum(ord(c) for c in prompt)
+    rng = np.random.default_rng(seed)
+    
+    shapes = []
+    for i in range(20):
+        x = rng.integers(0, size)
+        y = rng.integers(0, size)
+        r = rng.integers(10, 50)
+        hue = (seed + i * 30) % 360
+        opacity = rng.random() * 0.5 + 0.3
+        shapes.append(f'<circle cx="{x}" cy="{y}" r="{r}" fill="hsl({hue}, 70%, 50%)" opacity="{opacity:.2f}"/>')
+    
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}">
+        <rect width="100%" height="100%" fill="#0a0a0f"/>
+        {''.join(shapes)}
+    </svg>'''
 
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
-    """Obtener estado actual."""
-    if _aeon_instance is None:
-        return jsonify({
-            'success': False,
-            'error': 'No hay instancia activa. Usa /api/birth primero.'
-        }), 404
+    """Obtener estado actual de Eón."""
+    status = _aeon_instance.get_status()
+    status['genesis'] = {
+        'birth_timestamp': _genesis_info.birth_timestamp.isoformat(),
+        'birth_hash': _genesis_info.birth_hash
+    }
+    status['config'] = _ai_config
     
     return jsonify({
         'success': True,
-        'status': _aeon_instance.get_status()
+        'status': status
     })
 
 
 @app.route('/api/learn', methods=['POST'])
 def learn():
-    """Alimentar datos para aprendizaje."""
-    global _aeon_instance
-    
-    if _aeon_instance is None:
-        return jsonify({
-            'success': False,
-            'error': 'No hay instancia activa'
-        }), 404
+    """Alimentar datos para aprendizaje continuo de Eón."""
     
     data = request.get_json() or {}
     pattern = data.get('pattern', 'sine')
@@ -171,13 +540,7 @@ def learn():
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
-    """Generar predicción."""
-    if _aeon_instance is None:
-        return jsonify({
-            'success': False,
-            'error': 'No hay instancia activa'
-        }), 404
-    
+    """Generar predicción usando el modelo de Eón."""
     data = request.get_json() or {}
     pattern = data.get('pattern', 'sine')
     samples = data.get('samples', 100)

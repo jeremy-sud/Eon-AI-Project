@@ -2,6 +2,47 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [1.2.0] - 2024-12-08
+
+### Integración TinyLMv2 en Chat
+
+- **Modelo de Lenguaje**: TinyLMv2 integrado para respuestas generativas
+- **Entrenamiento Automático**: Se entrena al iniciar con textos filosóficos
+- **Respuestas Híbridas**: Intenciones conocidas usan respuestas predefinidas, mensajes genéricos usan el LM
+- **Nuevo Endpoint**: `/api/lm-status` para ver estado del modelo de lenguaje
+- **Configuración Dinámica**: La temperatura y max_tokens afectan la generación
+
+### Estadísticas del Modelo
+
+- 256 neuronas en el reservorio
+- 102 palabras en vocabulario
+- 99.9% accuracy en entrenamiento
+- Embeddings de 32 dimensiones
+
+## [1.1.0] - 2024-12-08
+
+### Interfaz Web Principal (web/)
+
+- **Servidor Flask**: API REST completa en `web/server.py`
+- **Chat Conversacional**: Sistema de respuestas basado en detección de intenciones
+- **Generación de Arte Neuronal**: Endpoint `/api/generate-image` usando ESN
+- **Configuración de IA**: Parámetros típicos (temperatura, top-p, max_tokens, etc.)
+- **Estado del Sistema**: Endpoint `/api/status` con información del Momento Cero
+- **Interfaz Moderna**: Chat, Dream (visualización), Estado & Config
+
+### Correcciones
+
+- Corregido `DATA_DIR` no definido en server.py
+- Eliminado endpoint `/api/birth` (reemplazado por `/api/genesis` solo lectura)
+- Eón siempre existe desde el Momento Cero (inmutable)
+- Botones de imagen y subir archivo ahora funcionales
+
+### Limpieza de Código
+
+- Eliminado `phase3-integration/demos/aeon.js` (duplicado)
+- Eliminado directorio `venv` duplicado (se conserva `.venv`)
+- Actualizada referencia en `phase3-integration/demos/index.html`
+
 ## [1.0.0] - 2024-12-08
 
 ### Fase 1: Fundamentos

@@ -1,5 +1,12 @@
-# Dependencias mínimas para Proyecto Eón - Fase 1
+# Dependencias mínimas para Proyecto Eón
 # Filosofía: Solo lo esencial
 
+# Core
 numpy>=1.21.0
-matplotlib>=3.5.0  # Para visualización de demos
+
+# Visualización
+matplotlib>=3.5.0
+
+# Servidor Web
+flask>=2.0.0
+pillow>=9.0.0  # Para generación de imágenes

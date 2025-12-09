@@ -50,10 +50,10 @@
         </div>
 
         <div class="input-area">
-          <button class="action-btn" title="Subir Archivo">
+          <button class="action-btn" id="uploadBtn" title="Subir Archivo">
             <i class="fa-solid fa-paperclip"></i>
           </button>
-          <button class="action-btn" title="Generar Imagen">
+          <button class="action-btn" id="imageBtn" title="Generar Imagen">
             <i class="fa-regular fa-image"></i>
           </button>
 
@@ -119,7 +119,7 @@
 
             <div class="panel">
                 <div class="panel-header">
-                    <span>CONFIGURACIÓN DEL NÚCLEO</span>
+                    <span>CONFIGURACIÓN DE IA</span>
                     <i class="fa-solid fa-sliders"></i>
                 </div>
                 
@@ -130,23 +130,35 @@
                             <label class="stat-label">Temperatura (Creatividad)</label>
                             <span class="stat-value" style="font-size: 0.9rem;" id="val-temp">0.7</span>
                         </div>
-                        <input type="range" id="cfg-temp" min="0.1" max="1.5" step="0.1" value="0.7" style="width: 100%;">
+                        <input type="range" id="cfg-temp" min="0.1" max="2.0" step="0.1" value="0.7" style="width: 100%;">
+                        <small style="color: var(--text-muted); font-size: 0.7rem;">Valores altos = respuestas más creativas</small>
                     </div>
 
                     <div class="config-item">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <label class="stat-label">Radio Espectral (Dinámica)</label>
-                            <span class="stat-value" style="font-size: 0.9rem;" id="val-radius">0.95</span>
+                            <label class="stat-label">Top-P (Nucleus Sampling)</label>
+                            <span class="stat-value" style="font-size: 0.9rem;" id="val-topp">0.9</span>
                         </div>
-                        <input type="range" id="cfg-radius" min="0.1" max="1.5" step="0.05" value="0.95" style="width: 100%;">
+                        <input type="range" id="cfg-topp" min="0.1" max="1.0" step="0.05" value="0.9" style="width: 100%;">
+                        <small style="color: var(--text-muted); font-size: 0.7rem;">Controla diversidad de vocabulario</small>
                     </div>
 
                     <div class="config-item">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <label class="stat-label">Tasa de Fuga (Memoria)</label>
-                            <span class="stat-value" style="font-size: 0.9rem;" id="val-leak">0.1</span>
+                            <label class="stat-label">Máximo de Tokens</label>
+                            <span class="stat-value" style="font-size: 0.9rem;" id="val-tokens">256</span>
                         </div>
-                        <input type="range" id="cfg-leak" min="0.01" max="1.0" step="0.01" value="0.1" style="width: 100%;">
+                        <input type="range" id="cfg-tokens" min="64" max="1024" step="64" value="256" style="width: 100%;">
+                        <small style="color: var(--text-muted); font-size: 0.7rem;">Longitud máxima de respuesta</small>
+                    </div>
+
+                    <div class="config-item">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <label class="stat-label">Tasa de Aprendizaje</label>
+                            <span class="stat-value" style="font-size: 0.9rem;" id="val-lr">0.01</span>
+                        </div>
+                        <input type="range" id="cfg-lr" min="0.001" max="0.1" step="0.001" value="0.01" style="width: 100%;">
+                        <small style="color: var(--text-muted); font-size: 0.7rem;">Velocidad de adaptación</small>
                     </div>
 
                 </div>
@@ -155,6 +167,35 @@
                      <button class="send-btn" id="saveConfigBtn" style="width: auto; display: inline-flex;">
                         <i class="fa-solid fa-save" style="margin-right: 0.5rem;"></i> Guardar Configuración
                     </button>
+                </div>
+            </div>
+            
+            <div class="panel" style="margin-top: 1.5rem;">
+                <div class="panel-header">
+                    <span>PARÁMETROS DEL RESERVORIO (ESN)</span>
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                
+                <div class="config-grid" style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
+                    
+                    <div class="config-item">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <label class="stat-label">Radio Espectral</label>
+                            <span class="stat-value" style="font-size: 0.9rem;" id="val-radius">0.95</span>
+                        </div>
+                        <input type="range" id="cfg-radius" min="0.1" max="1.5" step="0.05" value="0.95" style="width: 100%;">
+                        <small style="color: var(--text-muted); font-size: 0.7rem;">Dinámica del reservorio neural</small>
+                    </div>
+
+                    <div class="config-item">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <label class="stat-label">Tasa de Fuga</label>
+                            <span class="stat-value" style="font-size: 0.9rem;" id="val-leak">0.1</span>
+                        </div>
+                        <input type="range" id="cfg-leak" min="0.01" max="1.0" step="0.01" value="0.1" style="width: 100%;">
+                        <small style="color: var(--text-muted); font-size: 0.7rem;">Memoria temporal del sistema</small>
+                    </div>
+
                 </div>
             </div>
         </div>

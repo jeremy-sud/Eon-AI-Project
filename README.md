@@ -43,21 +43,34 @@ Eón Project AI/
 ├── docs/WHITEPAPER.md       # Paper técnico
 ├── phase1-foundations/      # Python ESN
 ├── phase2-core/             # C Ultraligero
-├── phase3-integration/      # JavaScript Web
+├── phase3-integration/      # JavaScript Web (core)
 ├── phase4-hardware/         # Arduino + ESP32
 ├── phase5-applications/     # IoT Predictor
 ├── phase6-collective/       # Mente Colectiva
 ├── phase7-language/         # TinyLM v2
-└── phase8-paper/            # Paper LaTeX
+├── phase8-paper/            # Paper LaTeX
+└── web/                     # Servidor Web Principal
+    ├── server.py            # API REST Flask
+    └── static/              # Frontend (Chat, Dream, Config)
 ```
 
 ## 🚀 Inicio Rápido
+
+### Interfaz Web Principal (Recomendado)
+
+```bash
+cd web
+python -m venv .venv && source .venv/bin/activate
+pip install flask numpy pillow
+python server.py
+# Abrir http://localhost:5000
+```
 
 ### Demo Python
 
 ```bash
 cd phase1-foundations/python
-python -m venv venv && source venv/bin/activate
+python -m venv .venv && source .venv/bin/activate
 pip install numpy flask
 python esn/esn.py
 ```
@@ -72,7 +85,7 @@ make && ./aeon_demo
 # cmake .. && make && ./aeon_demo
 ```
 
-### Demo Web
+### Demo Web Estática
 
 ```bash
 cd phase3-integration/demos

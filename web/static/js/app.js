@@ -8,7 +8,6 @@ const App = {
     currentView: "chat",
     status: null,
     config: {},
-    isReady: false,
     chatHistory: [],
   },
 
@@ -16,7 +15,7 @@ const App = {
     this.bindEvents();
     this.startStatusPolling();
     this.loadConfig();
-    this.addSystemMessage("Conectando con el núcleo Eón...");
+    this.addSystemMessage("Eón está activo. ¿En qué puedo ayudarte?");
   },
 
   bindEvents() {
@@ -41,6 +40,17 @@ const App = {
       .getElementById("sendBtn")
       .addEventListener("click", () => this.sendMessage());
 
+    // Action buttons
+    const imageBtn = document.getElementById("imageBtn");
+    if (imageBtn) {
+      imageBtn.addEventListener("click", () => this.promptForImage());
+    }
+    
+    const uploadBtn = document.getElementById("uploadBtn");
+    if (uploadBtn) {
+      uploadBtn.addEventListener("click", () => this.handleUpload());
+    }
+
     // Dream controls
     document
       .getElementById("btnGrid")
@@ -53,7 +63,7 @@ const App = {
       .addEventListener("click", () => window.togglePulse());
 
     // Config Controls
-    ["temp", "radius", "leak"].forEach((key) => {
+    ["temp", "radius", "leak", "topp", "tokens", "lr"].forEach((key) => {
       const input = document.getElementById(`cfg-${key}`);
       if (input) {
         input.addEventListener("input", (e) => {
@@ -114,18 +124,29 @@ const App = {
   },
 
   updateConfigUI(config) {
-    if (config.temperature) {
+    if (config.temperature !== undefined) {
       document.getElementById("cfg-temp").value = config.temperature;
       document.getElementById("val-temp").textContent = config.temperature;
     }
-    if (config.spectral_radius) {
+    if (config.spectral_radius !== undefined) {
       document.getElementById("cfg-radius").value = config.spectral_radius;
-      document.getElementById("val-radius").textContent =
-        config.spectral_radius;
+      document.getElementById("val-radius").textContent = config.spectral_radius;
     }
-    if (config.leak_rate) {
+    if (config.leak_rate !== undefined) {
       document.getElementById("cfg-leak").value = config.leak_rate;
       document.getElementById("val-leak").textContent = config.leak_rate;
+    }
+    if (config.top_p !== undefined) {
+      document.getElementById("cfg-topp").value = config.top_p;
+      document.getElementById("val-topp").textContent = config.top_p;
+    }
+    if (config.max_tokens !== undefined) {
+      document.getElementById("cfg-tokens").value = config.max_tokens;
+      document.getElementById("val-tokens").textContent = config.max_tokens;
+    }
+    if (config.learning_rate !== undefined) {
+      document.getElementById("cfg-lr").value = config.learning_rate;
+      document.getElementById("val-lr").textContent = config.learning_rate;
     }
   },
 
@@ -134,6 +155,9 @@ const App = {
       temperature: document.getElementById("cfg-temp").value,
       spectral_radius: document.getElementById("cfg-radius").value,
       leak_rate: document.getElementById("cfg-leak").value,
+      top_p: document.getElementById("cfg-topp").value,
+      max_tokens: document.getElementById("cfg-tokens").value,
+      learning_rate: document.getElementById("cfg-lr").value,
     };
 
     try {
@@ -162,11 +186,10 @@ const App = {
       const res = await fetch(`${this.API_BASE}/api/status`);
       const data = await res.json();
       if (data.success) {
-        this.state.isReady = true;
         this.updateStatusUI(data.status);
       }
     } catch (e) {
-      // console.error("Status check failed", e);
+      console.error("Status check failed", e);
     }
   },
 
@@ -196,43 +219,34 @@ const App = {
   },
 
   async processMessage(text) {
-    let responseText = "";
-
-    if (!this.state.isReady) {
-      responseText = "Conectando con Eón... por favor espera.";
-    } else {
-      // Determine pattern for prediction based on keywords
-      let pattern = "sine"; // default
-      if (text.toLowerCase().includes("caos")) pattern = "mackey_glass";
-      if (text.toLowerCase().includes("random")) pattern = "random";
-
-      try {
-        // Feed into Eon
-        const res = await fetch(`${this.API_BASE}/api/predict`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pattern: pattern, samples: 20 }),
-        });
-        const data = await res.json();
-
-        if (data.success) {
-          const preview = data.predictions
-            .slice(0, 5)
-            .map((n) => n.toFixed(3))
-            .join(", ");
-          responseText = `[Eón v1.0] Entendido. Patrón detectado: ${pattern}.\nRespuesta Neuronal: [${preview}...]`;
-        } else {
-          responseText = "Error procesando la solicitud.";
-        }
-      } catch (e) {
-        console.error(e);
-        responseText = "Error de conexión con el núcleo.";
-      }
+    // Detectar si es una solicitud de imagen
+    if (this.detectImageRequest(text)) {
+      // Extraer el tema de la imagen del texto
+      const prompt = text.replace(/^(crea|genera|dibuja|haz|dame|quiero)\s*(una?\s*)?(imagen|foto|dibujo|arte|ilustraci[oó]n)?\s*(de\s*)?/i, '').trim() || text;
+      await this.generateImage(prompt);
+      return;
     }
 
-    setTimeout(() => {
-      this.addMessage(responseText, "ai");
-    }, 500);
+    try {
+      // Usar el endpoint de chat para conversación
+      const res = await fetch(`${this.API_BASE}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setTimeout(() => {
+          this.addMessage(data.reply, "ai");
+        }, 300 + Math.random() * 500); // Delay natural
+      } else {
+        this.addMessage("Error procesando la solicitud.", "ai");
+      }
+    } catch (e) {
+      console.error(e);
+      this.addMessage("Error de conexión con el núcleo.", "ai");
+    }
   },
 
   addMessage(text, type) {
@@ -259,6 +273,115 @@ const App = {
     const lastMsg = document.querySelector(".chat-container").lastElementChild;
     if (lastMsg)
       lastMsg.querySelector(".message-header").textContent = "SISTEMA";
+  },
+
+  promptForImage() {
+    const input = document.getElementById("chatInput");
+    const currentText = input.value.trim();
+    if (currentText) {
+      // Si hay texto, usarlo como prompt
+      this.generateImage(currentText);
+      input.value = "";
+    } else {
+      // Pedir al usuario que escriba algo
+      input.placeholder = "Describe la imagen que quieres generar...";
+      input.focus();
+      this.addSystemMessage("Escribe una descripción para generar arte neuronal.");
+    }
+  },
+
+  async generateImage(prompt) {
+    this.addMessage(`Genera una imagen: ${prompt}`, "user");
+    this.addSystemMessage("Generando arte neuronal... Por favor espera.");
+    
+    try {
+      const res = await fetch(`${this.API_BASE}/api/generate-image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: prompt, size: 256 }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        this.addImageMessage(data.image, data.message);
+      } else {
+        this.addSystemMessage(`Error: ${data.error || 'No se pudo generar la imagen'}`);
+      }
+    } catch (e) {
+      console.error(e);
+      this.addSystemMessage("Error de conexión al generar imagen.");
+    }
+  },
+
+  addImageMessage(imageSrc, caption) {
+    const container = document.querySelector(".chat-container");
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "message ai";
+
+    const header = document.createElement("div");
+    header.className = "message-header";
+    header.textContent = "EÓN";
+
+    const imgWrapper = document.createElement("div");
+    imgWrapper.style.cssText = "margin: 0.5rem 0; border-radius: 8px; overflow: hidden;";
+    
+    const img = document.createElement("img");
+    img.src = imageSrc;
+    img.alt = caption;
+    img.style.cssText = "max-width: 100%; height: auto; display: block;";
+    
+    const captionEl = document.createElement("div");
+    captionEl.style.cssText = "font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;";
+    captionEl.textContent = caption;
+
+    imgWrapper.appendChild(img);
+    msgDiv.appendChild(header);
+    msgDiv.appendChild(imgWrapper);
+    msgDiv.appendChild(captionEl);
+
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+  },
+
+  detectImageRequest(text) {
+    const imageKeywords = [
+      'imagen', 'image', 'genera', 'crea', 'dibuja', 'draw', 
+      'picture', 'foto', 'ilustra', 'visualiza', 'arte', 'art'
+    ];
+    const lowerText = text.toLowerCase();
+    return imageKeywords.some(keyword => lowerText.includes(keyword));
+  },
+
+  handleUpload() {
+    // Crear input de archivo oculto
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.txt,.json,.csv';
+    fileInput.style.display = 'none';
+    
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      this.addSystemMessage(`Archivo seleccionado: ${file.name}`);
+      
+      try {
+        const text = await file.text();
+        // Mostrar preview del contenido
+        const preview = text.substring(0, 200) + (text.length > 200 ? '...' : '');
+        this.addSystemMessage(`Contenido (${text.length} caracteres):\n${preview}`);
+        
+        // En el futuro, aquí se podría enviar al servidor para aprendizaje
+        this.addSystemMessage("El archivo ha sido recibido. La función de aprendizaje desde archivos estará disponible próximamente.");
+      } catch (err) {
+        this.addSystemMessage(`Error al leer el archivo: ${err.message}`);
+      }
+      
+      document.body.removeChild(fileInput);
+    });
+    
+    document.body.appendChild(fileInput);
+    fileInput.click();
   },
 };
 

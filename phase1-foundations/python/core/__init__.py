@@ -1,2 +1,2 @@
 # Core module - Proyecto Eón
-from .genesis import AeonBirth
+from .aeon_birth import AeonBirth

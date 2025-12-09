@@ -14,14 +14,35 @@ _python_dir = os.path.join(os.path.dirname(_current_dir), "phase1-foundations", 
 if _python_dir not in sys.path:
     sys.path.insert(0, _python_dir)
 
-from core.genesis import AeonBirth
+from core.aeon_birth import AeonBirth
+from core.genesis import get_genesis
 from esn.esn import generate_mackey_glass
+
 
 app = Flask(__name__, static_folder='static')
 
 # Instancia global de Eón
-_aeon_instance = None
-DATA_DIR = os.path.join(_current_dir, "data")
+# Inicialización Automática (Singleton)
+# Intentamos cargar la instancia persistente o crearla basada en GENESIS
+try:
+    _genesis_info = get_genesis()
+    # Buscamos si existe data guardada, sino creamos una usando el hash de genesis como seed
+    try:
+        _aeon_instance = AeonBirth.load(_genesis_info.birth_hash, DATA_DIR)
+        print(f" [INFO] Instancia cargada: {_aeon_instance.name}")
+    except FileNotFoundError:
+        print(f" [INFO] Inicializando nueva instancia basada en GENESIS...")
+        _aeon_instance = AeonBirth(
+            n_reservoir=100,
+            name=f"Eon-{_genesis_info.birth_hash[:8]}",
+            data_dir=DATA_DIR
+        )
+        # Forzamos que el ESN use el timestamp real de genesis si es posible,
+        # aunque AeonBirth usa su propio tiempo. Para alinearlos:
+        # (Esto es una mejora opcional, por ahora basta con que exista)
+except Exception as e:
+    print(f" [ERROR] Fallo al inicializar Eón: {e}")
+    _aeon_instance = None
 
 
 @app.route('/')
@@ -29,30 +50,62 @@ def index():
     """Servir página principal."""
     return send_from_directory('static', 'index.html')
 
-
-@app.route('/api/birth', methods=['POST'])
-def create_birth():
-    """Crear nueva instancia de Eón (Momento Cero)."""
-    global _aeon_instance
-    
-    data = request.get_json() or {}
-    name = data.get('name')
-    n_reservoir = data.get('n_reservoir', 100)
-    
-    try:
-        _aeon_instance = AeonBirth(
-            n_reservoir=n_reservoir,
-            name=name,
-            data_dir=DATA_DIR
-        )
-        
+@app.route('/api/config', methods=['GET', 'POST'])
+def config():
+    """Endpoint para configuración de parámetros de IA."""
+    if request.method == 'POST':
+        data = request.get_json() or {}
+        # Aquí guardaríamos la configuración. Por ahora es simulado.
         return jsonify({
             'success': True,
-            'message': 'Momento Cero establecido',
+            'message': 'Configuración actualizada',
+            'config': data
+        })
+    else:
+        # Valores por defecto simulados
+        return jsonify({
+            'success': True,
+            'config': {
+                'temperature': 0.7,
+                'spectral_radius': 0.95,
+                'leak_rate': 0.1
+            }
+        })
+
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    """Endpoint preliminar para chat."""
+    global _aeon_instance
+    data = request.get_json() or {}
+    message = data.get('message', '')
+    
+    # Aquí iría la lógica de procesamiento de lenguaje natural real
+    # Por ahora, usamos una respuesta mock o eco si la instancia no está lista
+    
+    if not _aeon_instance:
+        return jsonify({
+            'success': False,
+            'reply': "Eón no ha nacido. Por favor inicializa el sistema."
+        })
+        
+    return jsonify({
+        'success': True,
+        'reply': f"Eco: {message} (Procesado por Eón v0.1)"
+    })
+
+
+@app.route('/api/birth', methods=['POST'])
+@app.route('/api/birth', methods=['POST'])
+def create_birth():
+    """Endpoint legado. Retorna el estado actual ya que el nacimiento es inmutable."""
+    global _aeon_instance
+    if _aeon_instance:
+         return jsonify({
+            'success': True,
+            'message': 'Eón ya existe (Inmutable)',
             'status': _aeon_instance.get_status()
         })
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+    return jsonify({'success': False, 'error': 'Sistema no inicializado'}), 500
 
 
 @app.route('/api/status', methods=['GET'])

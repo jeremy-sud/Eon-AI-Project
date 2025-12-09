@@ -2,11 +2,13 @@
 
 > **A.E.O.N.** - Arquitectura Emergente y Optimización Neuromórfica
 
-[![Fase](https://img.shields.io/badge/Fase-8%20Completa-success)]()
+[![Versión](https://img.shields.io/badge/Versión-1.4.0-brightgreen)]()
+[![Fase](https://img.shields.io/badge/Fase-10%20Completa-success)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)]()
 [![C](https://img.shields.io/badge/C-1.3KB-orange)]()
 [![JavaScript](https://img.shields.io/badge/JS-Browser-yellow)]()
 [![Arduino](https://img.shields.io/badge/Arduino-Compatible-teal)]()
+[![Aprendizaje](https://img.shields.io/badge/Aprendizaje-Continuo-purple)]()
 [![Licencia](https://img.shields.io/badge/Licencia-MIT-green)]()
 
 ---
@@ -19,16 +21,18 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 
 ## ✨ Características
 
-| Característica          | Descripción                        |
-| ----------------------- | ---------------------------------- |
-| **Ultraligero**         | Núcleo C de 1.3KB de memoria       |
-| **Multi-plataforma**    | Python, C, JavaScript, Arduino     |
-| **Reservoir Computing** | Echo State Networks eficientes     |
-| **Mente Colectiva**     | Protocolo 1-Bit Ultraligero        |
-| **TinyLMv2**            | Modelo de lenguaje word-level      |
-| **Arte Generativo**     | Dream visualization neuronal       |
-| **Chat Conversacional** | Memoria persistente y aprendizaje  |
-| **Generación de Imágenes** | Arte neuronal basado en ESN     |
+| Característica              | Descripción                                 |
+| --------------------------- | ------------------------------------------- |
+| **Ultraligero**             | Núcleo C de 1.3KB de memoria                |
+| **Multi-plataforma**        | Python, C, JavaScript, Arduino              |
+| **Reservoir Computing**     | Echo State Networks eficientes              |
+| **Aprendizaje Continuo**    | Online Learning + Memoria a largo plazo     |
+| **Mente Colectiva**         | Protocolo 1-Bit Ultraligero                 |
+| **TinyLMv2**                | Modelo de lenguaje word-level               |
+| **Sistema de Feedback**     | Mejora con retroalimentación 👍/👎           |
+| **Chat Conversacional**     | 17 categorías de intención + memoria        |
+| **Arte Generativo**         | 5 estilos (fractal, flow, particles, waves, neural) |
+| **Consolidación de Sueño**  | Optimización durante inactividad            |
 
 ## 📊 Comparativa
 
@@ -43,6 +47,7 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 ```
 Eón Project AI/
 ├── GENESIS.json             # Momento Cero (inmutable)
+├── benchmark_full.py        # Benchmark Integral v2.0
 ├── docs/WHITEPAPER.md       # Paper técnico
 ├── phase1-foundations/      # Python ESN + Core
 ├── phase2-core/             # C Ultraligero
@@ -53,13 +58,18 @@ Eón Project AI/
 ├── phase7-language/         # TinyLMv2 (word-level)
 ├── phase8-paper/            # Paper LaTeX
 └── web/                     # Servidor Web Principal
-    ├── server.py            # API REST Flask
-    ├── data/                # Persistencia (chat, stats)
-    └── static/              # Frontend (Chat, Dream, Config)
-        ├── index.html       # Interfaz principal
-        ├── css/style.css    # Estilos
+    ├── server.py            # API REST Flask (~1500 líneas)
+    ├── learning.py          # Sistema de Aprendizaje Continuo
+    ├── data/                # Persistencia
+    │   ├── chat_history.json
+    │   ├── long_term_memory.json
+    │   ├── feedback.json
+    │   └── stats.json
+    └── static/              # Frontend
+        ├── index.html       # Interfaz (Chat, Dream, Learning, Config)
+        ├── css/style.css    
         └── js/
-            ├── app.js       # Lógica principal
+            ├── app.js       # Lógica principal (~600 líneas)
             ├── dream.js     # Visualización neuronal
             └── aeon.js      # Núcleo Eón JS
 ```
@@ -87,7 +97,7 @@ La interfaz web incluye:
 |----------|--------|-------------|
 | `/api/status` | GET | Estado actual de Eón |
 | `/api/chat` | POST | Enviar mensaje al chat |
-| `/api/generate-image` | POST | Generar arte neuronal |
+| `/api/generate-image` | POST | Generar arte neuronal (5 estilos) |
 | `/api/config` | GET/POST | Configuración de IA |
 | `/api/stats` | GET | Estadísticas de uso |
 | `/api/history` | GET/DELETE | Historial de chat |
@@ -96,6 +106,10 @@ La interfaz web incluye:
 | `/api/learn-text` | POST | Aprender de texto |
 | `/api/genesis` | GET | Info del Momento Cero |
 | `/api/lm-status` | GET | Estado de TinyLMv2 |
+| `/api/feedback` | POST | Enviar feedback 👍/👎 |
+| `/api/learning-stats` | GET | Estadísticas de aprendizaje |
+| `/api/memory` | GET/DELETE | Gestión de memoria a largo plazo |
+| `/api/consolidate` | POST | Forzar consolidación ("sueño") |
 
 ### Demo Python
 
@@ -172,18 +186,47 @@ make test
 - **Eón Bio**: Detección de arritmias con <2KB RAM
 - **Eón Voice**: Detección de palabras clave ("EÓN") en Cortex-M4
 - **Eón Dream**: Arte generativo neuronal en web
-- **Chat con Memoria**: Historial persistente y aprendizaje continuo
-- **Generación de Imágenes**: Arte neuronal usando patrones del ESN
+- **Chat con Memoria**: 17 categorías de intención + memoria persistente
+- **Generación de Imágenes**: 5 estilos (fractal, flow, particles, waves, neural) + 12 paletas
+- **Aprendizaje Continuo**: Online Learning con feedback en tiempo real
+- **Memoria a Largo Plazo**: Almacenamiento de usuarios, hechos y estadísticas
+- **Cuantización 8-bit**: 99.6% precisión retenida con 8x compresión
 
 ## 📚 Documentación
 
 - [WHITEPAPER.md](docs/WHITEPAPER.md) - Paper técnico completo
-- [audit_report.md](docs/audit_report.md) - Auditoría de código y mejoras
-- [benchmarks.md](docs/benchmarks.md) - Análisis de energía
+- [architecture.md](docs/architecture.md) - Arquitectura del sistema
+- [benchmarks.md](docs/benchmarks.md) - Análisis de energía y rendimiento
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Guía para contribuir
 - [CHANGELOG.md](CHANGELOG.md) - Historial de cambios
 - [Fase 3 README](phase3-integration/README.md) - Detalles Web/Dream
 - [Fase 5 README](phase5-applications/README.md) - Detalles Bio/Voice
+
+## 🧠 Sistema de Aprendizaje Continuo
+
+Eón implementa un sistema de aprendizaje continuo inspirado en la neurociencia:
+
+### Componentes
+
+1. **OnlineLearner**: Actualización en tiempo real de W_out usando Recursive Ridge Regression
+2. **LongTermMemory**: Almacenamiento persistente de usuarios, hechos, estadísticas
+3. **FeedbackSystem**: Mejora basada en retroalimentación 👍/👎
+4. **ConsolidationEngine**: Optimización durante períodos de inactividad ("sueño")
+
+### Flujo de Aprendizaje
+
+```
+Interacción → OnlineLearner → Feedback → LongTermMemory → Consolidación
+     ↑                                           ↓
+     └───────────── Mejora Continua ─────────────┘
+```
+
+### Datos Almacenados
+
+- **Usuarios conocidos**: Nombres, roles, información personal
+- **Hechos aprendidos**: Preferencias, conocimiento específico
+- **Patrones exitosos**: Asociados con feedback positivo
+- **Estadísticas**: Eventos de aprendizaje, consolidaciones, ratio de éxito
 
 ## 🛣️ Roadmap
 

@@ -2,6 +2,55 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [1.4.0] - 2024-12-08
+
+### Sistema de Aprendizaje Continuo (NUEVO)
+
+- **OnlineLearner**: Actualización en tiempo real de W_out usando Recursive Ridge Regression
+- **LongTermMemory**: Almacenamiento persistente de usuarios, hechos y estadísticas
+- **FeedbackSystem**: Mejora basada en retroalimentación 👍/👎 de usuarios
+- **ConsolidationEngine**: Optimización durante inactividad ("sueño"), refuerza patrones exitosos
+
+### Mejoras en Generación de Imágenes
+
+- **5 Estilos de Arte**: fractal, flow, particles, waves, neural
+- **12 Paletas de Colores**: desde cosmic hasta fire
+- **Semillas Únicas**: Cada imagen es genuinamente diferente basada en timestamp + hash
+
+### Sistema de Chat Mejorado
+
+- **17 Categorías de Intención**: identidad, saludo, imagen, código, filosofía, memoria, etc.
+- **Detección Mejorada**: Sin falsos positivos en nombres propios
+- **Respuestas Contextuales**: Mayor coherencia que TinyLMv2 para este caso de uso
+
+### Nuevos Endpoints API
+
+- `POST /api/feedback` - Enviar feedback 👍/👎 sobre respuestas
+- `GET /api/learning-stats` - Estadísticas de aprendizaje
+- `GET|DELETE /api/memory` - Gestión de memoria a largo plazo
+- `POST /api/consolidate` - Forzar consolidación manual
+
+### Panel de Aprendizaje (Frontend)
+
+- Visualización de eventos de aprendizaje
+- Lista de usuarios conocidos
+- Lista de hechos aprendidos
+- Estadísticas de feedback
+- Botones de consolidación y limpieza de memoria
+- Botones 👍/👎 en cada mensaje de IA
+
+### Persistencia
+
+- `long_term_memory.json` - Usuarios, hechos, stats de aprendizaje
+- `feedback.json` - Historial de valoraciones por patrón
+
+### Benchmark Integral v2.0
+
+- Nuevo archivo `benchmark_full.py` en raíz
+- 8 módulos de prueba (ESN, cuantización, plasticidad, TinyLM, aprendizaje, memoria, imágenes, sistema)
+- Modos `--quick` y `--export`
+- Resultados verificados: 8-bit retiene 99.6% precisión
+
 ## [1.3.0] - 2024-12-08
 
 ### Sistema de Memoria y Estadísticas

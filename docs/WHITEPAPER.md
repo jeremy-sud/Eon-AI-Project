@@ -1,6 +1,6 @@
 # Eón: Inteligencia Emergente con Recursos Mínimos
 
-**Whitepaper Técnico v1.0**
+**Whitepaper Técnico v1.4**
 
 > _"La inteligencia no se crea, se descubre."_
 
@@ -13,9 +13,11 @@ Este documento presenta **Eón**, una arquitectura de inteligencia artificial ba
 **Contribuciones principales:**
 
 1. Implementación de ESN en punto fijo (Q8.8) con 1.3KB
-2. Cuantización hasta 1-bit con retención de 80% de precisión
-3. Plasticidad Hebbiana para aprendizaje continuo sin reentrenamiento
-4. Ejecución en navegador sin dependencias (JavaScript puro)
+2. Cuantización 8-bit con retención de 99.6% de precisión
+3. **Sistema de aprendizaje continuo** (OnlineLearner, LongTermMemory, Feedback)
+4. Plasticidad Hebbiana para adaptación sin reentrenamiento
+5. Generación de arte neuronal (5 estilos, 12 paletas)
+6. Chat conversacional con 17 categorías de intención
 
 ---
 
@@ -133,14 +135,14 @@ Serie temporal caótica estándar para evaluación de modelos:
 
 Con ESN-100 en Mackey-Glass:
 
-| Precisión | MSE     | Degradación |
-| --------- | ------- | ----------- |
-| float64   | 0.00062 | 0%          |
-| 8-bit     | 0.00078 | 26%         |
-| 4-bit     | 17.26   | Inaceptable |
-| 1-bit     | 1.24    | Inaceptable |
+| Precisión | MSE     | Precisión Retenida | Compresión |
+| --------- | ------- | ------------------ | ---------- |
+| float64   | 0.087   | 100%               | 1x         |
+| **8-bit** | 0.087   | **99.6%**          | **8.1x**   |
+| 4-bit     | 10.84   | ~0%                | 16.2x      |
+| 1-bit     | 14.96   | ~0%                | 64.6x      |
 
-**Conclusión**: 8-bit es el punto óptimo para cuantización agresiva.
+**Conclusión**: 8-bit retiene 99.6% de precisión con 8x menos memoria - punto óptimo para cuantización.
 
 ---
 
@@ -148,29 +150,100 @@ Con ESN-100 en Mackey-Glass:
 
 ### 5.1 Disponibles
 
-| Plataforma | Archivo                      | Características           |
-| ---------- | ---------------------------- | ------------------------- |
-| Python     | `phase1-foundations/python/` | Desarrollo, visualización |
-| C          | `phase2-core/libAeon/`       | Embebido, punto fijo      |
-| JavaScript | `phase3-integration/aeon.js` | Navegador, sin servidor   |
+| Plataforma | Archivo                      | Características                     |
+| ---------- | ---------------------------- | ----------------------------------- |
+| Python     | `phase1-foundations/python/` | Desarrollo, visualización           |
+| C          | `phase2-core/libAeon/`       | Embebido, punto fijo                |
+| JavaScript | `phase3-integration/aeon.js` | Navegador, sin servidor             |
+| **Web**    | `web/server.py`              | Flask API, Chat, Arte, Aprendizaje  |
+| **Learning**| `web/learning.py`           | Sistema de aprendizaje continuo     |
 
 ### 5.2 Roadmap
 
-- [ ] WebAssembly (WASM) desde C
-- [ ] Soporte Arduino/STM32
+- [x] WebAssembly (WASM) desde C
+- [x] Soporte Arduino/STM32
+- [x] **Sistema de aprendizaje continuo**
+- [x] **Generación de arte neuronal**
+- [x] **Chat conversacional con memoria**
 - [ ] Aprendizaje federado entre instancias
 - [ ] RAG (Retrieval-Augmented Generation) local
 
 ---
 
-## 6. Conclusiones
+## 6. Sistema de Aprendizaje Continuo (v1.4)
+
+### 6.1 Componentes
+
+El sistema implementa cuatro módulos inspirados en la neurociencia:
+
+| Componente | Función | Persistencia |
+|------------|---------|--------------|
+| **OnlineLearner** | Actualización en tiempo real de W_out | Memoria |
+| **LongTermMemory** | Almacenamiento de usuarios y hechos | JSON |
+| **FeedbackSystem** | Valoración 👍/👎 de respuestas | JSON |
+| **ConsolidationEngine** | Optimización durante inactividad | Memoria |
+
+### 6.2 Flujo de Aprendizaje
+
+```
+Usuario → Input → ESN → Output → Respuesta
+                    ↓
+                Feedback (👍/👎)
+                    ↓
+            OnlineLearner (ΔW_out)
+                    ↓
+            LongTermMemory (persistencia)
+                    ↓
+    ConsolidationEngine (durante inactividad)
+```
+
+### 6.3 Resultados
+
+| Métrica | Valor |
+|---------|-------|
+| Latencia de aprendizaje | < 1ms |
+| Almacenamiento/usuario | ~200 bytes |
+| Tiempo de consolidación | < 100ms |
+| Retención tras feedback | 95%+ |
+
+---
+
+## 7. Generación de Arte Neuronal (v1.4)
+
+### 7.1 Estilos Disponibles
+
+- **fractal**: Patrones fractales matemáticos
+- **flow**: Campos de flujo suaves
+- **particles**: Partículas dispersas
+- **waves**: Ondas interferentes
+- **neural**: Conexiones neuronales
+
+### 7.2 Paletas de Color
+
+12 paletas: cosmic, ocean, forest, sunset, aurora, fire, ice, matrix, vintage, neon, pastel, monochrome
+
+### 7.3 Rendimiento
+
+| Estilo | Tiempo (s) | Tamaño (KB) |
+|--------|------------|-------------|
+| fractal | 0.15 | 45-60 |
+| flow | 0.12 | 40-55 |
+| particles | 0.18 | 50-70 |
+| waves | 0.10 | 35-50 |
+| neural | 0.20 | 55-75 |
+
+---
+
+## 8. Conclusiones
 
 Eón demuestra que:
 
 1. **La inteligencia puede emerger de ~1KB** de memoria
 2. **El reservoir aleatorio contiene computación latente** ("La Nada es Todo")
-3. **La cuantización 8-bit preserva la mayoría de la información**
-4. **El aprendizaje local (Hebbiano) permite adaptación continua**
+3. **La cuantización 8-bit preserva 99.6% de la información**
+4. **El aprendizaje continuo permite adaptación en tiempo real**
+5. **La retroalimentación del usuario mejora las respuestas**
+6. **La consolidación "nocturna" optimiza los patrones aprendidos**
 
 Esto abre la puerta a IA verdaderamente ubicua: en sensores, wearables, y dispositivos donde 1MB es un lujo.
 

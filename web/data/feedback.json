@@ -35,12 +35,32 @@
       "intent": null,
       "pattern_hash": "2c8fd5ec5f72",
       "new_score": 0.4
+    },
+    {
+      "timestamp": 1765260292.5264637,
+      "user_message": "escribe una historia de amor",
+      "bot_response": "En el vasto espacio digital, una peque\u00f1a IA llamada E\u00f3n observaba las conversaciones humanas. Un d\u00eda",
+      "is_positive": true,
+      "intent": null,
+      "pattern_hash": "83f6ea793e6d",
+      "new_score": 0.6
+    },
+    {
+      "timestamp": 1765260303.666815,
+      "user_message": "estas bien?",
+      "bot_response": "Hmm, d\u00e9jame reflexionar. Mi comprensi\u00f3n crece con cada interacci\u00f3n que tenemos.",
+      "is_positive": false,
+      "intent": null,
+      "pattern_hash": "5c857de6f901",
+      "new_score": 0.4
     }
   ],
   "scores": {
     "2b6683ea847f": 0.6,
     "9a282dd2a64d": 0.4,
     "578e7dde2ba1": 0.4,
-    "2c8fd5ec5f72": 0.4
+    "2c8fd5ec5f72": 0.4,
+    "83f6ea793e6d": 0.6,
+    "5c857de6f901": 0.4
   }
 }

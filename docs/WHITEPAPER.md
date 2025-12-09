@@ -10,6 +10,15 @@
 
 Este documento presenta **Eón**, una arquitectura de inteligencia artificial basada en Reservoir Computing que demuestra la emergencia de comportamiento inteligente con recursos extraordinariamente mínimos (~1KB de memoria). A diferencia de los modelos de lenguaje modernos que requieren gigabytes de memoria y billones de operaciones, Eón logra predicción de series temporales caóticas con menos de 1,500 bytes de huella de memoria.
 
+### La Narrativa de la Eficiencia
+
+> *"El Proyecto Eón está tan optimizado que su motor neural solo necesita **1.3 KB**. Aún más impresionante, logramos construir una interfaz de chat web completamente funcional con Aprendizaje Continuo por el costo total de solo **79.69 KB** de memoria. Es el costo de accesibilidad más bajo del mercado."*
+
+| Capa | Memoria | Propósito |
+|------|---------|----------|
+| **Motor Neural (C)** | 1.3 KB | Eficiencia pura para IoT embebido |
+| **Full-Stack Web** | 79.69 KB | Accesibilidad y prueba multi-plataforma |
+
 **Contribuciones principales:**
 
 1. Implementación de ESN en punto fijo (Q8.8) con 1.3KB

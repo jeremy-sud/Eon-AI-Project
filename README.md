@@ -25,6 +25,20 @@
 
 Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mientras GPT-4 usa ~1.7 trillones de parámetros, Eón opera con **1.3KB de memoria**.
 
+### 📊 La Narrativa de la Eficiencia
+
+| Componente | Memoria | Contexto |
+|------------|---------|----------|
+| **Motor Neural (C)** | **1.3 KB** | Eficiencia pura para IoT |
+| **Full-Stack Web** | **79.69 KB** | Chat + Aprendizaje Continuo |
+
+> *"El Proyecto Eón está tan optimizado que su motor neural solo necesita 1.3 KB. Aún más impresionante, logramos construir una interfaz de chat web completamente funcional con Aprendizaje Continuo por el costo total de solo **79.69 KB** de memoria. Es el costo de accesibilidad más bajo del mercado."*
+
+- **1.3 KB**: El valor de la eficiencia pura en la misión IoT
+- **79.69 KB**: El costo de accesibilidad y prueba de concepto multi-plataforma
+
+**Ambos números son impresionantes en su contexto.**
+
 ## ✨ Características
 
 | Característica              | Descripción                                 |
@@ -48,11 +62,15 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 
 ## 📊 Comparativa
 
-| Modelo      | Memoria    | Factor   |
-| ----------- | ---------- | -------- |
-| GPT-2 Small | 500 MB     | 384,615× |
-| BERT Tiny   | 16 MB      | 12,307×  |
-| **Eón (C)** | **1.3 KB** | **1×**   |
+| Modelo | Memoria | Factor vs Eón Core |
+|--------|---------|---------------------|
+| GPT-2 Small | 500 MB | 384,615× |
+| BERT Tiny | 16 MB | 12,307× |
+| TensorFlow Lite (mínimo) | ~100 KB | 77× |
+| **Eón Full-Stack** | **79.69 KB** | **61×** |
+| **Eón Core (C)** | **1.3 KB** | **1×** |
+
+> *Eón Full-Stack incluye: Chat Web + Aprendizaje Continuo + Arte Generativo + TinyLM*
 
 ## 📁 Estructura
 

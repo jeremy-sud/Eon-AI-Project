@@ -17,7 +17,7 @@
       "fact": "soy jeremy",
       "hash": "271a0a4d",
       "source": "conversation",
-      "confidence": 0.2574846067639487,
+      "confidence": 0.17752252675876345,
       "learned_at": 1765255187.3528864,
       "last_confirmed": 1765255302.3866065
     }
@@ -65,5 +65,5 @@
   },
   "emotional_memory": [],
   "created_at": 1765255170.0615954,
-  "last_updated": 1765266103.7070656
+  "last_updated": 1765268323.7458687
 }

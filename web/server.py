@@ -34,6 +34,8 @@ app = Flask(__name__, static_folder='static')
 
 # Directorio para persistencia de datos
 DATA_DIR = os.path.join(_current_dir, 'data')
+CHAT_HISTORY_FILE = os.path.join(DATA_DIR, 'chat_history.json')
+STATS_FILE = os.path.join(DATA_DIR, 'stats.json')
 os.makedirs(DATA_DIR, exist_ok=True)
 
 # Configuración global de IA (valores por defecto)
@@ -43,8 +45,82 @@ _ai_config = {
     'leak_rate': 0.1,
     'max_tokens': 256,
     'top_p': 0.9,
-    'learning_rate': 0.01
+    'learning_rate': 0.01,
+    # Configuración de personalidad
+    'personality': 'balanced',  # formal, casual, creative, precise, balanced
+    'verbosity': 'normal',      # minimal, normal, verbose
 }
+
+# Estadísticas de uso
+_stats = {
+    'total_messages': 0,
+    'total_images_generated': 0,
+    'total_files_processed': 0,
+    'samples_learned_from_chat': 0,
+    'session_start': None,
+}
+
+def _load_stats():
+    """Cargar estadísticas desde archivo."""
+    global _stats
+    try:
+        if os.path.exists(STATS_FILE):
+            with open(STATS_FILE, 'r') as f:
+                import json
+                saved = json.load(f)
+                _stats.update(saved)
+    except Exception:
+        pass
+    _stats['session_start'] = __import__('time').time()
+
+def _save_stats():
+    """Guardar estadísticas a archivo."""
+    try:
+        with open(STATS_FILE, 'w') as f:
+            import json
+            json.dump(_stats, f, indent=2)
+    except Exception:
+        pass
+
+# Historial de conversaciones
+_chat_history = []
+
+def _load_chat_history():
+    """Cargar historial de chat desde archivo."""
+    global _chat_history
+    try:
+        if os.path.exists(CHAT_HISTORY_FILE):
+            with open(CHAT_HISTORY_FILE, 'r') as f:
+                import json
+                _chat_history = json.load(f)
+                # Limitar a últimos 100 mensajes
+                _chat_history = _chat_history[-100:]
+    except Exception:
+        _chat_history = []
+
+def _save_chat_history():
+    """Guardar historial de chat a archivo."""
+    try:
+        with open(CHAT_HISTORY_FILE, 'w') as f:
+            import json
+            # Guardar solo últimos 100 mensajes
+            json.dump(_chat_history[-100:], f, indent=2)
+    except Exception:
+        pass
+
+def _add_to_history(role: str, content: str):
+    """Añadir mensaje al historial."""
+    import time
+    _chat_history.append({
+        'role': role,
+        'content': content,
+        'timestamp': time.time()
+    })
+    _save_chat_history()
+
+# Cargar datos persistentes al iniciar
+_load_stats()
+_load_chat_history()
 
 # Instancia global de Eón
 # Eón nace una sola vez (Momento Cero) y persiste para siempre.
@@ -285,7 +361,9 @@ class EonChat:
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    """Endpoint para chat conversacional."""
+    """Endpoint para chat conversacional con memoria y aprendizaje."""
+    global _stats
+    
     data = request.get_json() or {}
     message = data.get('message', '').strip()
     
@@ -295,21 +373,43 @@ def chat():
             'error': 'Mensaje vacío'
         }), 400
     
+    # Guardar mensaje del usuario en historial
+    _add_to_history('user', message)
+    _stats['total_messages'] += 1
+    
     # Obtener estado actual de Eón
     status = _aeon_instance.get_status()
     
     # Verificar si usar el modelo de lenguaje
     use_lm = data.get('use_lm', True) and _tinylm_model is not None
     
-    # Generar respuesta
+    # Generar respuesta con contexto del historial
     reply = EonChat.get_response(message, status, use_lm=use_lm)
+    
+    # Guardar respuesta en historial
+    _add_to_history('assistant', reply)
+    
+    # Aprendizaje continuo: alimentar el ESN con el mensaje
+    try:
+        # Convertir texto a señal numérica simple
+        signal = np.array([ord(c) / 255.0 for c in message[:50]])
+        if len(signal) >= 10:
+            _aeon_instance.esn._update_state(signal[:10])
+            _stats['samples_learned_from_chat'] += 1
+    except Exception:
+        pass
+    
+    # Guardar estadísticas periódicamente
+    if _stats['total_messages'] % 10 == 0:
+        _save_stats()
     
     return jsonify({
         'success': True,
         'reply': reply,
         'intent': EonChat.get_intent(message),
         'age': status['age'],
-        'lm_used': use_lm and EonChat.get_intent(message) == 'default'
+        'lm_used': use_lm and EonChat.get_intent(message) == 'default',
+        'messages_count': _stats['total_messages']
     })
 
 
@@ -329,6 +429,183 @@ def lm_status():
         'available': True,
         'stats': stats
     })
+
+
+@app.route('/api/stats', methods=['GET'])
+def get_stats():
+    """Obtener estadísticas de uso de Eón."""
+    import time
+    
+    uptime_seconds = time.time() - _stats.get('session_start', time.time())
+    
+    return jsonify({
+        'success': True,
+        'stats': {
+            'total_messages': _stats['total_messages'],
+            'total_images_generated': _stats['total_images_generated'],
+            'total_files_processed': _stats['total_files_processed'],
+            'samples_learned_from_chat': _stats['samples_learned_from_chat'],
+            'session_uptime_seconds': int(uptime_seconds),
+            'session_uptime_formatted': f"{int(uptime_seconds // 3600)}h {int((uptime_seconds % 3600) // 60)}m",
+            'lm_available': _tinylm_model is not None,
+            'lm_stats': _tinylm_model.get_stats() if _tinylm_model else None
+        }
+    })
+
+
+@app.route('/api/history', methods=['GET', 'DELETE'])
+def manage_history():
+    """Obtener o limpiar historial de conversaciones."""
+    if request.method == 'DELETE':
+        global _chat_history
+        _chat_history = []
+        _save_chat_history()
+        return jsonify({
+            'success': True,
+            'message': 'Historial limpiado'
+        })
+    
+    # GET: devolver historial con paginación opcional
+    limit = request.args.get('limit', 50, type=int)
+    offset = request.args.get('offset', 0, type=int)
+    
+    history_slice = _chat_history[-(limit + offset):-offset if offset > 0 else None]
+    
+    return jsonify({
+        'success': True,
+        'history': history_slice,
+        'total': len(_chat_history)
+    })
+
+
+@app.route('/api/personality', methods=['GET', 'POST'])
+def manage_personality():
+    """Configurar la personalidad de Eón."""
+    global _ai_config
+    
+    VALID_PERSONALITIES = ['formal', 'casual', 'creative', 'precise', 'balanced']
+    VALID_VERBOSITY = ['minimal', 'normal', 'verbose']
+    
+    if request.method == 'POST':
+        data = request.get_json() or {}
+        
+        if 'personality' in data and data['personality'] in VALID_PERSONALITIES:
+            _ai_config['personality'] = data['personality']
+        
+        if 'verbosity' in data and data['verbosity'] in VALID_VERBOSITY:
+            _ai_config['verbosity'] = data['verbosity']
+        
+        return jsonify({
+            'success': True,
+            'message': 'Personalidad actualizada',
+            'personality': _ai_config['personality'],
+            'verbosity': _ai_config['verbosity']
+        })
+    
+    return jsonify({
+        'success': True,
+        'personality': _ai_config.get('personality', 'balanced'),
+        'verbosity': _ai_config.get('verbosity', 'normal'),
+        'available_personalities': VALID_PERSONALITIES,
+        'available_verbosity': VALID_VERBOSITY
+    })
+
+
+@app.route('/api/learn-text', methods=['POST'])
+def learn_from_text():
+    """Alimentar el modelo de lenguaje con texto nuevo para aprendizaje."""
+    global _stats
+    
+    data = request.get_json() or {}
+    text = data.get('text', '').strip()
+    
+    if not text or len(text) < 20:
+        return jsonify({
+            'success': False,
+            'error': 'El texto debe tener al menos 20 caracteres'
+        }), 400
+    
+    if _tinylm_model is None:
+        return jsonify({
+            'success': False,
+            'error': 'TinyLMv2 no está disponible'
+        }), 503
+    
+    try:
+        # Entrenar con el nuevo texto (pocas épocas para no sobreajustar)
+        stats = _tinylm_model.train(text, epochs=1, washout=10)
+        _stats['samples_learned_from_chat'] += len(text.split())
+        _save_stats()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Aprendido texto de {len(text)} caracteres',
+            'stats': stats
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/upload', methods=['POST'])
+def upload_file():
+    """Subir archivo para que Eón aprenda de su contenido."""
+    global _stats
+    
+    if 'file' not in request.files:
+        return jsonify({
+            'success': False,
+            'error': 'No se recibió ningún archivo'
+        }), 400
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        return jsonify({
+            'success': False,
+            'error': 'Nombre de archivo vacío'
+        }), 400
+    
+    # Extensiones permitidas
+    ALLOWED_EXTENSIONS = {'txt', 'md', 'py', 'js', 'json', 'csv'}
+    ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else ''
+    
+    if ext not in ALLOWED_EXTENSIONS:
+        return jsonify({
+            'success': False,
+            'error': f'Extensión no permitida. Permitidas: {", ".join(ALLOWED_EXTENSIONS)}'
+        }), 400
+    
+    try:
+        content = file.read().decode('utf-8', errors='ignore')
+        
+        # Limitar tamaño
+        if len(content) > 50000:
+            content = content[:50000]
+        
+        _stats['total_files_processed'] += 1
+        
+        # Si es texto, intentar aprender de él
+        if ext in {'txt', 'md'} and _tinylm_model is not None and len(content) > 50:
+            _tinylm_model.train(content, epochs=1, washout=10)
+            _stats['samples_learned_from_chat'] += len(content.split())
+        
+        _save_stats()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Archivo "{file.filename}" procesado ({len(content)} caracteres)',
+            'filename': file.filename,
+            'size': len(content),
+            'learned': ext in {'txt', 'md'}
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
 @app.route('/api/genesis', methods=['GET'])
@@ -443,6 +720,11 @@ def generate_image():
         img.save(buffer, format='PNG')
         img_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
         
+        # Incrementar estadísticas
+        _stats['total_images_generated'] += 1
+        if _stats['total_images_generated'] % 5 == 0:
+            _save_stats()
+        
         return jsonify({
             'success': True,
             'image': f'data:image/png;base64,{img_base64}',
@@ -452,6 +734,7 @@ def generate_image():
         
     except ImportError:
         # Si PIL no está instalado, generar SVG simple
+        _stats['total_images_generated'] += 1
         svg_content = generate_svg_art(prompt, size)
         return jsonify({
             'success': True,

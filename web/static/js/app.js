@@ -9,12 +9,14 @@ const App = {
     status: null,
     config: {},
     chatHistory: [],
+    stats: {},
   },
 
   init() {
     this.bindEvents();
     this.startStatusPolling();
     this.loadConfig();
+    this.loadStats();
     this.addSystemMessage("Eón está activo. ¿En qué puedo ayudarte?");
   },
 
@@ -50,6 +52,12 @@ const App = {
     if (uploadBtn) {
       uploadBtn.addEventListener("click", () => this.handleUpload());
     }
+    
+    // Clear history button
+    const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+    if (clearHistoryBtn) {
+      clearHistoryBtn.addEventListener("click", () => this.clearHistory());
+    }
 
     // Dream controls
     document
@@ -74,6 +82,12 @@ const App = {
 
     const saveBtn = document.getElementById("saveConfigBtn");
     if (saveBtn) saveBtn.addEventListener("click", () => this.saveConfig());
+    
+    // Personality selector
+    const personalitySelect = document.getElementById("cfg-personality");
+    if (personalitySelect) {
+      personalitySelect.addEventListener("change", () => this.savePersonality());
+    }
   },
 
   switchView(viewName) {
@@ -356,25 +370,37 @@ const App = {
     // Crear input de archivo oculto
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
-    fileInput.accept = '.txt,.json,.csv';
+    fileInput.accept = '.txt,.md,.py,.js,.json,.csv';
     fileInput.style.display = 'none';
     
     fileInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
       
-      this.addSystemMessage(`Archivo seleccionado: ${file.name}`);
+      this.addSystemMessage(`Procesando archivo: ${file.name}...`);
       
       try {
-        const text = await file.text();
-        // Mostrar preview del contenido
-        const preview = text.substring(0, 200) + (text.length > 200 ? '...' : '');
-        this.addSystemMessage(`Contenido (${text.length} caracteres):\n${preview}`);
+        const formData = new FormData();
+        formData.append('file', file);
         
-        // En el futuro, aquí se podría enviar al servidor para aprendizaje
-        this.addSystemMessage("El archivo ha sido recibido. La función de aprendizaje desde archivos estará disponible próximamente.");
+        const res = await fetch(`${this.API_BASE}/api/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          this.addSystemMessage(`✓ ${data.message}`);
+          if (data.learned) {
+            this.addSystemMessage("El contenido ha sido procesado para aprendizaje.");
+          }
+          this.loadStats(); // Actualizar estadísticas
+        } else {
+          this.addSystemMessage(`Error: ${data.error}`);
+        }
       } catch (err) {
-        this.addSystemMessage(`Error al leer el archivo: ${err.message}`);
+        this.addSystemMessage(`Error al subir el archivo: ${err.message}`);
       }
       
       document.body.removeChild(fileInput);
@@ -383,8 +409,92 @@ const App = {
     document.body.appendChild(fileInput);
     fileInput.click();
   },
+  
+  async loadStats() {
+    try {
+      const res = await fetch(`${this.API_BASE}/api/stats`);
+      const data = await res.json();
+      if (data.success) {
+        this.state.stats = data.stats;
+        this.updateStatsUI(data.stats);
+      }
+    } catch (e) {
+      console.error("Stats load failed", e);
+    }
+  },
+  
+  updateStatsUI(stats) {
+    // Actualizar elementos de estadísticas si existen
+    const messagesEl = document.getElementById("statMessages");
+    if (messagesEl) messagesEl.textContent = stats.total_messages || 0;
+    
+    const imagesEl = document.getElementById("statImages");
+    if (imagesEl) imagesEl.textContent = stats.total_images_generated || 0;
+    
+    const filesEl = document.getElementById("statFiles");
+    if (filesEl) filesEl.textContent = stats.total_files_processed || 0;
+    
+    const uptimeEl = document.getElementById("statUptime");
+    if (uptimeEl) uptimeEl.textContent = stats.session_uptime_formatted || "0h 0m";
+    
+    const lmStatusEl = document.getElementById("statLmStatus");
+    if (lmStatusEl) {
+      lmStatusEl.textContent = stats.lm_available ? "Activo" : "Inactivo";
+      lmStatusEl.style.color = stats.lm_available ? "var(--primary)" : "var(--text-secondary)";
+    }
+  },
+  
+  async clearHistory() {
+    if (!confirm("¿Estás seguro de querer limpiar el historial de conversación?")) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`${this.API_BASE}/api/history`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        // Limpiar UI de chat
+        const container = document.querySelector(".chat-container");
+        container.innerHTML = '';
+        this.addSystemMessage("Historial limpiado. Comenzando nueva conversación.");
+      }
+    } catch (e) {
+      this.addSystemMessage("Error al limpiar historial.");
+    }
+  },
+  
+  async savePersonality() {
+    const personalitySelect = document.getElementById("cfg-personality");
+    const verbositySelect = document.getElementById("cfg-verbosity");
+    
+    if (!personalitySelect) return;
+    
+    try {
+      const res = await fetch(`${this.API_BASE}/api/personality`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          personality: personalitySelect.value,
+          verbosity: verbositySelect ? verbositySelect.value : 'normal'
+        })
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        this.addSystemMessage(`Personalidad actualizada: ${data.personality}`);
+      }
+    } catch (e) {
+      console.error("Error saving personality", e);
+    }
+  },
 };
 
 window.addEventListener("DOMContentLoaded", () => {
   App.init();
+  
+  // Actualizar estadísticas cada 30 segundos
+  setInterval(() => App.loadStats(), 30000);
 });

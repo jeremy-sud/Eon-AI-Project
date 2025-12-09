@@ -19,13 +19,16 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 
 ## ✨ Características
 
-| Característica          | Descripción                    |
-| ----------------------- | ------------------------------ |
-| **Ultraligero**         | Núcleo C de 1.3KB de memoria   |
-| **Multi-plataforma**    | Python, C, JavaScript, Arduino |
-| **Reservoir Computing** | Echo State Networks eficientes |
-| **Mente Colectiva**     | Protocolo 1-Bit Ultraligero    |
-| **TinyLM**              | Diccionario Trie Optimizado    |
+| Característica          | Descripción                        |
+| ----------------------- | ---------------------------------- |
+| **Ultraligero**         | Núcleo C de 1.3KB de memoria       |
+| **Multi-plataforma**    | Python, C, JavaScript, Arduino     |
+| **Reservoir Computing** | Echo State Networks eficientes     |
+| **Mente Colectiva**     | Protocolo 1-Bit Ultraligero        |
+| **TinyLMv2**            | Modelo de lenguaje word-level      |
+| **Arte Generativo**     | Dream visualization neuronal       |
+| **Chat Conversacional** | Memoria persistente y aprendizaje  |
+| **Generación de Imágenes** | Arte neuronal basado en ESN     |
 
 ## 📊 Comparativa
 
@@ -41,17 +44,24 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 Eón Project AI/
 ├── GENESIS.json             # Momento Cero (inmutable)
 ├── docs/WHITEPAPER.md       # Paper técnico
-├── phase1-foundations/      # Python ESN
+├── phase1-foundations/      # Python ESN + Core
 ├── phase2-core/             # C Ultraligero
 ├── phase3-integration/      # JavaScript Web (core)
 ├── phase4-hardware/         # Arduino + ESP32
 ├── phase5-applications/     # IoT Predictor
 ├── phase6-collective/       # Mente Colectiva
-├── phase7-language/         # TinyLM v2
+├── phase7-language/         # TinyLMv2 (word-level)
 ├── phase8-paper/            # Paper LaTeX
 └── web/                     # Servidor Web Principal
     ├── server.py            # API REST Flask
+    ├── data/                # Persistencia (chat, stats)
     └── static/              # Frontend (Chat, Dream, Config)
+        ├── index.html       # Interfaz principal
+        ├── css/style.css    # Estilos
+        └── js/
+            ├── app.js       # Lógica principal
+            ├── dream.js     # Visualización neuronal
+            └── aeon.js      # Núcleo Eón JS
 ```
 
 ## 🚀 Inicio Rápido
@@ -59,12 +69,33 @@ Eón Project AI/
 ### Interfaz Web Principal (Recomendado)
 
 ```bash
-cd web
+cd "Eón Project AI"
 python -m venv .venv && source .venv/bin/activate
 pip install flask numpy pillow
-python server.py
+python web/server.py
 # Abrir http://localhost:5000
 ```
+
+La interfaz web incluye:
+- **Chat**: Conversación con Eón usando TinyLMv2
+- **Dream**: Visualización del reservorio neuronal
+- **Estado**: Estadísticas y configuración de IA
+
+### API Endpoints Disponibles
+
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/api/status` | GET | Estado actual de Eón |
+| `/api/chat` | POST | Enviar mensaje al chat |
+| `/api/generate-image` | POST | Generar arte neuronal |
+| `/api/config` | GET/POST | Configuración de IA |
+| `/api/stats` | GET | Estadísticas de uso |
+| `/api/history` | GET/DELETE | Historial de chat |
+| `/api/personality` | GET/POST | Configuración de personalidad |
+| `/api/upload` | POST | Subir archivo para aprendizaje |
+| `/api/learn-text` | POST | Aprender de texto |
+| `/api/genesis` | GET | Info del Momento Cero |
+| `/api/lm-status` | GET | Estado de TinyLMv2 |
 
 ### Demo Python
 
@@ -134,13 +165,15 @@ make test
 
 - **ESN Python**: MSE 0.0004 en Mackey-Glass
 - **ESN C**: MSE 0.009 con punto fijo Q8.8
-- **TinyLM v2**: 99.9% accuracy con **>50% reducción de memoria** (Trie).
-- **Mente Colectiva**: Protocolo P2P funcional en ESP32 con compresión **17x** (1-Bit).
-- **Consistencia**: "Spirit Hash" único (16 bytes) idéntico en Python, C y JS.
-- **Robustez**: Core C verificado con suite de pruebas unitarias.
-- **Eón Bio**: Detección de arritmias con <2KB RAM.
-- **Eón Voice**: Detección de palabras clave ("EÓN") en Cortex-M4.
-- **Eón Dream**: Arte generativo neuronal en web.
+- **TinyLMv2**: 99.9% accuracy, tokenización word-level con **>50% reducción de memoria** (Trie)
+- **Mente Colectiva**: Protocolo P2P funcional en ESP32 con compresión **17x** (1-Bit)
+- **Consistencia**: "Spirit Hash" único (16 bytes) idéntico en Python, C y JS
+- **Robustez**: Core C verificado con suite de pruebas unitarias
+- **Eón Bio**: Detección de arritmias con <2KB RAM
+- **Eón Voice**: Detección de palabras clave ("EÓN") en Cortex-M4
+- **Eón Dream**: Arte generativo neuronal en web
+- **Chat con Memoria**: Historial persistente y aprendizaje continuo
+- **Generación de Imágenes**: Arte neuronal usando patrones del ESN
 
 ## 📚 Documentación
 

@@ -2,6 +2,36 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [1.3.0] - 2024-12-08
+
+### Sistema de Memoria y Estadísticas
+
+- **Historial Persistente**: Conversaciones guardadas en `chat_history.json`
+- **Estadísticas de Uso**: Tracking de mensajes, imágenes, archivos procesados
+- **Aprendizaje desde Archivos**: Soporte para .txt, .md, .py, .js, .json, .csv
+- **Configuración de Personalidad**: Estilos (formal, casual, creative, precise, balanced)
+
+### Nuevos Endpoints API
+
+- `GET /api/stats` - Estadísticas de uso completas
+- `GET|DELETE /api/history` - Gestión del historial de chat
+- `GET|POST /api/personality` - Configuración de personalidad
+- `POST /api/learn-text` - Aprender de texto nuevo
+- `POST /api/upload` - Subir archivos para aprendizaje
+
+### Mejoras de Frontend
+
+- Panel de Estadísticas de Uso (mensajes, imágenes, archivos, uptime)
+- Panel de Personalidad (selector de estilo y verbosidad)
+- Botón "Limpiar Historial"
+- Subida de archivos funcional con aprendizaje real
+- Actualización automática de estadísticas cada 30s
+
+### Correcciones
+
+- Mejorada integración frontend-backend
+- Persistencia de estadísticas entre sesiones
+
 ## [1.2.0] - 2024-12-08
 
 ### Integración TinyLMv2 en Chat

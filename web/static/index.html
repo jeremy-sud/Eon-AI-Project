@@ -119,6 +119,70 @@
 
             <div class="panel">
                 <div class="panel-header">
+                    <span>ESTADÍSTICAS DE USO</span>
+                    <i class="fa-solid fa-chart-bar"></i>
+                </div>
+                
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Mensajes Totales</div>
+                        <div class="stat-value" id="statMessages">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Imágenes Generadas</div>
+                        <div class="stat-value" id="statImages">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Archivos Procesados</div>
+                        <div class="stat-value" id="statFiles">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Tiempo de Sesión</div>
+                        <div class="stat-value" id="statUptime">0h 0m</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Modelo de Lenguaje</div>
+                        <div class="stat-value" id="statLmStatus">...</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1rem; text-align: right;">
+                    <button class="action-btn" id="clearHistoryBtn" title="Limpiar Historial" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+                        <i class="fa-solid fa-trash"></i> Limpiar Historial
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span>PERSONALIDAD</span>
+                    <i class="fa-solid fa-user-gear"></i>
+                </div>
+                
+                <div class="config-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="config-item">
+                        <label class="stat-label" style="margin-bottom: 0.5rem; display: block;">Estilo de Respuesta</label>
+                        <select id="cfg-personality" style="width: 100%; padding: 0.5rem; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 4px;">
+                            <option value="balanced">Equilibrado</option>
+                            <option value="formal">Formal</option>
+                            <option value="casual">Casual</option>
+                            <option value="creative">Creativo</option>
+                            <option value="precise">Preciso</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label class="stat-label" style="margin-bottom: 0.5rem; display: block;">Nivel de Detalle</label>
+                        <select id="cfg-verbosity" style="width: 100%; padding: 0.5rem; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 4px;">
+                            <option value="minimal">Mínimo</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="verbose">Detallado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
                     <span>CONFIGURACIÓN DE IA</span>
                     <i class="fa-solid fa-sliders"></i>
                 </div>

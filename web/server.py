@@ -4,7 +4,9 @@ API REST para interactuar con el núcleo de Eón.
 """
 
 from flask import Flask, request, jsonify, send_from_directory
+from typing import Optional
 import numpy as np
+import re
 import os
 import sys
 
@@ -145,7 +147,7 @@ except FileNotFoundError:
 
 # Inicializar Sistema de Aprendizaje Continuo
 _learning_system = EonLearningSystem(DATA_DIR, _aeon_instance.esn)
-print(f" [INFO] Sistema de aprendizaje inicializado")
+print(" [INFO] Sistema de aprendizaje inicializado")
 
 # Inicializar TinyLMv2 para generación de texto
 _tinylm_model = None
@@ -416,7 +418,7 @@ class EonChat:
     }
     
     @classmethod
-    def extract_name(cls, message: str) -> str:
+    def extract_name(cls, message: str) -> Optional[str]:
         """Extrae el nombre del usuario del mensaje."""
         message_lower = message.lower()
         
@@ -426,7 +428,6 @@ class EonChat:
             r'(?:mucho gusto,?\s*)([a-záéíóúñ]+)',
         ]
         
-        import re
         for pattern in patterns:
             match = re.search(pattern, message_lower)
             if match:
@@ -489,10 +490,8 @@ class EonChat:
         return False
     
     @classmethod
-    def _solve_math(cls, message: str) -> str:
+    def _solve_math(cls, message: str) -> Optional[str]:
         """Resuelve operaciones matemáticas en el mensaje."""
-        import re
-        
         # Normalizar operadores
         message = message.replace('×', '*').replace('x', '*').replace('÷', '/')
         
@@ -524,7 +523,7 @@ class EonChat:
                 if result == int(result):
                     result = int(result)
                 results.append(f"{num1} {op} {num2} = {result}")
-            except:
+            except (ValueError, ZeroDivisionError):
                 continue
         
         if results:
@@ -802,7 +801,7 @@ class EonChat:
                     from learning import LongTermMemory
                     ltm = LongTermMemory()
                     ltm.store_fact(user_id, fact_type, value)
-                except:
+                except (ImportError, AttributeError):
                     pass
                 
                 responses = [
@@ -1067,7 +1066,7 @@ El subsistema de {subsystem} ha reportado una anomalía.
         return docs
     
     @classmethod
-    def _search_docs(cls, query: str) -> str:
+    def _search_docs(cls, query: str) -> Optional[str]:
         """Busca información relevante en los documentos cargados (RAG ligero)."""
         docs = cls._load_docs_for_rag()
         
@@ -1117,9 +1116,8 @@ El subsistema de {subsystem} ha reportado una anomalía.
         return None
     
     @classmethod
-    def _handle_factual_message(cls, message: str) -> str:
+    def _handle_factual_message(cls, message: str) -> Optional[str]:
         """Detecta y maneja mensajes sobre estados/hechos que pueden cambiar."""
-        import re
         
         message_lower = message.lower()
         
@@ -1407,8 +1405,8 @@ def chat():
         user_context = _learning_system.get_user_context(user_name)
         EonChat._context['user_name'] = user_name
     
-    # Buscar hechos relevantes
-    relevant_facts = _learning_system.search_relevant_facts(message)
+    # Buscar hechos relevantes (para uso futuro de contexto)
+    _ = _learning_system.search_relevant_facts(message)
     
     # Generar respuesta con contexto del historial
     reply = EonChat.get_response(message, status, use_lm=use_lm)
@@ -1790,10 +1788,10 @@ def generate_image():
     style = data.get('style', 'auto')  # auto, fractal, flow, particles, waves, neural
     
     try:
-        # Semilla única basada en prompt + timestamp + random
+        # Semilla única basada en prompt + timestamp
         timestamp = int(time.time() * 1000) % 100000
         prompt_hash = int(hashlib.md5(prompt.encode()).hexdigest()[:8], 16)
-        seed = prompt_hash ^ timestamp ^ np.random.randint(0, 10000)
+        seed = prompt_hash ^ timestamp
         rng = np.random.default_rng(seed)
         
         # Usar el reservorio para generar patrones únicos
@@ -2199,7 +2197,8 @@ def learn():
             t = np.linspace(0, 4 * np.pi, samples)
             train_data = np.sign(np.sin(t))
         elif pattern == 'random':
-            train_data = np.random.randn(samples)
+            rng = np.random.default_rng(42)
+            train_data = rng.standard_normal(samples)
         else:
             return jsonify({
                 'success': False,

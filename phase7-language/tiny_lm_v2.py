@@ -68,8 +68,8 @@ class WordTokenizer:
         self.actual_vocab_size = self.vocab.size
         
         # Crear embeddings aleatorios
-        np.random.seed(42)
-        self.embeddings = np.random.randn(self.actual_vocab_size, self.embedding_dim) * 0.1
+        rng = np.random.default_rng(42)
+        self.embeddings = rng.standard_normal((self.actual_vocab_size, self.embedding_dim)) * 0.1
         self.embeddings[0] = 0 # PAD
         
     def _tokenize(self, text: str) -> List[str]:
@@ -275,8 +275,10 @@ class TinyLMv2:
                 exp_logits = np.exp(top_k_logits - np.max(top_k_logits))
                 probs = exp_logits / np.sum(exp_logits)
                 
-                # Samplear
-                chosen = np.random.choice(len(top_k_indices), p=probs)
+                # Samplear (usar tiempo como seed para variación)
+                import time
+                rng = np.random.default_rng(int(time.time() * 1000) % (2**32))
+                chosen = rng.choice(len(top_k_indices), p=probs)
                 next_idx = top_k_indices[chosen]
             
             # Evitar tokens especiales

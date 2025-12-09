@@ -161,7 +161,7 @@
                 
                 <div class="config-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     <div class="config-item">
-                        <label class="stat-label" style="margin-bottom: 0.5rem; display: block;">Estilo de Respuesta</label>
+                        <label for="cfg-personality" class="stat-label" style="margin-bottom: 0.5rem; display: block;">Estilo de Respuesta</label>
                         <select id="cfg-personality" style="width: 100%; padding: 0.5rem; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 4px;">
                             <option value="balanced">Equilibrado</option>
                             <option value="formal">Formal</option>
@@ -171,7 +171,7 @@
                         </select>
                     </div>
                     <div class="config-item">
-                        <label class="stat-label" style="margin-bottom: 0.5rem; display: block;">Nivel de Detalle</label>
+                        <label for="cfg-verbosity" class="stat-label" style="margin-bottom: 0.5rem; display: block;">Nivel de Detalle</label>
                         <select id="cfg-verbosity" style="width: 100%; padding: 0.5rem; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 4px;">
                             <option value="minimal">Mínimo</option>
                             <option value="normal" selected>Normal</option>
@@ -235,7 +235,7 @@
                     
                     <div class="config-item">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <label class="stat-label">Temperatura (Creatividad)</label>
+                            <label for="cfg-temp" class="stat-label">Temperatura (Creatividad)</label>
                             <span class="stat-value" style="font-size: 0.9rem;" id="val-temp">0.7</span>
                         </div>
                         <input type="range" id="cfg-temp" min="0.1" max="2.0" step="0.1" value="0.7" style="width: 100%;">
@@ -244,7 +244,7 @@
 
                     <div class="config-item">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <label class="stat-label">Top-P (Nucleus Sampling)</label>
+                            <label for="cfg-topp" class="stat-label">Top-P (Nucleus Sampling)</label>
                             <span class="stat-value" style="font-size: 0.9rem;" id="val-topp">0.9</span>
                         </div>
                         <input type="range" id="cfg-topp" min="0.1" max="1.0" step="0.05" value="0.9" style="width: 100%;">
@@ -253,7 +253,7 @@
 
                     <div class="config-item">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <label class="stat-label">Máximo de Tokens</label>
+                            <label for="cfg-tokens" class="stat-label">Máximo de Tokens</label>
                             <span class="stat-value" style="font-size: 0.9rem;" id="val-tokens">256</span>
                         </div>
                         <input type="range" id="cfg-tokens" min="64" max="1024" step="64" value="256" style="width: 100%;">
@@ -262,7 +262,7 @@
 
                     <div class="config-item">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <label class="stat-label">Tasa de Aprendizaje</label>
+                            <label for="cfg-lr" class="stat-label">Tasa de Aprendizaje</label>
                             <span class="stat-value" style="font-size: 0.9rem;" id="val-lr">0.01</span>
                         </div>
                         <input type="range" id="cfg-lr" min="0.001" max="0.1" step="0.001" value="0.01" style="width: 100%;">
@@ -288,7 +288,7 @@
                     
                     <div class="config-item">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <label class="stat-label">Radio Espectral</label>
+                            <label for="cfg-radius" class="stat-label">Radio Espectral</label>
                             <span class="stat-value" style="font-size: 0.9rem;" id="val-radius">0.95</span>
                         </div>
                         <input type="range" id="cfg-radius" min="0.1" max="1.5" step="0.05" value="0.95" style="width: 100%;">
@@ -297,7 +297,7 @@
 
                     <div class="config-item">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <label class="stat-label">Tasa de Fuga</label>
+                            <label for="cfg-leak" class="stat-label">Tasa de Fuga</label>
                             <span class="stat-value" style="font-size: 0.9rem;" id="val-leak">0.1</span>
                         </div>
                         <input type="range" id="cfg-leak" min="0.01" max="1.0" step="0.01" value="0.1" style="width: 100%;">

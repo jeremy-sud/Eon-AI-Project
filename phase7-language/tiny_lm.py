@@ -193,7 +193,9 @@ class TinyLM:
             probs = exp_out / np.sum(exp_out)
             
             # Samplear siguiente carácter
-            current = np.random.choice(len(probs), p=probs)
+            import time
+            rng = np.random.default_rng(int(time.time() * 1000) % (2**32))
+            current = rng.choice(len(probs), p=probs)
             generated.append(current)
         
         return self.tokenizer.decode(np.array(generated))

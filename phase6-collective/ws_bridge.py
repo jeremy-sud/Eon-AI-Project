@@ -22,16 +22,21 @@ import argparse
 import struct
 from pathlib import Path
 from datetime import datetime
-from typing import Set, Dict, Any
+from typing import Set, Dict, Any, Optional
 
 # Intentar importar dependencias
 try:
     import websockets
-    from websockets.server import serve
+    from websockets.asyncio.server import serve
     WS_AVAILABLE = True
 except ImportError:
-    WS_AVAILABLE = False
-    print("⚠️  websockets no instalado. Ejecutar: pip install websockets")
+    try:
+        # Fallback para versiones anteriores
+        from websockets.server import serve
+        WS_AVAILABLE = True
+    except ImportError:
+        WS_AVAILABLE = False
+        print("⚠️  websockets no instalado. Ejecutar: pip install websockets")
 
 try:
     import paho.mqtt.client as mqtt
@@ -54,7 +59,7 @@ PACKET_TYPE_NAMES = {
 }
 
 
-def decode_1bit_packet(data: bytes) -> Dict[str, Any]:
+def decode_1bit_packet(data: bytes) -> Optional[Dict[str, Any]]:
     """Decodifica paquete binario del Protocolo 1-Bit."""
     if len(data) < 14:
         return None
@@ -169,7 +174,7 @@ class MQTTWebSocketBridge:
             # Enviar a todos los clientes WebSocket
             asyncio.run(self._broadcast(message))
             
-    def _process_message(self, topic: str, payload: bytes) -> Dict:
+    def _process_message(self, topic: str, payload: bytes) -> Optional[Dict]:
         """Procesa mensaje MQTT y retorna datos para WebSocket."""
         parts = topic.split("/")
         

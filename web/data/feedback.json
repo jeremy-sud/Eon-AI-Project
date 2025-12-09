@@ -53,6 +53,42 @@
       "intent": null,
       "pattern_hash": "5c857de6f901",
       "new_score": 0.4
+    },
+    {
+      "timestamp": 1765270750.9454062,
+      "user_message": "que piensas sobre los arcoiris?",
+      "bot_response": "El resultado de 30 / 2 es **15**. \ud83e\uddee",
+      "is_positive": true,
+      "intent": null,
+      "pattern_hash": "0e5897dacf61",
+      "new_score": 0.6
+    },
+    {
+      "timestamp": 1765270753.745294,
+      "user_message": "que piensas sobre los arcoiris?",
+      "bot_response": "El resultado de 9999999 + 1 es **10000000**. \ud83e\uddee",
+      "is_positive": true,
+      "intent": null,
+      "pattern_hash": "791075715785",
+      "new_score": 0.6
+    },
+    {
+      "timestamp": 1765270755.9575164,
+      "user_message": "que piensas sobre los arcoiris?",
+      "bot_response": "El resultado de 5 + 5 es **10**. \ud83e\uddee",
+      "is_positive": true,
+      "intent": null,
+      "pattern_hash": "c41792a63529",
+      "new_score": 0.6
+    },
+    {
+      "timestamp": 1765270917.1888325,
+      "user_message": "sabes lo que es la poes\u00eda?",
+      "bot_response": "Esa pregunta me hace pensar en los l\u00edmites de mi conocimiento. \u00bfQu\u00e9 piensas t\u00fa?",
+      "is_positive": true,
+      "intent": null,
+      "pattern_hash": "cef6776e9722",
+      "new_score": 0.6
     }
   ],
   "scores": {
@@ -61,6 +97,10 @@
     "578e7dde2ba1": 0.4,
     "2c8fd5ec5f72": 0.4,
     "83f6ea793e6d": 0.6,
-    "5c857de6f901": 0.4
+    "5c857de6f901": 0.4,
+    "0e5897dacf61": 0.6,
+    "791075715785": 0.6,
+    "c41792a63529": 0.6,
+    "cef6776e9722": 0.6
   }
 }

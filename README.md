@@ -2,7 +2,7 @@
 
 > **A.E.O.N.** - Arquitectura Emergente y Optimización Neuromórfica
 
-[![Versión](https://img.shields.io/badge/Versión-1.7.0-brightgreen)]()
+[![Versión](https://img.shields.io/badge/Versión-1.7.1-brightgreen)]()
 [![Fase](https://img.shields.io/badge/Fase-10%20Completa-success)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)]()
 [![C](https://img.shields.io/badge/C-1.3KB-orange)]()
@@ -10,6 +10,7 @@
 [![Arduino](https://img.shields.io/badge/Arduino-Compatible-teal)]()
 [![ESP32](https://img.shields.io/badge/ESP32-LoRa-red)]()
 [![MQTT](https://img.shields.io/badge/MQTT-Real-orange)]()
+[![WebSocket](https://img.shields.io/badge/WebSocket-Bridge-blue)]()
 [![Aprendizaje](https://img.shields.io/badge/Aprendizaje-Continuo-purple)]()
 [![RAG](https://img.shields.io/badge/RAG-Ligero-cyan)]()
 [![Licencia](https://img.shields.io/badge/Licencia-MIT-green)]()
@@ -166,19 +167,47 @@ python mqtt_client.py --broker localhost --port 1883 --node-id sensor-002
 # Comandos disponibles: sync, status, quit
 ```
 
-### 📊 Dashboard de Monitoreo
+### 📊 Dashboard de Monitoreo (Full-Stack)
+
+El sistema de monitoreo incluye 3 componentes:
 
 ```bash
+# 1. Iniciar Mosquitto MQTT Broker
+sudo systemctl start mosquitto
+
+# 2. Iniciar WebSocket Bridge (conecta MQTT con Dashboard)
 cd phase6-collective
-python3 -m http.server 8080
-# Abrir http://localhost:8080/dashboard.html
+python ws_bridge.py --mqtt-broker localhost --ws-port 8765
+
+# 3. Servir Dashboard HTML
+python3 -m http.server 8888
+# Abrir http://localhost:8888/dashboard.html
+```
+
+**Modo Simulación (sin broker MQTT):**
+```bash
+python ws_bridge.py --simulate --ws-port 8765
+```
+
+**Arquitectura Full-Stack:**
+```
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   ESP32/     │────▶│  Mosquitto   │────▶│  ws_bridge   │
+│   Sensors    │MQTT │    Broker    │     │   (Python)   │
+└──────────────┘     └──────────────┘     └──────┬───────┘
+                                                 │ WebSocket
+                                           ┌─────▼─────┐
+                                           │ Dashboard │
+                                           │  (HTML)   │
+                                           └───────────┘
 ```
 
 El dashboard muestra:
 - Topología de red con animaciones
-- Lista de nodos y estado
-- Métricas del Protocolo 1-Bit
-- Log de sincronización en tiempo real
+- Lista de nodos y estado en tiempo real
+- Métricas del Protocolo 1-Bit (compresión, precisión, latencia)
+- Log de sincronización en vivo
+- Conexión WebSocket automática con reconexión
 
 ### 📻 Demo ESP32 + LoRa
 
@@ -187,6 +216,32 @@ El dashboard muestra:
 3. Configurar pines según tu placa (TTGO LoRa32, Heltec, etc.)
 4. Subir a dos o más ESP32
 5. Observar sincronización automática en Serial Monitor
+
+### 📡 Tests de Campo ESP32
+
+**Test de Alcance LoRa:**
+```
+1. Subir LoRa_RangeTest.ino a ambos ESP32
+2. Serial Monitor: escribir 'tx' en uno, 'rx' en otro
+3. Alejar dispositivos y observar RSSI/SNR
+4. Escribir 's' para ver estadísticas
+```
+
+**Métricas de Energía:**
+| Métrica | 1-Bit | JSON | Mejora |
+|---------|-------|------|--------|
+| Tamaño paquete | 21 B | 175 B | 8.3× |
+| Tiempo de aire | 51 ms | 132 ms | 2.6× |
+| Energía por TX | 4.3 mJ | 11.2 mJ | 2.6× |
+| TX con 1000mAh | 1.02M | 0.39M | 2.6× |
+
+**Estimación de Rango (SF10, 125kHz):**
+| RSSI (dBm) | Rango típico |
+|------------|--------------|
+| > -80 | < 100m (excelente) |
+| -80 a -100 | 100-500m (bueno) |
+| -100 a -110 | 500m-1km (aceptable) |
+| -110 a -120 | 1-3km (límite) |
 
 ## 📦 Instalación
 

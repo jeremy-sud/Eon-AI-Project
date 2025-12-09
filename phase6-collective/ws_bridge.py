@@ -146,9 +146,11 @@ class MQTTWebSocketBridge:
         self.mqtt_client.on_connect = self._on_mqtt_connect
         self.mqtt_client.on_message = self._on_mqtt_message
         
-    def _on_mqtt_connect(self, client, userdata, flags, rc):
-        """Callback de conexión MQTT."""
-        if rc == 0:
+    def _on_mqtt_connect(self, client, userdata, flags, rc, properties=None):
+        """Callback de conexión MQTT (compatible con paho-mqtt v1.x y v2.x)."""
+        # En paho-mqtt v2.x, rc es un ReasonCode object
+        rc_value = rc if isinstance(rc, int) else rc.value
+        if rc_value == 0:
             print(f"✓ Conectado a MQTT broker {self.mqtt_broker}:{self.mqtt_port}")
             # Suscribirse a todos los topics de Eón
             client.subscribe("aeon/colony/#")

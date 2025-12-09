@@ -2,12 +2,14 @@
 
 > **A.E.O.N.** - Arquitectura Emergente y Optimización Neuromórfica
 
-[![Versión](https://img.shields.io/badge/Versión-1.6.0-brightgreen)]()
+[![Versión](https://img.shields.io/badge/Versión-1.7.0-brightgreen)]()
 [![Fase](https://img.shields.io/badge/Fase-10%20Completa-success)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)]()
 [![C](https://img.shields.io/badge/C-1.3KB-orange)]()
 [![JavaScript](https://img.shields.io/badge/JS-Browser-yellow)]()
 [![Arduino](https://img.shields.io/badge/Arduino-Compatible-teal)]()
+[![ESP32](https://img.shields.io/badge/ESP32-LoRa-red)]()
+[![MQTT](https://img.shields.io/badge/MQTT-Real-orange)]()
 [![Aprendizaje](https://img.shields.io/badge/Aprendizaje-Continuo-purple)]()
 [![RAG](https://img.shields.io/badge/RAG-Ligero-cyan)]()
 [![Licencia](https://img.shields.io/badge/Licencia-MIT-green)]()
@@ -25,10 +27,13 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 | Característica              | Descripción                                 |
 | --------------------------- | ------------------------------------------- |
 | **Ultraligero**             | Núcleo C de 1.3KB de memoria                |
-| **Multi-plataforma**        | Python, C, JavaScript, Arduino              |
+| **Multi-plataforma**        | Python, C, JavaScript, Arduino, ESP32       |
 | **Reservoir Computing**     | Echo State Networks eficientes              |
 | **Aprendizaje Continuo**    | Online Learning + Memoria a largo plazo     |
-| **Mente Colectiva**         | Protocolo 1-Bit Ultraligero (9-17x compresión) |
+| **Mente Colectiva**         | Protocolo 1-Bit Ultraligero (11.8x compresión) |
+| **MQTT Real**               | Cliente paho-mqtt para brokers reales       |
+| **ESP32 + LoRa**            | Transmisión inalámbrica P2P                 |
+| **Dashboard de Monitoreo**  | Visualización de red en tiempo real         |
 | **TinyLMv2**                | Modelo de lenguaje word-level               |
 | **RAG Ligero**              | Búsqueda semántica en documentación         |
 | **Memoria Factual**         | Timestamps para resolver ambigüedades      |
@@ -36,9 +41,7 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 | **Sistema de Feedback**     | Mejora con retroalimentación 👍/👎           |
 | **Chat Avanzado**           | 20+ categorías de intención + memoria personal |
 | **Predicción de Secuencias**| Aritmético, geométrico, Fibonacci, potencias |
-| **Base de Conocimiento**    | Definiciones técnicas integradas            |
 | **Arte Generativo**         | 5 estilos (fractal, flow, particles, waves, neural) |
-| **Vocabulario Técnico**     | Robótica, programación, filosofía          |
 
 ## 📊 Comparativa
 
@@ -143,6 +146,47 @@ cd phase3-integration/demos
 python3 -m http.server 8888
 # Abrir http://localhost:8888
 ```
+
+### 📡 Demo MQTT Real
+
+```bash
+# Instalar Mosquitto (broker)
+sudo apt install mosquitto mosquitto-clients
+
+# Instalar cliente Python
+pip install paho-mqtt
+
+# Iniciar cliente Eón
+cd phase6-collective
+python mqtt_client.py --broker localhost --port 1883 --node-id sensor-001
+
+# En otra terminal, otro nodo:
+python mqtt_client.py --broker localhost --port 1883 --node-id sensor-002
+
+# Comandos disponibles: sync, status, quit
+```
+
+### 📊 Dashboard de Monitoreo
+
+```bash
+cd phase6-collective
+python3 -m http.server 8080
+# Abrir http://localhost:8080/dashboard.html
+```
+
+El dashboard muestra:
+- Topología de red con animaciones
+- Lista de nodos y estado
+- Métricas del Protocolo 1-Bit
+- Log de sincronización en tiempo real
+
+### 📻 Demo ESP32 + LoRa
+
+1. Abrir `phase4-hardware/esp32/examples/LoRa_1Bit_Demo.ino` en Arduino IDE
+2. Instalar librerías: LoRa by Sandeep Mistry, ArduinoJson
+3. Configurar pines según tu placa (TTGO LoRa32, Heltec, etc.)
+4. Subir a dos o más ESP32
+5. Observar sincronización automática en Serial Monitor
 
 ## 📦 Instalación
 

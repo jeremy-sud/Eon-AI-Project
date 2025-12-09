@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eón - Dashboard Mente Colectiva</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #12122a;
+            --bg-card: #1a1a3a;
+            --accent: #00d4ff;
+            --accent-2: #7b2fff;
+            --accent-3: #00ff88;
+            --text: #e0e0ff;
+            --text-dim: #8080a0;
+            --danger: #ff4444;
+            --warning: #ffaa00;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--accent);
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .header h1 .icon {
+            font-size: 2rem;
+        }
+        
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-badge.online {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--accent-3);
+            border: 1px solid var(--accent-3);
+        }
+        
+        .status-badge.offline {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.online { background: var(--accent-3); }
+        .status-dot.offline { background: var(--danger); }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Main Grid */
+        .main {
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            gap: 1rem;
+            padding: 1rem;
+            height: calc(100vh - 70px);
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+        }
+        
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .card-content {
+            padding: 1rem;
+            overflow-y: auto;
+            max-height: calc(100% - 60px);
+        }
+        
+        /* Node List */
+        .node-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .node-item {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        
+        .node-item:hover {
+            border-color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .node-item.selected {
+            border-color: var(--accent);
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .node-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .node-info {
+            flex: 1;
+        }
+        
+        .node-info h3 {
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+        
+        .node-info p {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+        
+        .node-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .node-status.online { background: var(--accent-3); }
+        .node-status.syncing { background: var(--warning); animation: pulse 0.5s infinite; }
+        .node-status.offline { background: var(--danger); }
+        
+        /* Network Visualization */
+        .network-viz {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #network-canvas {
+            flex: 1;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 0.25rem;
+        }
+        
+        /* Sync Log */
+        .sync-log {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .log-entry {
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-left: 3px solid var(--accent);
+        }
+        
+        .log-entry.sync { border-left-color: var(--accent-3); }
+        .log-entry.error { border-left-color: var(--danger); }
+        .log-entry.warning { border-left-color: var(--warning); }
+        
+        .log-time {
+            color: var(--text-dim);
+            font-size: 0.7rem;
+        }
+        
+        /* Metrics Panel */
+        .metrics-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .metric-bar {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 0.75rem;
+        }
+        
+        .metric-bar-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .metric-bar-track {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .metric-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .metric-bar-fill.compression { background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .metric-bar-fill.accuracy { background: linear-gradient(90deg, var(--accent-3), #00aa55); }
+        .metric-bar-fill.bandwidth { background: linear-gradient(90deg, var(--warning), #ff6600); }
+        
+        /* Protocol Info */
+        .protocol-info {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+        }
+        
+        .protocol-info h4 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        
+        .protocol-info pre {
+            white-space: pre-wrap;
+            color: var(--text-dim);
+        }
+        
+        .protocol-info .highlight {
+            color: var(--accent-3);
+        }
+        
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+            padding-top: 1rem;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text);
+            border: 1px solid var(--accent);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main {
+                grid-template-columns: 250px 1fr;
+            }
+            .main > *:last-child {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>
+            <span class="icon">🧠</span>
+            Eón - Mente Colectiva
+        </h1>
+        <div id="connection-status" class="status-badge online">
+            <span class="status-dot online"></span>
+            <span>Conectado al Broker</span>
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Panel Izquierdo: Lista de Nodos -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📡 Nodos Activos</h2>
+                <span id="node-count">0</span>
+            </div>
+            <div class="card-content">
+                <div id="node-list" class="node-list">
+                    <!-- Nodos se agregan dinámicamente -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Panel Central: Visualización de Red -->
+        <div class="card network-viz">
+            <div class="card-header">
+                <h2>🌐 Topología de Red</h2>
+                <span id="sync-rate">0 sync/min</span>
+            </div>
+            <canvas id="network-canvas"></canvas>
+            <div class="controls" style="padding: 1rem;">
+                <button class="btn btn-primary" onclick="broadcastSync()">
+                    🔄 Sincronizar Todo
+                </button>
+                <button class="btn btn-secondary" onclick="refreshNodes()">
+                    ↻ Actualizar
+                </button>
+            </div>
+        </div>
+        
+        <!-- Panel Derecho: Métricas y Log -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📊 Métricas del Protocolo 1-Bit</h2>
+            </div>
+            <div class="card-content metrics-panel">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-syncs">0</div>
+                        <div class="stat-label">Sincronizaciones</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="bytes-saved">0 KB</div>
+                        <div class="stat-label">Bytes Ahorrados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avg-latency">0ms</div>
+                        <div class="stat-label">Latencia Prom.</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="compression-ratio">11.8x</div>
+                        <div class="stat-label">Compresión</div>
+                    </div>
+                </div>
+                
+                <div class="metric-bar">
+                    <div class="metric-bar-header">
+                        <span>Compresión 1-Bit</span>
+                        <span id="compression-pct">91.5%</span>
+                    </div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-fill compression" style="width: 91.5%"></div>
+                    </div>
+                </div>
+                
+                <div class="metric-bar">
+                    <div class="metric-bar-header">
+                        <span>Precisión de Signos</span>
+                        <span id="accuracy-pct">100%</span>
+                    </div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-fill accuracy" style="width: 100%"></div>
+                    </div>
+                </div>
+                
+                <div class="metric-bar">
+                    <div class="metric-bar-header">
+                        <span>Uso de Ancho de Banda</span>
+                        <span id="bandwidth-pct">8.5%</span>
+                    </div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-fill bandwidth" style="width: 8.5%"></div>
+                    </div>
+                </div>
+                
+                <div class="protocol-info">
+                    <h4>📦 Formato del Paquete</h4>
+                    <pre>
+<span class="highlight">EON</span> | Type | Seed[4] | Count[2] | Scale[4] | Bits...
+ 3B    1B      4B        2B         4B      ceil(N/8)
+
+Ejemplo (50 neuronas):
+  Header:  14 bytes
+  Payload:  7 bytes (50 bits)
+  Total:   21 bytes vs 200 bytes (float32)
+                    </pre>
+                </div>
+                
+                <div class="card-header" style="margin: 0.5rem -1rem; padding: 0.75rem 1rem;">
+                    <h2>📜 Log de Sincronización</h2>
+                </div>
+                
+                <div id="sync-log" class="sync-log">
+                    <!-- Log entries se agregan dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // ============================================================
+        // Estado de la aplicación
+        // ============================================================
+        const state = {
+            nodes: {},
+            selectedNode: null,
+            totalSyncs: 0,
+            bytesSaved: 0,
+            syncHistory: [],
+            connected: false
+        };
+        
+        // ============================================================
+        // Simulación de nodos (en producción sería WebSocket/MQTT)
+        // ============================================================
+        const DEMO_NODES = [
+            { id: 'sensor-001', name: 'Temp. Sala', type: 'ESP32', reservoir: 50 },
+            { id: 'sensor-002', name: 'Humid. Exterior', type: 'ESP32', reservoir: 50 },
+            { id: 'gateway-001', name: 'Gateway Principal', type: 'RPi4', reservoir: 100 },
+            { id: 'sensor-003', name: 'Presión Agua', type: 'Arduino', reservoir: 32 },
+            { id: 'edge-001', name: 'Edge Processor', type: 'Jetson', reservoir: 200 },
+        ];
+        
+        // ============================================================
+        // Inicialización
+        // ============================================================
+        function init() {
+            // Simular conexión
+            setTimeout(() => {
+                state.connected = true;
+                updateConnectionStatus();
+                
+                // Agregar nodos demo
+                DEMO_NODES.forEach((node, i) => {
+                    setTimeout(() => addNode(node), i * 500);
+                });
+                
+                // Iniciar simulación de syncs
+                setInterval(simulateSync, 5000);
+            }, 1000);
+            
+            // Inicializar canvas
+            initNetworkCanvas();
+            
+            // Log inicial
+            addLogEntry('Sistema iniciado', 'info');
+            addLogEntry('Conectando al broker MQTT...', 'info');
+        }
+        
+        // ============================================================
+        // Gestión de Nodos
+        // ============================================================
+        function addNode(nodeData) {
+            const node = {
+                ...nodeData,
+                status: 'online',
+                samples: Math.floor(Math.random() * 1000),
+                syncs: 0,
+                lastSeen: Date.now(),
+                x: 0,
+                y: 0
+            };
+            
+            state.nodes[node.id] = node;
+            renderNodeList();
+            updateNetworkCanvas();
+            addLogEntry(`Nodo ${node.name} conectado`, 'sync');
+            
+            document.getElementById('node-count').textContent = Object.keys(state.nodes).length;
+        }
+        
+        function renderNodeList() {
+            const container = document.getElementById('node-list');
+            container.innerHTML = '';
+            
+            Object.values(state.nodes).forEach(node => {
+                const el = document.createElement('div');
+                el.className = `node-item ${state.selectedNode === node.id ? 'selected' : ''}`;
+                el.onclick = () => selectNode(node.id);
+                
+                el.innerHTML = `
+                    <div class="node-avatar">${node.id.slice(-3).toUpperCase()}</div>
+                    <div class="node-info">
+                        <h3>${node.name}</h3>
+                        <p>${node.type} • ${node.reservoir} neuronas</p>
+                    </div>
+                    <div class="node-status ${node.status}"></div>
+                `;
+                
+                container.appendChild(el);
+            });
+        }
+        
+        function selectNode(nodeId) {
+            state.selectedNode = nodeId;
+            renderNodeList();
+        }
+        
+        // ============================================================
+        // Visualización de Red (Canvas)
+        // ============================================================
+        let canvas, ctx;
+        
+        function initNetworkCanvas() {
+            canvas = document.getElementById('network-canvas');
+            ctx = canvas.getContext('2d');
+            
+            function resize() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                updateNetworkCanvas();
+            }
+            
+            window.addEventListener('resize', resize);
+            resize();
+        }
+        
+        function updateNetworkCanvas() {
+            if (!ctx) return;
+            
+            const nodes = Object.values(state.nodes);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(canvas.width, canvas.height) * 0.35;
+            
+            // Posicionar nodos en círculo
+            nodes.forEach((node, i) => {
+                const angle = (i / nodes.length) * Math.PI * 2 - Math.PI / 2;
+                node.x = centerX + Math.cos(angle) * radius;
+                node.y = centerY + Math.sin(angle) * radius;
+            });
+            
+            // Limpiar canvas
+            ctx.fillStyle = '#12122a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Dibujar conexiones
+            ctx.strokeStyle = 'rgba(0, 212, 255, 0.2)';
+            ctx.lineWidth = 1;
+            
+            nodes.forEach((node1, i) => {
+                nodes.forEach((node2, j) => {
+                    if (i < j) {
+                        ctx.beginPath();
+                        ctx.moveTo(node1.x, node1.y);
+                        ctx.lineTo(node2.x, node2.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+            
+            // Dibujar nodos
+            nodes.forEach(node => {
+                // Glow
+                const gradient = ctx.createRadialGradient(
+                    node.x, node.y, 0,
+                    node.x, node.y, 30
+                );
+                gradient.addColorStop(0, 'rgba(0, 212, 255, 0.3)');
+                gradient.addColorStop(1, 'rgba(0, 212, 255, 0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 30, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Nodo
+                ctx.fillStyle = node.status === 'online' ? '#00ff88' : 
+                               node.status === 'syncing' ? '#ffaa00' : '#ff4444';
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 12, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Borde
+                ctx.strokeStyle = '#00d4ff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Label
+                ctx.fillStyle = '#e0e0ff';
+                ctx.font = '11px Segoe UI';
+                ctx.textAlign = 'center';
+                ctx.fillText(node.name, node.x, node.y + 28);
+            });
+            
+            // Nodo central (coordinador)
+            ctx.fillStyle = 'rgba(123, 47, 255, 0.3)';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 20, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#7b2fff';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#e0e0ff';
+            ctx.fillText('Coordinator', centerX, centerY + 35);
+        }
+        
+        // ============================================================
+        // Simulación de Sincronización
+        // ============================================================
+        function simulateSync() {
+            const nodes = Object.values(state.nodes);
+            if (nodes.length < 2) return;
+            
+            // Seleccionar dos nodos aleatorios
+            const idx1 = Math.floor(Math.random() * nodes.length);
+            let idx2 = Math.floor(Math.random() * nodes.length);
+            while (idx2 === idx1) idx2 = Math.floor(Math.random() * nodes.length);
+            
+            const node1 = nodes[idx1];
+            const node2 = nodes[idx2];
+            
+            // Simular sync
+            node1.status = 'syncing';
+            node2.status = 'syncing';
+            renderNodeList();
+            updateNetworkCanvas();
+            
+            // Animar conexión
+            animateSyncLine(node1, node2);
+            
+            setTimeout(() => {
+                node1.status = 'online';
+                node2.status = 'online';
+                node1.syncs++;
+                node2.syncs++;
+                state.totalSyncs++;
+                
+                // Calcular bytes ahorrados
+                const float32Size = node1.reservoir * 4;
+                const oneBitSize = Math.ceil(node1.reservoir / 8) + 14;  // bits + header
+                state.bytesSaved += (float32Size - oneBitSize) * 2;  // bidireccional
+                
+                renderNodeList();
+                updateNetworkCanvas();
+                updateStats();
+                
+                addLogEntry(
+                    `Sync: ${node1.name} ↔ ${node2.name} (${oneBitSize}B)`,
+                    'sync'
+                );
+            }, 800);
+        }
+        
+        function animateSyncLine(node1, node2) {
+            const startTime = Date.now();
+            const duration = 500;
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                updateNetworkCanvas();
+                
+                // Dibujar línea animada
+                ctx.strokeStyle = '#00ff88';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 5]);
+                ctx.lineDashOffset = -elapsed / 50;
+                
+                ctx.beginPath();
+                ctx.moveTo(node1.x, node1.y);
+                ctx.lineTo(
+                    node1.x + (node2.x - node1.x) * progress,
+                    node1.y + (node2.y - node1.y) * progress
+                );
+                ctx.stroke();
+                
+                ctx.setLineDash([]);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+        
+        // ============================================================
+        // Actualización de Stats
+        // ============================================================
+        function updateStats() {
+            document.getElementById('total-syncs').textContent = state.totalSyncs;
+            document.getElementById('bytes-saved').textContent = 
+                (state.bytesSaved / 1024).toFixed(1) + ' KB';
+            document.getElementById('avg-latency').textContent = 
+                Math.floor(Math.random() * 20 + 10) + 'ms';
+            
+            // Sync rate
+            const syncsPerMin = Math.floor(state.totalSyncs / 
+                ((Date.now() - state.startTime || 60000) / 60000));
+            document.getElementById('sync-rate').textContent = 
+                syncsPerMin + ' sync/min';
+        }
+        
+        // ============================================================
+        // Log de Sincronización
+        // ============================================================
+        function addLogEntry(message, type = 'info') {
+            const container = document.getElementById('sync-log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            
+            const time = new Date().toLocaleTimeString();
+            entry.innerHTML = `
+                <span class="log-time">${time}</span>
+                <span>${message}</span>
+            `;
+            
+            container.insertBefore(entry, container.firstChild);
+            
+            // Mantener máximo 20 entradas
+            while (container.children.length > 20) {
+                container.removeChild(container.lastChild);
+            }
+        }
+        
+        // ============================================================
+        // Controles
+        // ============================================================
+        function broadcastSync() {
+            addLogEntry('Iniciando sincronización global...', 'info');
+            
+            const nodes = Object.values(state.nodes);
+            nodes.forEach(node => {
+                node.status = 'syncing';
+            });
+            renderNodeList();
+            updateNetworkCanvas();
+            
+            setTimeout(() => {
+                nodes.forEach(node => {
+                    node.status = 'online';
+                    node.syncs += nodes.length - 1;
+                });
+                state.totalSyncs += nodes.length * (nodes.length - 1) / 2;
+                
+                renderNodeList();
+                updateNetworkCanvas();
+                updateStats();
+                
+                addLogEntry(`Sincronización completa: ${nodes.length} nodos`, 'sync');
+            }, 1500);
+        }
+        
+        function refreshNodes() {
+            addLogEntry('Actualizando lista de nodos...', 'info');
+            
+            Object.values(state.nodes).forEach(node => {
+                node.samples += Math.floor(Math.random() * 100);
+            });
+            
+            renderNodeList();
+        }
+        
+        function updateConnectionStatus() {
+            const el = document.getElementById('connection-status');
+            if (state.connected) {
+                el.className = 'status-badge online';
+                el.innerHTML = `
+                    <span class="status-dot online"></span>
+                    <span>Conectado al Broker</span>
+                `;
+                addLogEntry('✓ Conexión establecida con broker MQTT', 'sync');
+            } else {
+                el.className = 'status-badge offline';
+                el.innerHTML = `
+                    <span class="status-dot offline"></span>
+                    <span>Desconectado</span>
+                `;
+            }
+        }
+        
+        // ============================================================
+        // Iniciar
+        // ============================================================
+        state.startTime = Date.now();
+        init();
+    </script>
+</body>
+</html>

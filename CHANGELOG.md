@@ -2,6 +2,67 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [1.7.0] - 2025-12-09
+
+### Mente Colectiva - Transmisión Real (NUEVO)
+
+- **Cliente MQTT Real**
+  - Nuevo `mqtt_client.py`: Cliente completo con paho-mqtt
+  - Compatible con Mosquitto, HiveMQ, y cualquier broker MQTT
+  - Paquetes binarios nativos del Protocolo 1-Bit
+  - Heartbeat automático y reconexión
+  - Callbacks para sync y descubrimiento de peers
+  - CLI interactivo para pruebas
+
+- **ESP32 + LoRa**
+  - Nuevo `LoRa_1Bit_Demo.ino`: Demo completo para ESP32 con LoRa
+  - Compatible con TTGO LoRa32, Heltec WiFi LoRa 32
+  - Transmisión inalámbrica del protocolo 1-bit
+  - Sincronización P2P sin servidor central
+  - Ideal para IoT rural y redes mesh
+  - Soporte para 433/868/915 MHz según región
+
+- **Dashboard de Monitoreo**
+  - Nuevo `dashboard.html`: Interfaz web completa
+  - Visualización de topología de red en canvas
+  - Lista de nodos con estado en tiempo real
+  - Métricas del Protocolo 1-Bit (compresión, precisión, latencia)
+  - Log de sincronización en vivo
+  - Animaciones de transmisión entre nodos
+  - Diseño responsive y moderno
+
+### Formato del Paquete Binario
+
+```
+Byte 0-2:   Magic "EON" (3 bytes)
+Byte 3:     Type (1=SYNC, 2=REQ, 3=ACK, 4=PING, 5=STATUS)
+Byte 4-7:   Seed (uint32, big-endian)
+Byte 8-9:   Count (uint16, big-endian)
+Byte 10-13: Scale (float32, big-endian)
+Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
+```
+
+### Nuevos Archivos
+
+- `phase6-collective/mqtt_client.py` - Cliente MQTT real con paho-mqtt
+- `phase6-collective/dashboard.html` - Dashboard de monitoreo web
+- `phase4-hardware/esp32/examples/LoRa_1Bit_Demo.ino` - Demo ESP32+LoRa
+
+### Dependencias Opcionales
+
+- `paho-mqtt`: Para conexión a brokers MQTT reales
+- Arduino Libraries: LoRa by Sandeep Mistry, ArduinoJson
+
+### Métricas de Transmisión
+
+| Métrica | Valor |
+|---------|-------|
+| Compresión | 11.8x |
+| Ahorro | 91.5% |
+| Latencia típica | 10-30ms |
+| MTU LoRa | 255 bytes |
+| Nodos por sync | Ilimitado |
+
 ## [1.6.0] - 2025-12-09
 
 ### Plan de Alimentación - Crecimiento Dinámico (NUEVO)

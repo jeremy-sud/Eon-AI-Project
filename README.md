@@ -2,17 +2,19 @@
 
 > **A.E.O.N.** - Arquitectura Emergente y Optimización Neuromórfica
 
-[![Versión](https://img.shields.io/badge/Versión-1.7.1-brightgreen)]()
+[![Versión](https://img.shields.io/badge/Versión-1.7.2-brightgreen)]()
 [![Fase](https://img.shields.io/badge/Fase-10%20Completa-success)]()
+[![Tests](https://img.shields.io/badge/Tests-19%20passing-green)]()
+[![Docker](https://img.shields.io/badge/Docker-Full%20Stack-blue)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)]()
 [![C](https://img.shields.io/badge/C-1.3KB-orange)]()
 [![JavaScript](https://img.shields.io/badge/JS-Browser-yellow)]()
 [![Arduino](https://img.shields.io/badge/Arduino-Compatible-teal)]()
 [![ESP32](https://img.shields.io/badge/ESP32-LoRa-red)]()
-[![MQTT](https://img.shields.io/badge/MQTT-Real-orange)]()
+[![MQTT](https://img.shields.io/badge/MQTT-Mosquitto-orange)]()
 [![WebSocket](https://img.shields.io/badge/WebSocket-Bridge-blue)]()
-[![Aprendizaje](https://img.shields.io/badge/Aprendizaje-Continuo-purple)]()
-[![RAG](https://img.shields.io/badge/RAG-Ligero-cyan)]()
+[![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1-green)]()
+[![Paper](https://img.shields.io/badge/Paper-PDF-red)]()
 [![Licencia](https://img.shields.io/badge/Licencia-MIT-green)]()
 
 ---
@@ -56,42 +58,85 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 
 ```
 Eón Project AI/
-├── GENESIS.json             # Momento Cero (inmutable)
-├── benchmark_full.py        # Benchmark Integral v2.0
-├── docs/WHITEPAPER.md       # Paper técnico
-├── phase1-foundations/      # Python ESN + Core
-├── phase2-core/             # C Ultraligero
-├── phase3-integration/      # JavaScript Web (core)
-├── phase4-hardware/         # Arduino + ESP32
-├── phase5-applications/     # IoT Predictor
-├── phase6-collective/       # Mente Colectiva
-├── phase7-language/         # TinyLMv2 (word-level)
-├── phase8-paper/            # Paper LaTeX
-└── web/                     # Servidor Web Principal
-    ├── server.py            # API REST Flask (~2000 líneas)
-    ├── learning.py          # Sistema de Aprendizaje Continuo
-    ├── data/                # Persistencia
-    │   ├── chat_history.json
-    │   ├── long_term_memory.json
-    │   ├── feedback.json
-    │   └── stats.json
-    └── static/              # Frontend
-        ├── index.html       # Interfaz (Chat, Dream, Learning, Config)
-        ├── css/style.css    
-        └── js/
-            ├── app.js       # Lógica principal (~600 líneas)
-            ├── dream.js     # Visualización neuronal
-            └── aeon.js      # Núcleo Eón JS
+├── GENESIS.json                    # Momento Cero (inmutable)
+├── docker-compose.yml              # 🆕 Full-stack deployment (6 servicios)
+├── start_demo.sh                   # 🆕 Script lanzador del stack
+├── benchmark_full.py               # Benchmark Integral v2.0
+│
+├── docs/
+│   ├── WHITEPAPER.md               # Paper técnico
+│   ├── architecture.md             # Arquitectura del sistema
+│   └── api/
+│       └── protocol_1bit.yaml      # 🆕 Especificación OpenAPI 3.1
+│
+├── docker/
+│   └── mosquitto/config/           # 🆕 Configuración MQTT
+│
+├── paper/
+│   ├── main.tex                    # Paper LaTeX
+│   └── main.pdf                    # 🆕 Paper compilado (3 páginas)
+│
+├── phase1-foundations/             # Python ESN + Core
+├── phase2-core/                    # C Ultraligero + Dockerfile
+├── phase3-integration/             # JavaScript Web (core)
+├── phase4-hardware/                # Arduino + ESP32 + LoRa
+├── phase5-applications/            # IoT: Bio, Voice, Temperature
+├── phase6-collective/              # Mente Colectiva
+│   ├── ws_bridge.py                # WebSocket-MQTT bridge
+│   ├── mqtt_client.py              # Cliente MQTT real
+│   ├── collective_mind.py          # Simulación distribuida
+│   ├── Dockerfile                  # Container collective
+│   ├── Dockerfile.bridge           # 🆕 Container WebSocket
+│   └── tests/
+│       └── test_ws_bridge.py       # 🆕 19 tests unitarios
+│
+├── phase7-language/                # TinyLMv2 (word-level)
+├── phase8-paper/                   # Paper LaTeX original
+│
+└── web/                            # Servidor Web Principal
+    ├── server.py                   # API REST Flask (~2300 líneas)
+    ├── learning.py                 # Sistema de Aprendizaje Continuo
+    ├── Dockerfile                  # 🆕 Container web
+    └── static/                     # Frontend
 ```
 
 ## 🚀 Inicio Rápido
 
-### Interfaz Web Principal (Recomendado)
+### 🐳 Docker (Recomendado)
+
+```bash
+cd "Eón Project AI"
+
+# Iniciar todo el stack
+docker compose up -d
+
+# Servicios disponibles:
+#   - Dashboard:     http://localhost:5000
+#   - TinyLM:        http://localhost:5001
+#   - WebSocket:     ws://localhost:8765
+#   - MQTT Broker:   localhost:1883
+
+# Ver logs
+docker compose logs -f
+
+# Detener
+docker compose down
+```
+
+### Script de Demo (Local)
+
+```bash
+./start_demo.sh              # Lanza MQTT, WebSocket, Web
+./start_demo.sh --docker     # Usa Docker Compose
+./start_demo.sh --no-browser # Sin abrir navegador
+```
+
+### Interfaz Web Principal (Manual)
 
 ```bash
 cd "Eón Project AI"
 python -m venv .venv && source .venv/bin/activate
-pip install flask numpy pillow
+pip install flask numpy pillow paho-mqtt websockets
 python web/server.py
 # Abrir http://localhost:5000
 ```
@@ -301,13 +346,17 @@ make test
 
 ## 📚 Documentación
 
-- [WHITEPAPER.md](docs/WHITEPAPER.md) - Paper técnico completo
-- [architecture.md](docs/architecture.md) - Arquitectura del sistema
-- [benchmarks.md](docs/benchmarks.md) - Análisis de energía y rendimiento
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Guía para contribuir
-- [CHANGELOG.md](CHANGELOG.md) - Historial de cambios
-- [Fase 3 README](phase3-integration/README.md) - Detalles Web/Dream
-- [Fase 5 README](phase5-applications/README.md) - Detalles Bio/Voice
+| Documento | Descripción |
+|-----------|-------------|
+| [WHITEPAPER.md](docs/WHITEPAPER.md) | Paper técnico completo |
+| [architecture.md](docs/architecture.md) | Arquitectura del sistema |
+| [benchmarks.md](docs/benchmarks.md) | Análisis de energía y rendimiento |
+| [protocol_1bit.yaml](docs/api/protocol_1bit.yaml) | 🆕 Especificación OpenAPI 3.1 |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Guía para contribuir |
+| [CHANGELOG.md](CHANGELOG.md) | Historial de cambios |
+| [paper/main.pdf](paper/main.pdf) | 🆕 Paper académico PDF (3 páginas) |
+| [Fase 4 README](phase4-hardware/README.md) | Hardware ESP32/LoRa |
+| [Fase 5 README](phase5-applications/README.md) | Detalles Bio/Voice |
 
 ## 🧠 Sistema de Aprendizaje Continuo
 
@@ -335,16 +384,38 @@ Interacción → OnlineLearner → Feedback → LongTermMemory → Consolidació
 - **Patrones exitosos**: Asociados con feedback positivo
 - **Estadísticas**: Eventos de aprendizaje, consolidaciones, ratio de éxito
 
-## 🛣️ Roadmap
+## 🐳 Docker Services
+
+| Servicio | Puerto | Descripción |
+|----------|--------|-------------|
+| `mqtt` | 1883, 9001 | Eclipse Mosquitto MQTT broker |
+| `ws-bridge` | 8765 | WebSocket-MQTT bridge |
+| `web` | 5000 | Flask Dashboard principal |
+| `tinylm` | 5001 | TinyLM Language Model server |
+| `collective-mind` | - | Simulación distribuida |
+| `core-builder` | - | Build C library (profile: build) |
+
+## 🧪 Tests
+
+```bash
+# Ejecutar tests del WebSocket bridge
+cd "Eón Project AI"
+pip install pytest pytest-asyncio
+python -m pytest phase6-collective/tests/ -v
+
+# Resultado: 19 tests passing
+```
+
+## 🗓️ Roadmap
 
 - [x] Fase 1-3: Fundamentos (Python, C, JS) + **Dream**
-- [x] Fase 4: Hardware (Arduino, ESP32) + Mente Colectiva
+- [x] Fase 4: Hardware (Arduino, ESP32) + LoRa + Energía
 - [x] Fase 5: Aplicaciones IoT + **Bio** + **Voice**
-- [x] Fase 6: Protocolo de Intercambio (1-Bit)
+- [x] Fase 6: Mente Colectiva + MQTT real + WebSocket
 - [x] Fase 7: TinyLM (Language Model)
-- [x] Fase 8: Paper académico y Auditoría
-- [x] Fase 9: Empaquetado y Distribución
-- [x] Fase 10: Publicación arXiv
+- [x] Fase 8: Paper académico compilado (PDF)
+- [x] Fase 9: Empaquetado + Docker Compose
+- [x] Fase 10: Tests + OpenAPI + Demo Script
 - [ ] Fase 11: Experimentación Abierta (Futuro)
 
 ## 📈 Benchmarks de Energía

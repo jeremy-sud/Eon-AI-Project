@@ -189,12 +189,87 @@ El sistema detecta automáticamente:
 
 | Component | File | Lines |
 |-----------|------|-------|
-| Flask Server | \`web/server.py\` | ~2000 |
-| Learning System | \`web/learning.py\` | ~400 |
-| Frontend | \`web/static/js/app.js\` | ~600 |
-| ESN Core | \`phase1-foundations/python/esn/esn.py\` | ~300 |
-| TinyLMv2 | \`phase7-language/tiny_lm_v2.py\` | ~250 |
+| Flask Server | `web/server.py` | ~2300 |
+| Learning System | `web/learning.py` | ~735 |
+| Frontend | `web/static/js/app.js` | ~600 |
+| ESN Core Python | `phase1-foundations/python/esn/esn.py` | ~300 |
+| ESN Core C | `phase2-core/libAeon/libAeon.c` | ~530 |
+| TinyLMv2 | `phase7-language/tiny_lm_v2.py` | ~380 |
+| WebSocket Bridge | `phase6-collective/ws_bridge.py` | ~490 |
+| MQTT Client | `phase6-collective/mqtt_client.py` | ~540 |
+| Collective Mind | `phase6-collective/collective_mind.py` | ~440 |
+
+## Full-Stack Architecture (v1.7.2)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     Docker Compose Stack                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐           │
+│  │   ESP32 /   │   │  Mosquitto  │   │ ws-bridge   │           │
+│  │   Sensors   │──▶│   (1883)    │──▶│   (8765)    │           │
+│  │   (LoRa)    │   │  MQTT Broker│   │  WebSocket  │           │
+│  └─────────────┘   └─────────────┘   └──────┬──────┘           │
+│                                             │                   │
+│                                             ▼                   │
+│  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐           │
+│  │   TinyLM    │   │  Flask Web  │   │  Dashboard  │           │
+│  │   (5001)    │◀─▶│   (5000)    │◀─▶│  (Browser)  │           │
+│  │  Language   │   │  Dashboard  │   │  Real-time  │           │
+│  └─────────────┘   └─────────────┘   └─────────────┘           │
+│                           │                                     │
+│                           ▼                                     │
+│  ┌─────────────────────────────────────────────────┐           │
+│  │              Persistent Storage                 │           │
+│  │  web/data/ (JSON), mosquitto-data, mosquitto-log│           │
+│  └─────────────────────────────────────────────────┘           │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Docker Services
+
+| Service | Port | Container | Description |
+|---------|------|-----------|-------------|
+| mqtt | 1883, 9001 | eclipse-mosquitto:2 | MQTT broker with WebSocket support |
+| ws-bridge | 8765 | python:3.11-slim | MQTT↔WebSocket bridge |
+| web | 5000 | python:3.11-slim | Flask dashboard |
+| tinylm | 5001 | python:3.9-slim | Language model server |
+| collective-mind | - | python:3.9-slim | Distributed learning simulation |
+| core-builder | - | debian:bookworm | C library build environment |
+
+## 1-Bit Protocol (OpenAPI Documented)
+
+Especificación completa en `docs/api/protocol_1bit.yaml`:
+
+```yaml
+# Binary Header (14 bytes)
+magic:        4 bytes  # "EON\x01"
+spirit_hash:  4 bytes  # Network identifier
+node_id:      4 bytes  # Source node
+weight_count: 2 bytes  # Number of weights
+
+# Payload: ceil(N/8) bytes
+# Each weight quantized to 1 bit: positive=1, negative/zero=0
+```
+
+**Compression**: 21 bytes for 50 weights (vs 175 bytes JSON) = **8.3× reduction**
+
+## Test Coverage
+
+```bash
+pytest phase6-collective/tests/ -v
+# 19 tests passing:
+# - TestMQTTWebSocketBridge (2 tests)
+# - TestProtocol1Bit (5 tests)
+# - TestMessageFormats (3 tests)
+# - TestTopicParsing (2 tests)
+# - TestAsyncWebSocket (2 tests)
+# - TestErrorHandling (2 tests)
+# - TestEnergyMetrics (3 tests)
+```
 
 ---
 
-*Updated: 2025-12-08 (v1.5.0)*
+*Updated: 2025-12-09 (v1.7.2)*

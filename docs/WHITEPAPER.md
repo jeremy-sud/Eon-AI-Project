@@ -1,6 +1,6 @@
 # Eón: Inteligencia Emergente con Recursos Mínimos
 
-**Whitepaper Técnico v1.5**
+**Whitepaper Técnico v1.7.2**
 
 > _"La inteligencia no se crea, se descubre."_
 
@@ -19,7 +19,9 @@ Este documento presenta **Eón**, una arquitectura de inteligencia artificial ba
 5. Generación de arte neuronal (5 estilos, 12 paletas)
 6. **Chat conversacional avanzado con 20+ categorías de intención**
 7. **Predicción de secuencias numéricas** (aritmético, geométrico, Fibonacci)
-8. **Memoria personal y base de conocimiento técnico**
+8. **Protocolo 1-Bit para transmisión ultraligera** (9.5× compresión)
+9. **Mente Colectiva con MQTT y ESP32/LoRa**
+10. **Full-stack containerizado con Docker Compose**
 
 ---
 
@@ -160,16 +162,26 @@ Con ESN-100 en Mackey-Glass:
 | Python     | `phase1-foundations/python/` | Desarrollo, visualización           |
 | C          | `phase2-core/libAeon/`       | Embebido, punto fijo                |
 | JavaScript | `phase3-integration/aeon.js` | Navegador, sin servidor             |
+| Arduino    | `phase4-hardware/arduino/`   | Microcontroladores 8-bit            |
+| ESP32/LoRa | `phase4-hardware/esp32/`     | IoT inalámbrico, protocolo 1-bit    |
 | **Web**    | `web/server.py`              | Flask API, Chat, Arte, Aprendizaje  |
 | **Learning**| `web/learning.py`           | Sistema de aprendizaje continuo     |
+| **MQTT**   | `phase6-collective/mqtt_client.py` | Cliente MQTT real (paho-mqtt) |
+| **WebSocket** | `phase6-collective/ws_bridge.py` | Bridge MQTT↔Browser           |
 
 ### 5.2 Roadmap
 
 - [x] WebAssembly (WASM) desde C
-- [x] Soporte Arduino/STM32
+- [x] Soporte Arduino/STM32/ESP32
 - [x] **Sistema de aprendizaje continuo**
 - [x] **Generación de arte neuronal**
 - [x] **Chat conversacional con memoria**
+- [x] **Protocolo 1-Bit (9.5× compresión)**
+- [x] **MQTT real con Mosquitto**
+- [x] **ESP32 + LoRa para IoT rural**
+- [x] **Docker Compose full-stack**
+- [x] **Tests unitarios (19 passing)**
+- [x] **Especificación OpenAPI 3.1**
 - [ ] Aprendizaje federado entre instancias
 - [ ] RAG (Retrieval-Augmented Generation) local
 

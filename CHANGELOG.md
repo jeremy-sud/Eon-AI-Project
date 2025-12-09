@@ -2,7 +2,71 @@
 
 Todos los cambios notables del Proyecto Eón.
 
-## [1.7.1] - 2025-01-XX
+## [1.7.2] - 2025-12-09
+
+### Infraestructura Completa
+
+- **Docker Compose Full-Stack**
+  - 6 servicios containerizados: MQTT, WebSocket, Web, TinyLM, Collective, Core
+  - Configuración Mosquitto incluida
+  - Health checks para todos los servicios
+  - Networks y volumes configurados
+  - Perfiles para desarrollo (`dev`) y build (`build`)
+
+- **Script de Demo**
+  - Nuevo `start_demo.sh`: Lanza todo el stack con un comando
+  - Soporta flags `--docker`, `--no-browser`
+  - Verificación de dependencias automática
+  - Cleanup graceful con Ctrl+C
+
+- **Tests Unitarios**
+  - 19 tests para WebSocket bridge
+  - Tests de protocolo 1-bit
+  - Tests de métricas de energía
+  - Tests async de WebSocket
+
+- **Especificación OpenAPI**
+  - Nuevo `docs/api/protocol_1bit.yaml`
+  - Documentación completa del protocolo 1-Bit
+  - Esquemas JSON para todos los mensajes
+  - Configuración LoRa incluida
+
+- **Paper PDF**
+  - Compilado `paper/main.pdf` (3 páginas, 147KB)
+  - Añadido paquete booktabs para tablas
+  - Tabla de métricas de energía incluida
+
+### Nuevos Archivos
+
+| Archivo | Descripción |
+|---------|-------------|
+| `docker-compose.yml` | Full-stack deployment |
+| `start_demo.sh` | Script lanzador |
+| `docker/mosquitto/config/mosquitto.conf` | Config MQTT |
+| `docs/api/protocol_1bit.yaml` | OpenAPI spec |
+| `phase2-core/Dockerfile` | C core builder |
+| `phase6-collective/Dockerfile.bridge` | WebSocket container |
+| `phase6-collective/tests/test_ws_bridge.py` | 19 unit tests |
+| `web/Dockerfile` | Dashboard container |
+| `paper/main.pdf` | Paper compilado |
+
+### Docker Services
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    docker compose up                     │
+├─────────────────────────────────────────────────────────┤
+│  mqtt (1883)    │ ws-bridge (8765) │ web (5000)         │
+│  Mosquitto      │ Python WS        │ Flask Dashboard    │
+├─────────────────┼──────────────────┼────────────────────┤
+│  tinylm (5001)  │ collective-mind  │ core-builder       │
+│  Language Model │ Distributed Sim  │ C library build    │
+└─────────────────┴──────────────────┴────────────────────┘
+```
+
+---
+
+## [1.7.1] - 2025-12-09
 
 ### Tests de Campo y Métricas de Energía
 

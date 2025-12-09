@@ -311,7 +311,7 @@ class BenchmarkSuite:
         train_size = int(len(X) * 0.5)
         adapt_size = int(len(X) * 0.2)
         X_train = X[:train_size]
-        X_adapt = X[train_size:train_size+adapt_size]
+        x_adapt = X[train_size:train_size+adapt_size]
         X_test = X[train_size+adapt_size:]
         y_train = y[:train_size]
         y_test = y[train_size+adapt_size:]
@@ -345,7 +345,7 @@ class BenchmarkSuite:
                 )
                 esn_p.fit(X_train, y_train)
                 esn_p.reset()
-                esn_p.adapt_online(X_adapt)
+                esn_p.adapt_online(x_adapt)
                 
                 pred = esn_p.predict(X_test)
                 mse = float(np.mean((pred - y_test)**2))
@@ -445,8 +445,9 @@ class BenchmarkSuite:
             
             # Test 1: Velocidad de aprendizaje online
             n_samples = 500 if self.quick_mode else 2000
-            states = np.random.randn(n_samples, 100)
-            targets = np.random.randn(n_samples, 1)
+            rng = np.random.default_rng(42)
+            states = rng.standard_normal((n_samples, 100))
+            targets = rng.standard_normal((n_samples, 1))
             
             start_time = time.time()
             for i in range(n_samples):
@@ -522,12 +523,13 @@ class BenchmarkSuite:
             times = []
             
             # Simular generación de imágenes (sin servidor)
-            for i in range(5 if self.quick_mode else 10):
+            rng_img = np.random.default_rng(42)
+            for _ in range(5 if self.quick_mode else 10):
                 start_time = time.time()
                 
                 # Generar imagen simple basada en ruido
                 size = 256
-                img_array = np.random.randint(0, 255, (size, size, 3), dtype=np.uint8)
+                img_array = rng_img.integers(0, 255, (size, size, 3), dtype=np.uint8)
                 img = Image.fromarray(img_array, 'RGB')
                 
                 gen_time = (time.time() - start_time) * 1000
@@ -647,7 +649,7 @@ class BenchmarkSuite:
         learning_stats = benchmarks.get('learning_system', {})
         chat_stats = benchmarks.get('chat_system', {})
         
-        print(f"""
+        print("""
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        MÉTRICAS CLAVE                               │
 ├─────────────────────────────────────────────────────────────────────┤

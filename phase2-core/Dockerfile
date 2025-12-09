@@ -58,8 +58,8 @@ COPY --from=builder /build/phase2-core/libAeon/build/aeon_demo /app/bin/aeon_dem
 COPY --from=builder /build/phase2-core/libAeon/build/libaeon.a /app/lib/libaeon.a
 
 # Optional binaries - use RUN with cp to allow failure
-RUN cp /build/bio-monitor/bio_monitor /app/bin/ 2>/dev/null || true
-RUN cp /build/voice-command/voice_kws /app/bin/ 2>/dev/null || true
+RUN cp /build/bio-monitor/bio_monitor /app/bin/ 2>/dev/null || true && \
+    cp /build/voice-command/voice_kws /app/bin/ 2>/dev/null || true
 
 # Set library path
 ENV LD_LIBRARY_PATH=/app/lib

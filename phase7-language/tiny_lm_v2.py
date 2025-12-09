@@ -179,7 +179,7 @@ class TinyLMv2:
         all_indices = np.tile(indices, epochs)
         
         # Embeddings
-        X_emb = self.tokenizer.to_embeddings(all_indices[:-1])
+        x_emb = self.tokenizer.to_embeddings(all_indices[:-1])
         
         # Targets: one-hot del siguiente token
         Y = np.zeros((len(all_indices) - 1, self.tokenizer.actual_vocab_size))
@@ -187,11 +187,11 @@ class TinyLMv2:
             Y[i, idx] = 1
         
         # Entrenar
-        self.esn.fit(X_emb, Y, washout=washout)
+        self.esn.fit(x_emb, Y, washout=washout)
         self.is_trained = True
         
         # Evaluar
-        predictions = self.esn.predict(X_emb)
+        predictions = self.esn.predict(x_emb)
         pred_indices = np.argmax(predictions, axis=1)
         real_indices = all_indices[1:]
         

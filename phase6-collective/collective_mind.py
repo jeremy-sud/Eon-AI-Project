@@ -22,7 +22,7 @@ import json
 import time
 import hashlib
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 import numpy as np
 
@@ -61,7 +61,7 @@ class AeonNode:
             sparsity=0.85
         )
         
-        self.created_at = datetime.utcnow().isoformat()
+        self.created_at = datetime.now(timezone.utc).isoformat()
         self.samples_learned = 0
         self.sync_count = 0
         self.last_sync = None
@@ -69,7 +69,8 @@ class AeonNode:
         
     def _generate_id(self) -> str:
         """Genera ID único basado en timestamp + random."""
-        data = f"{time.time()}-{np.random.random()}"
+        rng = np.random.default_rng(int(time.time() * 1000) % (2**32))
+        data = f"{time.time()}-{rng.random()}"
         return hashlib.sha256(data.encode()).hexdigest()[:12]
     
     def train(self, data: np.ndarray, washout: int = 20) -> float:
@@ -111,7 +112,7 @@ class AeonNode:
             'node_id': self.node_id,
             'n_reservoir': self.n_reservoir,
             'samples_learned': self.samples_learned,
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'W_out': self.esn.W_out.tolist()
         }
     
@@ -140,7 +141,7 @@ class AeonNode:
         )
         
         self.sync_count += 1
-        self.last_sync = datetime.utcnow().isoformat()
+        self.last_sync = datetime.now(timezone.utc).isoformat()
         
         if weights_data['node_id'] not in self.peers:
             self.peers.append(weights_data['node_id'])
@@ -195,7 +196,7 @@ class AeonNode:
             'payload': bytes(payload),
             'node_id': self.node_id,
             'samples_learned': self.samples_learned,
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             # Estadísticas de compresión
             'original_bytes': n_weights * 4,  # float32
             'compressed_bytes': n_bytes + 10,  # payload + header
@@ -245,7 +246,7 @@ class AeonNode:
         )
         
         self.sync_count += 1
-        self.last_sync = datetime.utcnow().isoformat()
+        self.last_sync = datetime.now(timezone.utc).isoformat()
         
         if packet.get('node_id') and packet['node_id'] not in self.peers:
             self.peers.append(packet['node_id'])
@@ -299,7 +300,7 @@ class CollectiveMind:
         node_a.import_weights(weights_b, merge_ratio)
         
         result = {
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'node_a': node_a_id,
             'node_b': node_b_id,
             'direction': 'bidirectional' if bidirectional else 'a_from_b',
@@ -365,20 +366,20 @@ if __name__ == "__main__":
     print("\n[2/4] Cada nodo aprende localmente...")
     
     # Simular datos diferentes por sensor
-    np.random.seed(42)
+    rng = np.random.default_rng(42)
     
     # Cocina: mayor temperatura base
-    data_cocina = 25 + 3 * np.sin(np.linspace(0, 4*np.pi, 200)) + np.random.normal(0, 0.5, 200)
+    data_cocina = 25 + 3 * np.sin(np.linspace(0, 4*np.pi, 200)) + rng.normal(0, 0.5, 200)
     mse_a = node_a.train(data_cocina)
     print(f"      Cocina: MSE = {mse_a:.6f}")
     
     # Sala: temperatura intermedia
-    data_sala = 22 + 2 * np.sin(np.linspace(0, 4*np.pi, 200)) + np.random.normal(0, 0.3, 200)
+    data_sala = 22 + 2 * np.sin(np.linspace(0, 4*np.pi, 200)) + rng.normal(0, 0.3, 200)
     mse_b = node_b.train(data_sala)
     print(f"      Sala: MSE = {mse_b:.6f}")
     
     # Exterior: más variación
-    data_exterior = 18 + 8 * np.sin(np.linspace(0, 4*np.pi, 200)) + np.random.normal(0, 1.0, 200)
+    data_exterior = 18 + 8 * np.sin(np.linspace(0, 4*np.pi, 200)) + rng.normal(0, 1.0, 200)
     mse_c = node_c.train(data_exterior)
     print(f"      Exterior: MSE = {mse_c:.6f}")
     
@@ -398,7 +399,7 @@ if __name__ == "__main__":
     # Simular que sensor-cocina actualiza sus pesos y los transmite
     packet_1bit = node_a.export_weights_1bit(scale=0.5)
     
-    print(f"      📡 SENSOR-COCINA exporta conocimiento:")
+    print("      📡 SENSOR-COCINA exporta conocimiento:")
     print(f"         • Magic: {packet_1bit['magic']}")
     print(f"         • Tipo: W_OUT_UPDATE (0x{packet_1bit['type']:02x})")
     print(f"         • Pesos: {packet_1bit['count']}")
@@ -412,7 +413,7 @@ if __name__ == "__main__":
     # sensor-sala recibe y fusiona
     print("      📥 SENSOR-SALA recibe paquete...")
     node_b.import_weights_1bit(packet_1bit, merge_ratio=0.4)
-    print(f"         ✓ Pesos fusionados con ratio 0.4")
+    print("         ✓ Pesos fusionados con ratio 0.4")
     print(f"         ✓ Syncs: {node_b.sync_count}, Peers: {node_b.peers}")
     
     # Verificar que el conocimiento se transfirió

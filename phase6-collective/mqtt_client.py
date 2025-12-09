@@ -19,7 +19,7 @@ import struct
 import argparse
 import threading
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Callable, Optional
 import numpy as np
 
@@ -105,8 +105,8 @@ class AeonMQTTNode:
         )
         
         # Inicializar W_out para demo
-        np.random.seed(hash(node_id) % (2**32))
-        self.esn.W_out = np.random.randn(1, n_reservoir) * 0.5
+        rng = np.random.default_rng(hash(node_id) % (2**32))
+        self.esn.W_out = rng.standard_normal((1, n_reservoir)) * 0.5
         
         # Estado
         self.connected = False
@@ -204,7 +204,7 @@ class AeonMQTTNode:
             if packet['type'] == PACKET_TYPES['SYNC']:
                 self._import_weights_from_packet(packet)
                 self.sync_count += 1
-                self.last_sync = datetime.utcnow().isoformat()
+                self.last_sync = datetime.now(timezone.utc).isoformat()
                 
                 # Callback
                 if self.on_sync_received:
@@ -213,7 +213,7 @@ class AeonMQTTNode:
         except Exception as e:
             print(f"✗ [{self.node_id}] Error en sync: {e}")
             
-    def _handle_status_message(self, topic: str, payload: bytes):
+    def _handle_status_message(self, _topic: str, payload: bytes):
         """Procesa mensaje de estado."""
         try:
             data = json.loads(payload.decode())
@@ -230,7 +230,7 @@ class AeonMQTTNode:
                 if self.on_peer_discovered:
                     self.on_peer_discovered(peer_id, data)
                     
-        except Exception as e:
+        except (json.JSONDecodeError, KeyError):
             pass  # Ignorar errores de status
             
     def connect(self, keepalive: int = 60) -> bool:
@@ -277,7 +277,7 @@ class AeonMQTTNode:
             "reservoir_size": self.n_reservoir,
             "samples_learned": self.samples_learned,
             "sync_count": self.sync_count,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         
         self.client.publish(
@@ -467,14 +467,14 @@ def main():
         
         # Crear paquete binario
         packet = node._create_binary_packet()
-        print(f"Paquete binario creado:")
+        print("Paquete binario creado:")
         print(f"  Tamaño: {len(packet)} bytes")
         print(f"  Header: {packet[:14].hex()}")
         print()
         
         # Decodificar
         decoded = node._decode_binary_packet(packet)
-        print(f"Paquete decodificado:")
+        print("Paquete decodificado:")
         print(f"  Magic: {decoded['magic']}")
         print(f"  Type: {PACKET_TYPE_NAMES.get(decoded['type'], 'UNKNOWN')}")
         print(f"  Seed: {decoded['seed']}")

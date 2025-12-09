@@ -232,6 +232,9 @@ class EonChat:
         'interaction_count': 0,
     }
     
+    # Regex pattern para extraer números (usado en múltiples lugares)
+    NUMBER_PATTERN = r'-?\d+\.?\d*'
+    
     # Memoria factual con timestamps (para resolver ambigüedades)
     # Almacena hechos que pueden cambiar con el tiempo
     _factual_memory = {}  # {topic: [(timestamp, fact), ...]}
@@ -480,10 +483,9 @@ class EonChat:
     @classmethod
     def _contains_sequence(cls, message: str) -> bool:
         """Detecta si el mensaje contiene una secuencia numérica (3+ números separados por comas)."""
-        import re
         # Buscar 3 o más números separados por comas (con o sin espacios)
         # Ejemplos: "4, 8, 16, 32" o "1,2,3,4,5"
-        numbers = re.findall(r'-?\d+\.?\d*', message)
+        numbers = re.findall(cls.NUMBER_PATTERN, message)
         # Si hay 3+ números y hay comas en el mensaje, es probablemente una secuencia
         if len(numbers) >= 3 and ',' in message:
             return True
@@ -650,7 +652,7 @@ class EonChat:
             message = message.split(':')[-1]
         
         # Extraer todos los números
-        numbers = re.findall(r'-?\d+\.?\d*', message)
+        numbers = re.findall(cls.NUMBER_PATTERN, message)
         
         # Filtrar números muy pequeños que probablemente no son parte de la secuencia
         # (como "3" en "siguientes 3 números")
@@ -658,7 +660,7 @@ class EonChat:
             # Probablemente hay números extra, tomar los últimos que estén en formato de comas
             comma_parts = message.split(',')
             if len(comma_parts) >= 3:
-                numbers = [n.strip() for part in comma_parts for n in re.findall(r'-?\d+\.?\d*', part)]
+                numbers = [n.strip() for part in comma_parts for n in re.findall(cls.NUMBER_PATTERN, part)]
         
         if len(numbers) < 3:
             return "Necesito al menos 3 números para identificar un patrón. Por ejemplo: '4, 8, 16, 32, __'"
@@ -704,7 +706,7 @@ class EonChat:
         # 2. Progresión geométrica (razón constante)
         if 0 not in seq:
             ratios = [seq[i+1] / seq[i] for i in range(len(seq)-1)]
-            if len(set([round(r, 6) for r in ratios])) == 1:
+            if len({round(r, 6) for r in ratios}) == 1:
                 ratio = fmt(ratios[0])
                 next_vals = generate_geometric(seq[-1], ratios[0], count_requested)
                 if count_requested == 1:
@@ -753,7 +755,7 @@ class EonChat:
         # 5. Segunda diferencia constante (cuadrática)
         if len(seq) >= 4:
             second_diffs = [diffs[i+1] - diffs[i] for i in range(len(diffs)-1)]
-            if len(set([round(d, 6) for d in second_diffs])) == 1:
+            if len({round(d, 6) for d in second_diffs}) == 1:
                 next_diff = diffs[-1] + second_diffs[0]
                 next_val = seq[-1] + next_diff
                 next_display = int(next_val) if next_val == int(next_val) else round(next_val, 2)
@@ -1959,7 +1961,7 @@ def _generate_fractal(size, colors, rng, params):
     return img
 
 
-def _generate_flow_field(size, colors, rng, params):
+def _generate_flow_field(size, colors, _rng, params):
     """Genera campo de flujo tipo fluido."""
     img = np.zeros((size, size, 3), dtype=np.uint8)
     

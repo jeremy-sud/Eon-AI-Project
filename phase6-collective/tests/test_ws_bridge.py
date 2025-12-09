@@ -101,9 +101,9 @@ class TestProtocol1Bit:
         assert header_size == 14
     
     def test_payload_size_50_weights(self):
-        """Test payload size for 50 weights."""
+        """Test payload size for 50 weights (ceil(50/8) = 7 bytes)."""
         n_weights = 50
-        payload_bytes = (n_weights + 7) // 8  # ceil(50/8) = 7
+        payload_bytes = (n_weights + 7) // 8
         total_size = 14 + payload_bytes  # header + payload
         
         assert payload_bytes == 7
@@ -210,7 +210,7 @@ class TestAsyncWebSocket:
         message = json.dumps({"test": "data"})
         
         # Create mock websockets
-        for i in range(3):
+        for _ in range(3):
             mock_ws = AsyncMock()
             mock_ws.send = AsyncMock()
             clients.add(mock_ws)

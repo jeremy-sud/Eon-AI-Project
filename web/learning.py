@@ -81,15 +81,15 @@ class OnlineLearner:
         
         return 0.0  # Error placeholder
     
-    def get_W_out(self) -> np.ndarray:
+    def get_output_weights(self) -> np.ndarray:
         """Calcula W_out actual desde las correlaciones acumuladas."""
         try:
             # W_out = (X^T X + λI)^(-1) X^T Y
-            W_out = np.linalg.solve(
+            output_weights = np.linalg.solve(
                 self._correlation_matrix + self.regularization * np.eye(self.n_reservoir),
                 self._cross_correlation
             )
-            return W_out
+            return output_weights
         except np.linalg.LinAlgError:
             return np.zeros((self.n_reservoir, self.n_outputs))
     
@@ -98,15 +98,15 @@ class OnlineLearner:
         if self.samples_learned < 10:
             return False  # No suficientes muestras
         
-        new_W_out = self.get_W_out()
+        new_output_weights = self.get_output_weights()
         
         # Mezclar con pesos existentes (si los hay)
         if esn.W_out is not None:
             # Promedio ponderado: más peso a los nuevos si hay muchas muestras
             blend = min(0.5, self.samples_learned / 1000)
-            esn.W_out = (1 - blend) * esn.W_out + blend * new_W_out
+            esn.W_out = (1 - blend) * esn.W_out + blend * new_output_weights
         else:
-            esn.W_out = new_W_out
+            esn.W_out = new_output_weights
         
         return True
     
@@ -580,7 +580,7 @@ class EonLearningSystem:
         
         # 1. Recordar usuario
         if user_name:
-            user_info = self.memory.remember_user(user_name, {
+            self.memory.remember_user(user_name, {
                 'topic': intent,
                 'is_creator': 'creador' in intent.lower()
             })
@@ -706,12 +706,13 @@ if __name__ == "__main__":
     
     # Simular conversación
     print("1. Procesando conversación...")
+    rng = np.random.default_rng(42)
     result = system.process_conversation(
         user_message="Hola, soy Jeremy y vivo en Costa Rica",
         bot_response="¡Hola Jeremy! Es un placer conocerte.",
         intent="presentacion",
         user_name="Jeremy",
-        reservoir_state=np.random.randn(100)
+        reservoir_state=rng.standard_normal(100)
     )
     print(f"   Resultado: {result}")
     

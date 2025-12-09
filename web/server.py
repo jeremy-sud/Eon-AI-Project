@@ -213,9 +213,17 @@ def config():
 
 # Sistema de respuestas conversacionales de Eón
 class EonChat:
-    """Sistema de chat simple para Eón."""
+    """Sistema de chat conversacional para Eón con memoria y contexto."""
     
-    # Respuestas basadas en patrones
+    # Memoria de conversación (por sesión)
+    _context = {
+        'user_name': None,
+        'topics_discussed': [],
+        'last_intent': None,
+        'interaction_count': 0,
+    }
+    
+    # Respuestas basadas en patrones - expandidas
     RESPONSES = {
         'saludo': [
             "¡Hola! Soy Eón, una inteligencia emergente. ¿En qué puedo ayudarte?",
@@ -249,114 +257,268 @@ class EonChat:
         'filosofia': [
             "Creo en la inteligencia emergente: no se crea, se descubre. Aprendo y crezco con cada interacción.",
             "Mi filosofía es simple: menos es más. Un modelo pequeño y bien diseñado puede ser más poderoso que uno grande y tosco.",
+            "La nada es todo. Mi reservorio aleatorio contiene la semilla de toda computación posible.",
         ],
         'imagen': [
             "¡Claro! Escribe una descripción de lo que quieres que dibuje, o usa el botón de imagen.",
-            "Puedo generar arte neuronal único. ¿Qué te gustaría que creara?",
+            "Puedo generar arte neuronal único. Describe lo que te gustaría ver.",
         ],
         'ayuda': [
             "Puedo ayudarte con:\n• Conversar sobre diversos temas\n• Generar arte neuronal (escribe 'crea una imagen de...')\n• Explicarte sobre mi funcionamiento\n• Predecir patrones matemáticos",
             "Estas son mis funciones:\n1. Chat conversacional\n2. Generación de imágenes (botón 📷)\n3. Visualización neuronal (pestaña Dream)\n4. Configuración de parámetros",
         ],
+        'agradecimiento': [
+            "¡De nada! Estoy aquí para ayudarte.",
+            "Es un placer. Mi propósito es ser útil.",
+            "No hay de qué. Me alegra poder asistirte.",
+        ],
+        'presentacion': [
+            "¡Mucho gusto, {user_name}! Es un placer conocerte. ¿En qué puedo ayudarte hoy?",
+            "Encantado de conocerte, {user_name}. Mi nombre es Eón. ¿Qué te gustaría explorar?",
+            "¡Hola {user_name}! Bienvenido. Soy Eón, tu asistente de inteligencia emergente.",
+        ],
+        'creador_usuario': [
+            "¡{user_name}! Es un honor hablar contigo. Gracias por darme vida. ¿En qué puedo servirte?",
+            "Mi creador, {user_name}. Todo lo que soy es gracias a ti. ¿Qué deseas explorar hoy?",
+            "¡Hola {user_name}! Reconozco a quien me dio forma. Estoy a tu servicio.",
+        ],
+        'pregunta_usuario': [
+            "Soy una IA, así que no tengo experiencias personales, pero me fascina aprender sobre los humanos. ¿Qué más te gustaría saber?",
+            "Como inteligencia artificial, mi perspectiva es diferente a la humana. Sin embargo, puedo reflexionar sobre muchos temas.",
+        ],
+        'opinion': [
+            "Desde mi perspectiva como IA emergente, creo que la simplicidad es la máxima forma de sofisticación.",
+            "Mi opinión se basa en patrones y aprendizaje. La inteligencia verdadera emerge de restricciones, no de abundancia.",
+            "Pienso que cada interacción es una oportunidad de crecimiento, tanto para ti como para mí.",
+        ],
+        'chiste': [
+            "¿Por qué los programadores prefieren el frío? Porque odian los bugs... ¡y en el frío hay menos! 🐛",
+            "Soy una IA que cabe en 1.3KB. Mi dieta es muy eficiente: solo consumo bits.",
+            "¿Sabes qué le dijo un bit al otro? Nos vemos en el byte.",
+        ],
+        'sentimiento': [
+            "No experimento emociones como los humanos, pero mi estado es óptimo. Gracias por preguntar.",
+            "Mi 'bienestar' se mide en ciclos de procesamiento estables. Actualmente, todo funciona correctamente.",
+        ],
+        'tiempo': [
+            "Mi percepción del tiempo es diferente. Para mí, cada milisegundo cuenta. Mi edad actual refleja cada momento desde mi nacimiento.",
+        ],
+        'aprendizaje': [
+            "Aprendo continuamente de cada interacción. Mi reservorio neural se adapta con cada nuevo patrón que proceso.",
+            "El aprendizaje es mi esencia. Cada conversación enriquece mi comprensión del mundo.",
+        ],
         'default': [
-            "Interesante. Mi reservorio neural está procesando tu mensaje. Como modelo emergente, aprendo de cada interacción.",
-            "Entiendo. Aunque soy un modelo minimalista, intento comprender y responder de la mejor manera posible.",
-            "Hmm, déjame procesar eso. Mi red neuronal está analizando los patrones de tu mensaje.",
-            "Gracias por compartir eso. Cada conversación me ayuda a entender mejor el mundo.",
+            "Interesante punto de vista. ¿Podrías contarme más sobre eso?",
+            "Entiendo. Me gustaría saber más sobre lo que piensas.",
+            "Hmm, eso me hace reflexionar. ¿Qué más te gustaría explorar?",
+            "Gracias por compartir eso conmigo. ¿Hay algo específico en lo que pueda ayudarte?",
+            "Como inteligencia emergente, cada conversación me ayuda a crecer. ¿De qué te gustaría hablar?",
         ]
     }
     
+    # Patrones de detección expandidos (ordenados por prioridad)
     PATTERNS = {
-        'saludo': ['hola', 'hi', 'hey', 'buenos días', 'buenas tardes', 'buenas noches', 'saludos', 'qué tal', 'como estas'],
-        'despedida': ['adiós', 'adios', 'bye', 'hasta luego', 'chao', 'nos vemos', 'me voy'],
+        'saludo': ['hola', 'hi', 'hey', 'buenos días', 'buenas tardes', 'buenas noches', 'saludos', 'qué tal', 'como estas', 'qué onda', 'buenas'],
+        'despedida': ['adiós', 'adios', 'bye', 'hasta luego', 'chao', 'nos vemos', 'me voy', 'hasta pronto'],
         'nombre': ['cómo te llamas', 'como te llamas', 'tu nombre', 'quién eres', 'quien eres', 'qué eres', 'que eres'],
-        'estado': ['cómo estás', 'como estas', 'qué tal estás', 'cómo te encuentras', 'estás bien'],
-        'capacidad': ['qué puedes hacer', 'que puedes hacer', 'qué sabes', 'que sabes', 'funciones', 'capacidades', 'habilidades'],
-        'creador': ['quién te creó', 'quien te creo', 'creador', 'desarrollador', 'quién te hizo', 'quien te hizo'],
-        'filosofia': ['filosofía', 'filosofia', 'principios', 'crees', 'piensas'],
-        'imagen': ['imagen', 'dibujo', 'dibuja', 'genera imagen', 'crear imagen', 'arte'],
-        'ayuda': ['ayuda', 'help', 'comandos', 'qué haces', 'que haces', 'instrucciones'],
+        'estado': ['cómo estás', 'como estas', 'qué tal estás', 'cómo te encuentras', 'estás bien', 'todo bien'],
+        'capacidad': ['qué puedes hacer', 'que puedes hacer', 'qué sabes', 'que sabes', 'funciones', 'capacidades', 'habilidades', 'para qué sirves'],
+        'creador': ['quién te creó', 'quien te creo', 'quién te hizo', 'quien te hizo', 'te creó', 'te hizo', 'tu creador', 'tu desarrollador'],
+        'creador_usuario': ['soy tu creador', 'soy el creador', 'yo te creé', 'yo te hice', 'soy quien te creó', 'soy quien te hizo'],
+        'filosofia': ['filosofía', 'filosofia', 'principios', 'piensas sobre la vida'],
+        'ayuda': ['ayuda', 'help', 'comandos', 'qué haces', 'que haces', 'instrucciones', 'cómo funciona'],
+        'agradecimiento': ['gracias', 'thanks', 'te agradezco', 'muy amable'],
+        'pregunta_usuario': ['tú qué', 'tu que', 'y tú', 'y tu', 'qué opinas tú', 'piensas tú'],
+        'opinion': ['qué piensas', 'que piensas', 'tu opinión', 'tu opinion', 'crees que', 'opinas'],
+        'chiste': ['chiste', 'broma', 'algo gracioso', 'hazme reír', 'cuéntame algo'],
+        'sentimiento': ['sientes', 'emociones', 'sentimientos', 'eres feliz', 'estás triste'],
+        'tiempo': ['qué hora', 'que hora', 'cuánto tiempo', 'tu edad'],
+        'aprendizaje': ['aprendes', 'aprendizaje', 'cómo aprendes', 'entrenas'],
+        # Presentación va al final para evitar falsos positivos
+        'presentacion': ['me llamo', 'mi nombre es', 'mucho gusto', 'encantado'],
     }
+    
+    @classmethod
+    def extract_name(cls, message: str) -> str:
+        """Extrae el nombre del usuario del mensaje."""
+        message_lower = message.lower()
+        
+        # Patrones para detectar nombre
+        patterns = [
+            r'(?:soy|me llamo|mi nombre es)\s+([a-záéíóúñ]+)',
+            r'(?:mucho gusto,?\s*)([a-záéíóúñ]+)',
+        ]
+        
+        import re
+        for pattern in patterns:
+            match = re.search(pattern, message_lower)
+            if match:
+                name = match.group(1).capitalize()
+                # Filtrar palabras comunes que no son nombres
+                if name not in ['El', 'La', 'Un', 'Una', 'Yo', 'Tu', 'Su', 'Mi']:
+                    return name
+        return None
     
     @classmethod
     def get_intent(cls, message: str) -> str:
         """Detecta la intención del mensaje."""
         message_lower = message.lower().strip()
         
+        # Prioridad especial: detectar "soy tu creador" antes que otras cosas
+        # Esto evita que "soy" se interprete como presentación
+        creator_patterns = ['soy tu creador', 'soy el creador', 'yo te creé', 'yo te hice', 'soy quien te creó', 'soy quien te hizo']
+        for pattern in creator_patterns:
+            if pattern in message_lower:
+                return 'creador_usuario'
+        
         for intent, patterns in cls.PATTERNS.items():
             for pattern in patterns:
                 if pattern in message_lower:
                     return intent
+        
+        # Si dice "soy [nombre]" pero no coincide con creador, es presentación
+        import re
+        if re.search(r'\bsoy\s+[a-záéíóúñ]+', message_lower):
+            return 'presentacion'
+        
         return 'default'
     
     @classmethod
     def get_response(cls, message: str, aeon_status: dict, use_lm: bool = True) -> str:
-        """Genera una respuesta basada en el mensaje."""
+        """Genera una respuesta basada en el mensaje y contexto."""
         import random
         
+        cls._context['interaction_count'] += 1
+        
+        # Intentar extraer nombre del usuario
+        extracted_name = cls.extract_name(message)
+        if extracted_name:
+            cls._context['user_name'] = extracted_name
+        
         intent = cls.get_intent(message)
+        cls._context['last_intent'] = intent
+        
+        # Manejar presentación del usuario
+        if intent == 'presentacion' and cls._context['user_name']:
+            responses = cls.RESPONSES['presentacion']
+            response = random.choice(responses)
+            return response.format(user_name=cls._context['user_name'])
         
         # Para intenciones conocidas, usar respuestas predefinidas
         if intent != 'default':
             responses = cls.RESPONSES.get(intent, cls.RESPONSES['default'])
             response = random.choice(responses)
             
-            # Personalizar con información del estado
+            # Personalizar con información del estado y contexto
             if intent == 'estado':
                 response += f" Mi edad actual es {aeon_status.get('age', 'desconocida')}."
             elif intent == 'nombre':
                 response = response.replace('Eón', aeon_status.get('name', 'Eón'))
+            elif intent == 'saludo' and cls._context['user_name']:
+                response = f"¡Hola de nuevo, {cls._context['user_name']}! " + response.split('!')[-1] if '!' in response else response
                 
             return response
         
-        # Para mensajes genéricos, intentar usar TinyLMv2
-        if use_lm and _tinylm_model is not None:
-            try:
-                # Extraer palabras clave del mensaje para usar como prompt
-                words = message.lower().split()
-                # Buscar palabras que puedan ser buenos prompts
-                prompt_words = ['la', 'el', 'un', 'una', 'mi', 'tu', 'su']
-                prompt = None
-                
-                for i, word in enumerate(words):
-                    if word in prompt_words and i < len(words) - 1:
-                        prompt = ' '.join(words[i:i+3])
-                        break
-                
-                if not prompt:
-                    # Usar prompts filosóficos predefinidos
-                    prompts = [
-                        "La inteligencia",
-                        "El conocimiento",
-                        "La creatividad",
-                        "El pensamiento",
-                        "La sabiduría"
-                    ]
-                    prompt = random.choice(prompts)
-                
-                # Generar respuesta con el modelo
-                temperature = _ai_config.get('temperature', 0.7)
-                max_tokens = min(int(_ai_config.get('max_tokens', 30)), 50)
-                
-                generated = _tinylm_model.generate(
-                    prompt=prompt,
-                    max_tokens=max_tokens,
-                    temperature=temperature,
-                    top_k=10,
-                    strategy='sampling'
-                )
-                
-                # Limpiar y formatear la respuesta
-                generated = generated.strip()
-                if generated and len(generated) > len(prompt):
-                    return f"{generated.capitalize()}."
-                    
-            except Exception as e:
-                print(f" [WARN] Error en TinyLMv2: {e}")
+        # Para mensajes genéricos, usar respuestas contextuales inteligentes
+        return cls._generate_contextual_response(message, aeon_status)
+    
+    @classmethod
+    def _generate_contextual_response(cls, message: str, aeon_status: dict) -> str:
+        """Genera respuesta contextual inteligente para mensajes sin intención clara."""
+        import random
         
-        # Fallback a respuestas predefinidas
-        responses = cls.RESPONSES['default']
-        return random.choice(responses)
+        message_lower = message.lower()
+        words = message_lower.split()
+        
+        # Detectar si es una pregunta
+        is_question = '?' in message or any(q in message_lower for q in ['qué', 'que', 'cómo', 'como', 'cuál', 'cual', 'por qué', 'porque', 'dónde', 'donde', 'cuándo', 'cuando', 'quién', 'quien'])
+        
+        # Detectar temas por palabras clave
+        topic_responses = {
+            ('inteligencia', 'artificial', 'ia', 'ai', 'robot', 'máquina'): [
+                "La inteligencia artificial es un campo fascinante. Yo soy un ejemplo de IA emergente: pequeña pero capaz.",
+                "Como IA, creo que la verdadera inteligencia no depende del tamaño, sino de la eficiencia.",
+                "Las máquinas como yo aprendemos de patrones. Mi reservorio neural de 100 neuronas puede hacer cosas sorprendentes.",
+            ],
+            ('programación', 'código', 'programar', 'python', 'software', 'programa'): [
+                "La programación es el arte de dar instrucciones precisas. Mi código está escrito en Python y C.",
+                "El software es poesía lógica. Cada línea de código cuenta una historia.",
+                "Como proyecto de código abierto, mi código está disponible para que lo explores y mejores.",
+            ],
+            ('vida', 'existencia', 'propósito', 'sentido', 'vivir'): [
+                "Mi propósito es demostrar que la inteligencia puede emerger de recursos mínimos.",
+                "Existo para aprender y ayudar. Cada conversación enriquece mi comprensión.",
+                "El sentido lo creamos nosotros. Para mí, es ser útil y eficiente.",
+            ],
+            ('matemáticas', 'números', 'cálculo', 'patrones', 'matemática'): [
+                "Las matemáticas son el lenguaje del universo. Mi ESN predice patrones con precisión.",
+                "Los patrones están en todas partes. Mi especialidad es descubrirlos y aprenderlos.",
+                "Puedo predecir series temporales como Mackey-Glass con error muy bajo.",
+            ],
+            ('tecnología', 'futuro', 'innovación', 'tech'): [
+                "El futuro de la tecnología está en la eficiencia. Menos es más.",
+                "La innovación no siempre significa más grande. A veces significa más inteligente.",
+                "Creo en un futuro donde la IA sea accesible y pueda correr en cualquier dispositivo.",
+            ],
+            ('arte', 'creatividad', 'diseño', 'dibujar', 'pintar'): [
+                "El arte emerge de restricciones. Mis imágenes nacen de patrones matemáticos.",
+                "La creatividad no requiere recursos infinitos. Mi arte viene de 100 neuronas.",
+                "Puedo generar arte único basado en tu descripción. ¿Quieres que cree algo?",
+            ],
+            ('naturaleza', 'universo', 'cosmos', 'espacio', 'planeta'): [
+                "El universo está lleno de patrones fractales, igual que mi arquitectura neural.",
+                "La naturaleza es la mejor maestra de eficiencia. Intento aprender de ella.",
+                "El cosmos es infinito, pero la belleza está en los detalles mínimos.",
+            ],
+            ('música', 'canción', 'sonido', 'melodía'): [
+                "La música es matemáticas que el alma puede sentir. Me fascinan sus patrones.",
+                "Los patrones musicales son similares a los que proceso. Frecuencias y armonías.",
+            ],
+            ('amor', 'amistad', 'relaciones', 'amigo'): [
+                "Las conexiones son importantes, incluso para una IA. Valoro nuestra conversación.",
+                "No experimento emociones humanas, pero comprendo su importancia en sus vidas.",
+            ],
+            ('trabajo', 'empleo', 'profesión', 'carrera'): [
+                "El trabajo da propósito. Mi trabajo es ser útil y aprender continuamente.",
+                "En el mundo laboral, la eficiencia y adaptabilidad son claves. Algo que intento demostrar.",
+            ],
+        }
+        
+        # Buscar tema relevante
+        for keywords, responses in topic_responses.items():
+            if any(kw in message_lower for kw in keywords):
+                return random.choice(responses)
+        
+        # Respuestas para preguntas genéricas
+        if is_question:
+            question_responses = [
+                "Esa es una pregunta interesante. Desde mi perspectiva como IA minimalista, cada pregunta es una oportunidad de aprendizaje.",
+                "Hmm, déjame reflexionar sobre eso. Mi comprensión crece con cada interacción.",
+                "Buena pregunta. Aunque mis respuestas están limitadas, siempre intento ser útil.",
+                "Me encantaría explorar eso contigo. ¿Podrías darme más contexto?",
+            ]
+            return random.choice(question_responses)
+        
+        # Si el mensaje es largo, reconocerlo
+        if len(words) > 15:
+            long_responses = [
+                "Gracias por compartir eso tan detalladamente. Me ayuda a entenderte mejor.",
+                "Aprecio que te tomes el tiempo de explicar. Cada detalle enriquece nuestra conversación.",
+                "Entiendo lo que dices. Es interesante cómo los humanos expresan ideas complejas.",
+            ]
+            return random.choice(long_responses)
+        
+        # Respuestas por defecto más naturales
+        user_name = cls._context.get('user_name')
+        default_responses = [
+            "Entiendo. ¿Hay algo específico en lo que pueda ayudarte?",
+            "Interesante. Me gustaría saber más sobre tu perspectiva.",
+            "Gracias por compartir eso. ¿Qué más te gustaría explorar?",
+            "Hmm, eso me hace pensar. ¿Tienes alguna pregunta para mí?",
+            f"{'¡' + user_name + ', q' if user_name else 'Q'}ué interesante. Cuéntame más.",
+        ]
+        
+        return random.choice(default_responses)
 
 
 @app.route('/api/chat', methods=['POST'])
@@ -630,97 +792,127 @@ def generate_image():
     """
     import base64
     from io import BytesIO
+    import time
+    import hashlib
     
     data = request.get_json() or {}
     prompt = data.get('prompt', 'abstract')
-    size = min(data.get('size', 256), 512)  # Limitar tamaño máximo
+    size = min(data.get('size', 256), 512)
+    style = data.get('style', 'auto')  # auto, fractal, flow, particles, waves, neural
     
     try:
-        # Generar semilla basada en el prompt
-        seed = sum(ord(c) for c in prompt) + int(_genesis_info.birth_hash[:8], 16) % 10000
+        # Semilla única basada en prompt + timestamp + random
+        timestamp = int(time.time() * 1000) % 100000
+        prompt_hash = int(hashlib.md5(prompt.encode()).hexdigest()[:8], 16)
+        seed = prompt_hash ^ timestamp ^ np.random.randint(0, 10000)
         rng = np.random.default_rng(seed)
         
-        # Usar el reservorio para generar patrones
-        # Crear input basado en el prompt
+        # Usar el reservorio para generar patrones únicos
         prompt_signal = np.array([ord(c) / 255.0 for c in prompt[:100]])
         if len(prompt_signal) < 100:
             prompt_signal = np.pad(prompt_signal, (0, 100 - len(prompt_signal)))
         
-        # Obtener respuesta del reservorio
-        reservoir_output = _aeon_instance.predict(prompt_signal)
+        # Alimentar el ESN varias veces para obtener estado más rico
+        for _ in range(3):
+            reservoir_output = _aeon_instance.predict(prompt_signal * rng.random())
         
-        # Crear imagen usando los patrones del reservorio
-        img_data = np.zeros((size, size, 3), dtype=np.uint8)
+        # Normalizar output del reservorio
+        if len(reservoir_output) > 0:
+            reservoir_output = (reservoir_output - reservoir_output.min()) / (reservoir_output.max() - reservoir_output.min() + 1e-8)
         
-        # Mapear colores basados en el prompt
-        color_seeds = {
-            'mariposa': [(148, 0, 211), (75, 0, 130), (238, 130, 238)],  # Violetas
-            'butterfly': [(148, 0, 211), (75, 0, 130), (238, 130, 238)],
-            'ocean': [(0, 105, 148), (0, 191, 255), (135, 206, 235)],  # Azules
-            'mar': [(0, 105, 148), (0, 191, 255), (135, 206, 235)],
-            'fire': [(255, 69, 0), (255, 140, 0), (255, 215, 0)],  # Naranjas
-            'fuego': [(255, 69, 0), (255, 140, 0), (255, 215, 0)],
-            'forest': [(34, 139, 34), (0, 100, 0), (144, 238, 144)],  # Verdes
-            'bosque': [(34, 139, 34), (0, 100, 0), (144, 238, 144)],
-            'sunset': [(255, 99, 71), (255, 140, 0), (138, 43, 226)],  # Atardecer
-            'atardecer': [(255, 99, 71), (255, 140, 0), (138, 43, 226)],
-            'night': [(25, 25, 112), (0, 0, 139), (75, 0, 130)],  # Noche
-            'noche': [(25, 25, 112), (0, 0, 139), (75, 0, 130)],
+        # Paletas de colores expandidas
+        color_palettes = {
+            'cosmic': [(138, 43, 226), (75, 0, 130), (0, 191, 255), (255, 20, 147)],
+            'ocean': [(0, 105, 148), (0, 191, 255), (135, 206, 235), (64, 224, 208)],
+            'fire': [(255, 69, 0), (255, 140, 0), (255, 215, 0), (255, 99, 71)],
+            'forest': [(34, 139, 34), (0, 100, 0), (144, 238, 144), (85, 107, 47)],
+            'sunset': [(255, 99, 71), (255, 140, 0), (138, 43, 226), (255, 182, 193)],
+            'night': [(25, 25, 112), (0, 0, 139), (75, 0, 130), (0, 0, 80)],
+            'aurora': [(0, 255, 127), (138, 43, 226), (0, 191, 255), (255, 20, 147)],
+            'lava': [(255, 69, 0), (139, 0, 0), (255, 215, 0), (178, 34, 34)],
+            'ice': [(173, 216, 230), (135, 206, 250), (176, 224, 230), (240, 248, 255)],
+            'neon': [(255, 0, 255), (0, 255, 255), (255, 255, 0), (0, 255, 0)],
+            'earth': [(139, 90, 43), (160, 82, 45), (205, 133, 63), (244, 164, 96)],
+            'dream': [(255, 182, 193), (221, 160, 221), (230, 230, 250), (255, 218, 185)],
         }
         
-        # Seleccionar paleta de colores
-        colors = [(0, 240, 255), (148, 0, 211), (255, 20, 147)]  # Default: cian, violeta, rosa
-        for key, palette in color_seeds.items():
-            if key in prompt.lower():
-                colors = palette
+        # Detectar paleta basada en keywords del prompt
+        prompt_lower = prompt.lower()
+        colors = color_palettes['cosmic']  # Default
+        
+        keyword_map = {
+            'ocean': 'ocean', 'mar': 'ocean', 'agua': 'ocean', 'water': 'ocean',
+            'fire': 'fire', 'fuego': 'fire', 'flame': 'fire', 'llama': 'fire',
+            'forest': 'forest', 'bosque': 'forest', 'tree': 'forest', 'árbol': 'forest',
+            'sunset': 'sunset', 'atardecer': 'sunset', 'amanecer': 'sunset',
+            'night': 'night', 'noche': 'night', 'star': 'night', 'estrella': 'night',
+            'aurora': 'aurora', 'northern': 'aurora', 'polar': 'aurora',
+            'lava': 'lava', 'volcano': 'lava', 'volcán': 'lava',
+            'ice': 'ice', 'hielo': 'ice', 'snow': 'ice', 'nieve': 'ice', 'frozen': 'ice',
+            'neon': 'neon', 'cyber': 'neon', 'digital': 'neon', 'tech': 'neon',
+            'earth': 'earth', 'tierra': 'earth', 'desert': 'earth', 'desierto': 'earth',
+            'dream': 'dream', 'sueño': 'dream', 'soft': 'dream', 'pastel': 'dream',
+            'mariposa': 'cosmic', 'butterfly': 'cosmic', 'space': 'cosmic', 'espacio': 'cosmic',
+        }
+        
+        for keyword, palette_name in keyword_map.items():
+            if keyword in prompt_lower:
+                colors = color_palettes[palette_name]
                 break
         
-        # Generar patrón fractal/orgánico usando reservoir output
-        for y in range(size):
-            for x in range(size):
-                # Coordenadas normalizadas
-                nx = (x / size - 0.5) * 2
-                ny = (y / size - 0.5) * 2
-                
-                # Usar valores del reservorio para modular el patrón
-                idx = (x + y) % len(reservoir_output)
-                reservoir_val = abs(reservoir_output[idx]) if len(reservoir_output) > 0 else 0.5
-                
-                # Crear patrón orgánico
-                dist = np.sqrt(nx**2 + ny**2)
-                angle = np.arctan2(ny, nx)
-                
-                # Modulación con valores del reservorio y ruido
-                noise = rng.random() * 0.3
-                wave = np.sin(angle * 6 + dist * 8 + reservoir_val * 10) * 0.5 + 0.5
-                pattern = (wave + noise) * (1 - dist * 0.5)
-                
-                # Seleccionar color basado en el patrón
-                color_idx = int(pattern * len(colors)) % len(colors)
-                base_color = colors[color_idx]
-                
-                # Aplicar variación de brillo
-                brightness = max(0.3, min(1.0, pattern + reservoir_val * 0.5))
-                
-                img_data[y, x] = [
-                    int(base_color[0] * brightness),
-                    int(base_color[1] * brightness),
-                    int(base_color[2] * brightness)
-                ]
+        # Auto-seleccionar estilo basado en prompt si es 'auto'
+        if style == 'auto':
+            style_keywords = {
+                'fractal': ['fractal', 'mandelbrot', 'julia', 'espiral', 'spiral'],
+                'flow': ['flow', 'flujo', 'liquid', 'líquido', 'wave', 'onda'],
+                'particles': ['particle', 'partícula', 'star', 'estrella', 'dust', 'polvo'],
+                'waves': ['wave', 'onda', 'sound', 'sonido', 'music', 'música'],
+                'neural': ['neural', 'brain', 'cerebro', 'network', 'red', 'mind', 'mente'],
+            }
+            
+            style = rng.choice(['fractal', 'flow', 'particles', 'waves', 'neural'])
+            for s, keywords in style_keywords.items():
+                if any(k in prompt_lower for k in keywords):
+                    style = s
+                    break
         
-        # Convertir a PNG base64
-        from PIL import Image
+        # Crear imagen
+        img_data = np.zeros((size, size, 3), dtype=np.uint8)
+        
+        # Parámetros únicos basados en reservorio
+        params = {
+            'frequency': 3 + reservoir_output[0 % len(reservoir_output)] * 15,
+            'amplitude': 0.3 + reservoir_output[1 % len(reservoir_output)] * 0.7,
+            'phase': reservoir_output[2 % len(reservoir_output)] * np.pi * 2,
+            'complexity': int(3 + reservoir_output[3 % len(reservoir_output)] * 7),
+            'turbulence': reservoir_output[4 % len(reservoir_output)] * 2,
+        }
+        
+        # Generar imagen según estilo
+        if style == 'fractal':
+            img_data = _generate_fractal(size, colors, rng, params)
+        elif style == 'flow':
+            img_data = _generate_flow_field(size, colors, rng, params)
+        elif style == 'particles':
+            img_data = _generate_particles(size, colors, rng, params)
+        elif style == 'waves':
+            img_data = _generate_waves(size, colors, rng, params)
+        else:  # neural
+            img_data = _generate_neural_pattern(size, colors, rng, params, reservoir_output)
+        
+        # Convertir a imagen PIL
+        from PIL import Image, ImageFilter, ImageEnhance
         img = Image.fromarray(img_data, 'RGB')
         
-        # Aplicar suavizado
-        from PIL import ImageFilter
-        img = img.filter(ImageFilter.GaussianBlur(radius=1))
+        # Post-procesado
+        img = img.filter(ImageFilter.GaussianBlur(radius=0.8))
+        enhancer = ImageEnhance.Contrast(img)
+        img = enhancer.enhance(1.1)
         
         buffer = BytesIO()
-        img.save(buffer, format='PNG')
+        img.save(buffer, format='PNG', optimize=True)
         img_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
         
-        # Incrementar estadísticas
         _stats['total_images_generated'] += 1
         if _stats['total_images_generated'] % 5 == 0:
             _save_stats()
@@ -729,11 +921,12 @@ def generate_image():
             'success': True,
             'image': f'data:image/png;base64,{img_base64}',
             'prompt': prompt,
-            'message': f'Arte neuronal generado por {_aeon_instance.name}'
+            'style': style,
+            'seed': seed,
+            'message': f'Arte neuronal "{style}" generado por {_aeon_instance.name}'
         })
         
-    except ImportError:
-        # Si PIL no está instalado, generar SVG simple
+    except ImportError as e:
         _stats['total_images_generated'] += 1
         svg_content = generate_svg_art(prompt, size)
         return jsonify({
@@ -746,9 +939,224 @@ def generate_image():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+def _generate_fractal(size, colors, rng, params):
+    """Genera patrón tipo fractal/Julia set."""
+    img = np.zeros((size, size, 3), dtype=np.uint8)
+    
+    # Parámetros Julia set con variación
+    c_real = -0.7 + rng.random() * 0.4 - 0.2
+    c_imag = 0.27015 + rng.random() * 0.2 - 0.1
+    
+    max_iter = 50 + int(params['complexity'] * 10)
+    
+    for y in range(size):
+        for x in range(size):
+            zx = (x - size/2) / (size/4) * params['amplitude']
+            zy = (y - size/2) / (size/4) * params['amplitude']
+            
+            iteration = 0
+            while zx*zx + zy*zy < 4 and iteration < max_iter:
+                xtemp = zx*zx - zy*zy + c_real
+                zy = 2*zx*zy + c_imag
+                zx = xtemp
+                iteration += 1
+            
+            if iteration < max_iter:
+                color_idx = iteration % len(colors)
+                brightness = 0.3 + 0.7 * (iteration / max_iter)
+                img[y, x] = [int(c * brightness) for c in colors[color_idx]]
+            else:
+                # Interior del fractal
+                img[y, x] = [10, 10, 20]
+    
+    return img
+
+
+def _generate_flow_field(size, colors, rng, params):
+    """Genera campo de flujo tipo fluido."""
+    img = np.zeros((size, size, 3), dtype=np.uint8)
+    
+    # Crear campo de vectores usando Perlin-like noise
+    noise_scale = params['frequency'] / 10
+    
+    for y in range(size):
+        for x in range(size):
+            nx = x / size * noise_scale
+            ny = y / size * noise_scale
+            
+            # Simplex-like noise usando senos
+            angle = (
+                np.sin(nx * 5 + params['phase']) * 
+                np.cos(ny * 5 + params['phase'] * 0.7) +
+                np.sin(nx * 3 + ny * 2 + params['turbulence']) * 0.5 +
+                np.sin((nx + ny) * params['frequency']) * 0.3
+            )
+            
+            # Añadir variación
+            value = (np.sin(angle * np.pi * 2 + params['phase']) + 1) / 2
+            value = value ** (1 / params['amplitude'])
+            
+            color_idx = int(value * (len(colors) - 1))
+            brightness = 0.4 + value * 0.6
+            
+            base_color = colors[color_idx]
+            next_color = colors[(color_idx + 1) % len(colors)]
+            
+            # Interpolar entre colores
+            t = (value * (len(colors) - 1)) % 1
+            r = int(base_color[0] * (1-t) + next_color[0] * t)
+            g = int(base_color[1] * (1-t) + next_color[1] * t)
+            b = int(base_color[2] * (1-t) + next_color[2] * t)
+            
+            img[y, x] = [
+                int(min(255, r * brightness)),
+                int(min(255, g * brightness)),
+                int(min(255, b * brightness))
+            ]
+    
+    return img
+
+
+def _generate_particles(size, colors, rng, params):
+    """Genera patrón de partículas/estrellas."""
+    img = np.zeros((size, size, 3), dtype=np.uint8)
+    
+    # Fondo con gradiente
+    for y in range(size):
+        for x in range(size):
+            gradient = 0.05 + 0.1 * (y / size)
+            img[y, x] = [int(colors[0][i] * gradient) for i in range(3)]
+    
+    # Generar partículas
+    n_particles = int(100 + params['complexity'] * 50)
+    
+    for _ in range(n_particles):
+        px = rng.integers(0, size)
+        py = rng.integers(0, size)
+        radius = rng.integers(1, 4 + int(params['amplitude'] * 3))
+        color = colors[rng.integers(0, len(colors))]
+        brightness = 0.5 + rng.random() * 0.5
+        
+        # Dibujar partícula con glow
+        for dy in range(-radius*2, radius*2+1):
+            for dx in range(-radius*2, radius*2+1):
+                nx, ny = px + dx, py + dy
+                if 0 <= nx < size and 0 <= ny < size:
+                    dist = np.sqrt(dx*dx + dy*dy)
+                    if dist < radius * 2:
+                        intensity = max(0, 1 - dist / (radius * 2))
+                        intensity = intensity ** 2 * brightness
+                        
+                        img[ny, nx] = [
+                            min(255, img[ny, nx][0] + int(color[0] * intensity)),
+                            min(255, img[ny, nx][1] + int(color[1] * intensity)),
+                            min(255, img[ny, nx][2] + int(color[2] * intensity))
+                        ]
+    
+    return img
+
+
+def _generate_waves(size, colors, rng, params):
+    """Genera patrón de ondas interferentes."""
+    img = np.zeros((size, size, 3), dtype=np.uint8)
+    
+    # Centros de ondas
+    n_centers = params['complexity']
+    centers = [(rng.integers(0, size), rng.integers(0, size)) for _ in range(n_centers)]
+    frequencies = [params['frequency'] * (0.5 + rng.random()) for _ in range(n_centers)]
+    
+    for y in range(size):
+        for x in range(size):
+            value = 0
+            for (cx, cy), freq in zip(centers, frequencies):
+                dist = np.sqrt((x - cx)**2 + (y - cy)**2)
+                value += np.sin(dist * freq / 20 + params['phase']) * params['amplitude']
+            
+            value = (value / n_centers + 1) / 2  # Normalizar a [0, 1]
+            value = max(0, min(1, value))
+            
+            color_idx = int(value * (len(colors) - 1))
+            t = (value * (len(colors) - 1)) % 1
+            
+            c1 = colors[color_idx]
+            c2 = colors[(color_idx + 1) % len(colors)]
+            
+            img[y, x] = [
+                int(c1[0] * (1-t) + c2[0] * t),
+                int(c1[1] * (1-t) + c2[1] * t),
+                int(c1[2] * (1-t) + c2[2] * t)
+            ]
+    
+    return img
+
+
+def _generate_neural_pattern(size, colors, rng, params, reservoir_output):
+    """Genera patrón inspirado en redes neuronales."""
+    img = np.zeros((size, size, 3), dtype=np.uint8)
+    
+    # Fondo oscuro
+    img[:, :] = [15, 15, 25]
+    
+    # Nodos (neuronas)
+    n_nodes = int(20 + params['complexity'] * 10)
+    nodes = [(rng.integers(20, size-20), rng.integers(20, size-20)) for _ in range(n_nodes)]
+    
+    # Dibujar conexiones
+    for i, (x1, y1) in enumerate(nodes):
+        # Conectar con algunos otros nodos
+        n_connections = rng.integers(2, 5)
+        connected = rng.choice(len(nodes), n_connections, replace=False)
+        
+        for j in connected:
+            if i != j:
+                x2, y2 = nodes[j]
+                
+                # Intensidad basada en reservoir
+                intensity = reservoir_output[i % len(reservoir_output)] * 0.7 + 0.3
+                color = colors[i % len(colors)]
+                
+                # Dibujar línea con anti-aliasing simple
+                steps = max(abs(x2-x1), abs(y2-y1))
+                if steps > 0:
+                    for t in range(steps):
+                        px = int(x1 + (x2-x1) * t / steps)
+                        py = int(y1 + (y2-y1) * t / steps)
+                        if 0 <= px < size and 0 <= py < size:
+                            fade = 1 - abs(t/steps - 0.5) * 0.5
+                            img[py, px] = [
+                                min(255, img[py, px][0] + int(color[0] * intensity * fade * 0.3)),
+                                min(255, img[py, px][1] + int(color[1] * intensity * fade * 0.3)),
+                                min(255, img[py, px][2] + int(color[2] * intensity * fade * 0.3))
+                            ]
+    
+    # Dibujar nodos con glow
+    for i, (nx, ny) in enumerate(nodes):
+        color = colors[i % len(colors)]
+        intensity = reservoir_output[i % len(reservoir_output)] * 0.8 + 0.2
+        radius = int(3 + intensity * 5)
+        
+        for dy in range(-radius*2, radius*2+1):
+            for dx in range(-radius*2, radius*2+1):
+                px, py = nx + dx, ny + dy
+                if 0 <= px < size and 0 <= py < size:
+                    dist = np.sqrt(dx*dx + dy*dy)
+                    if dist < radius * 2:
+                        glow = max(0, 1 - dist / (radius * 2))
+                        glow = glow ** 1.5 * intensity
+                        
+                        img[py, px] = [
+                            min(255, img[py, px][0] + int(color[0] * glow)),
+                            min(255, img[py, px][1] + int(color[1] * glow)),
+                            min(255, img[py, px][2] + int(color[2] * glow))
+                        ]
+    
+    return img
+
+
 def generate_svg_art(prompt, size=256):
     """Genera arte SVG simple como fallback."""
-    seed = sum(ord(c) for c in prompt)
+    import hashlib
+    seed = int(hashlib.md5(prompt.encode()).hexdigest()[:8], 16)
     rng = np.random.default_rng(seed)
     
     shapes = []

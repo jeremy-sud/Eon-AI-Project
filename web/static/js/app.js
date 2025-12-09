@@ -358,12 +358,18 @@ const App = {
   },
 
   detectImageRequest(text) {
-    const imageKeywords = [
-      'imagen', 'image', 'genera', 'crea', 'dibuja', 'draw', 
-      'picture', 'foto', 'ilustra', 'visualiza', 'arte', 'art'
-    ];
     const lowerText = text.toLowerCase();
-    return imageKeywords.some(keyword => lowerText.includes(keyword));
+    
+    // Patrones específicos para solicitar imágenes (más precisos)
+    const imagePatterns = [
+      /\b(genera|crea|dibuja|haz|hazme|dame|quiero|necesito|puedes (hacer|crear|generar|dibujar))\s+(una?\s+)?(imagen|foto|dibujo|ilustraci[oó]n|arte|picture|image)/i,
+      /\b(imagen|foto|dibujo|ilustraci[oó]n|picture|image)\s+(de|del|sobre|con)\b/i,
+      /\bdibuja(me)?\s+(un|una|algo|el|la)\b/i,
+      /\bgenera(me)?\s+arte\b/i,
+      /\bcrea(me)?\s+algo\s+(visual|artístico)/i,
+    ];
+    
+    return imagePatterns.some(pattern => pattern.test(lowerText));
   },
 
   handleUpload() {

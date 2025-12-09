@@ -492,6 +492,19 @@ class EonChat:
         return False
     
     @classmethod
+    @staticmethod
+    def _calculate_operation(n1: float, n2: float, op: str) -> Optional[float]:
+        """Ejecuta una operación matemática básica."""
+        operations = {
+            '+': lambda a, b: a + b,
+            '-': lambda a, b: a - b,
+            '*': lambda a, b: a * b,
+            '/': lambda a, b: a / b if b != 0 else None,
+        }
+        func = operations.get(op)
+        return func(n1, n2) if func else None
+    
+    @classmethod
     def _solve_math(cls, message: str) -> Optional[str]:
         """Resuelve operaciones matemáticas en el mensaje."""
         # Normalizar operadores
@@ -506,34 +519,23 @@ class EonChat:
         
         results = []
         for num1, op, num2 in matches:
-            try:
-                n1, n2 = float(num1), float(num2)
-                if op == '+':
-                    result = n1 + n2
-                elif op == '-':
-                    result = n1 - n2
-                elif op == '*':
-                    result = n1 * n2
-                elif op == '/':
-                    if n2 == 0:
-                        return "¡División por cero! Eso crearía una singularidad en mi reservorio. 🌀"
-                    result = n1 / n2
-                else:
-                    continue
-                
-                # Formatear resultado
-                if result == int(result):
-                    result = int(result)
-                results.append(f"{num1} {op} {num2} = {result}")
-            except (ValueError, ZeroDivisionError):
+            n1, n2 = float(num1), float(num2)
+            if op == '/' and n2 == 0:
+                return "¡División por cero! Eso crearía una singularidad en mi reservorio. 🌀"
+            
+            result = cls._calculate_operation(n1, n2, op)
+            if result is None:
                 continue
+            
+            # Formatear resultado
+            result_str = str(int(result)) if result == int(result) else str(result)
+            results.append(f"{num1} {op} {num2} = {result_str}")
         
         if results:
             if len(results) == 1:
                 parts = results[0].split(' = ')
                 return f"El resultado de {parts[0]} es **{parts[1]}**. 🧮"
-            else:
-                return "Los resultados son:\n" + "\n".join(f"• {r}" for r in results)
+            return "Los resultados son:\n" + "\n".join(f"• {r}" for r in results)
         
         return None
     
@@ -635,33 +637,145 @@ class EonChat:
         return random.choice(recommendations['default'])
     
     @classmethod
-    def _predict_sequence(cls, message: str) -> str:
-        """Predice el siguiente valor en una secuencia numérica."""
-        import re
-        
-        original_message = message.lower()
-        
-        # Detectar si pide múltiples valores (ej: "siguientes 3 números")
-        multi_match = re.search(r'(?:siguientes?|pr[oó]ximos?)\s*(\d+)', original_message)
-        count_requested = int(multi_match.group(1)) if multi_match else 1
-        count_requested = min(count_requested, 5)  # Máximo 5 valores
-        
-        # Estrategia: buscar números separados por comas
-        # Si hay ":" en el mensaje, tomar solo lo que viene después
+    # Helper functions para detección de patrones de secuencia
+    @staticmethod
+    def _fmt_number(val):
+        """Formatea número como int si es entero, sino como float con 2 decimales."""
+        return int(val) if val == int(val) else round(val, 2)
+    
+    @classmethod
+    def _generate_arithmetic(cls, last, diff, count):
+        """Genera valores de progresión aritmética."""
+        return [cls._fmt_number(last + diff * (i + 1)) for i in range(count)]
+    
+    @classmethod
+    def _generate_geometric(cls, last, ratio, count):
+        """Genera valores de progresión geométrica."""
+        return [cls._fmt_number(last * (ratio ** (i + 1))) for i in range(count)]
+    
+    @classmethod
+    def _generate_fibonacci(cls, seq, count):
+        """Genera valores tipo Fibonacci."""
+        result = []
+        a, b = seq[-2], seq[-1]
+        for _ in range(count):
+            next_val = a + b
+            result.append(cls._fmt_number(next_val))
+            a, b = b, next_val
+        return result
+    
+    @classmethod
+    def _check_arithmetic(cls, seq, diffs, count_requested):
+        """Verifica si es progresión aritmética."""
+        if len(set(diffs)) == 1:
+            diff = cls._fmt_number(diffs[0])
+            next_vals = cls._generate_arithmetic(seq[-1], diffs[0], count_requested)
+            if count_requested == 1:
+                return f"Es una progresión aritmética con diferencia {diff}. El siguiente valor es: **{next_vals[0]}** 📊"
+            vals_str = ', '.join(str(v) for v in next_vals)
+            return f"Es una progresión aritmética con diferencia {diff}. Los siguientes {count_requested} valores son: **{vals_str}** 📊"
+        return None
+    
+    @classmethod
+    def _check_geometric(cls, seq, count_requested):
+        """Verifica si es progresión geométrica."""
+        if 0 in seq:
+            return None
+        ratios = [seq[i+1] / seq[i] for i in range(len(seq)-1)]
+        if len({round(r, 6) for r in ratios}) == 1:
+            ratio = cls._fmt_number(ratios[0])
+            next_vals = cls._generate_geometric(seq[-1], ratios[0], count_requested)
+            if count_requested == 1:
+                return f"Es una progresión geométrica con razón {ratio}. El siguiente valor es: **{next_vals[0]}** 📈"
+            vals_str = ', '.join(str(v) for v in next_vals)
+            return f"Es una progresión geométrica con razón {ratio}. Los siguientes {count_requested} valores son: **{vals_str}** 📈"
+        return None
+    
+    @classmethod
+    def _check_fibonacci(cls, seq, count_requested):
+        """Verifica si es secuencia tipo Fibonacci."""
+        for i in range(2, len(seq)):
+            if seq[i] != seq[i-1] + seq[i-2]:
+                return None
+        next_vals = cls._generate_fibonacci(seq, count_requested)
+        if count_requested == 1:
+            return f"Es una secuencia tipo Fibonacci. El siguiente valor es: **{next_vals[0]}** 🌀"
+        vals_str = ', '.join(str(v) for v in next_vals)
+        return f"Es una secuencia tipo Fibonacci. Los siguientes {count_requested} valores son: **{vals_str}** 🌀"
+    
+    @classmethod
+    @staticmethod
+    def _find_exponent_for_base(val: float, base: int) -> Optional[int]:
+        """Encuentra el exponente si val es una potencia de base."""
+        for exp in range(-5, 20):
+            if base ** exp == val:
+                return exp
+        return None
+    
+    @classmethod
+    def _is_power_sequence(cls, seq: list, base: int) -> Optional[tuple]:
+        """Verifica si seq es secuencia de potencias de base."""
+        exp_start = None
+        for i, val in enumerate(seq):
+            exp = cls._find_exponent_for_base(val, base)
+            if exp is None:
+                return None
+            if exp_start is None:
+                exp_start = exp
+            elif exp != exp_start + i:
+                return None
+        return (base, exp_start) if exp_start is not None else None
+    
+    @classmethod
+    def _check_powers(cls, seq):
+        """Verifica si es secuencia de potencias."""
+        if len(seq) < 3 or seq[0] == 0:
+            return None
+        for base in [2, 3, 4, 5, 10]:
+            result = cls._is_power_sequence(seq, base)
+            if result:
+                base_val, exp_start = result
+                next_exp = exp_start + len(seq)
+                next_val = base_val ** next_exp
+                return f"Es una secuencia de potencias de {base_val}. El siguiente valor es: **{next_val}** ⚡"
+        return None
+    
+    @classmethod
+    def _check_quadratic(cls, seq, diffs):
+        """Verifica si es secuencia cuadrática (segunda diferencia constante)."""
+        if len(seq) < 4:
+            return None
+        second_diffs = [diffs[i+1] - diffs[i] for i in range(len(diffs)-1)]
+        if len({round(d, 6) for d in second_diffs}) == 1:
+            next_diff = diffs[-1] + second_diffs[0]
+            next_val = seq[-1] + next_diff
+            next_display = cls._fmt_number(next_val)
+            return f"Es una secuencia cuadrática. El siguiente valor es: **{next_display}** 📐"
+        return None
+    
+    @classmethod
+    def _extract_sequence_numbers(cls, message: str):
+        """Extrae números de un mensaje para análisis de secuencia."""
         if ':' in message:
             message = message.split(':')[-1]
-        
-        # Extraer todos los números
         numbers = re.findall(cls.NUMBER_PATTERN, message)
-        
-        # Filtrar números muy pequeños que probablemente no son parte de la secuencia
-        # (como "3" en "siguientes 3 números")
         if len(numbers) > 4:
-            # Probablemente hay números extra, tomar los últimos que estén en formato de comas
             comma_parts = message.split(',')
             if len(comma_parts) >= 3:
                 numbers = [n.strip() for part in comma_parts for n in re.findall(cls.NUMBER_PATTERN, part)]
+        return numbers
+    
+    @classmethod
+    def _predict_sequence(cls, message: str) -> str:
+        """Predice el siguiente valor en una secuencia numérica."""
+        original_message = message.lower()
         
+        # Detectar si pide múltiples valores
+        multi_match = re.search(r'(?:siguientes?|pr[oó]ximos?)\s*(\d+)', original_message)
+        count_requested = min(int(multi_match.group(1)) if multi_match else 1, 5)
+        
+        # Extraer números
+        numbers = cls._extract_sequence_numbers(message)
         if len(numbers) < 3:
             return "Necesito al menos 3 números para identificar un patrón. Por ejemplo: '4, 8, 16, 32, __'"
         
@@ -671,97 +785,31 @@ class EonChat:
         except ValueError:
             return "No pude interpretar los números de la secuencia."
         
-        # Función helper para formatear número
-        def fmt(val):
-            return int(val) if val == int(val) else round(val, 2)
+        # Calcular diferencias
+        diffs = [seq[i+1] - seq[i] for i in range(len(seq)-1)]
         
-        # Función helper para generar múltiples valores
-        def generate_arithmetic(last, diff, count):
-            return [fmt(last + diff * (i + 1)) for i in range(count)]
-        
-        def generate_geometric(last, ratio, count):
-            return [fmt(last * (ratio ** (i + 1))) for i in range(count)]
-        
-        def generate_fibonacci(seq, count):
-            result = []
-            a, b = seq[-2], seq[-1]
-            for _ in range(count):
-                next_val = a + b
-                result.append(fmt(next_val))
-                a, b = b, next_val
+        # Probar patrones en orden
+        result = cls._check_arithmetic(seq, diffs, count_requested)
+        if result:
             return result
         
-        # Detectar patrones comunes
-        # 1. Progresión aritmética (diferencia constante)
-        diffs = [seq[i+1] - seq[i] for i in range(len(seq)-1)]
-        if len(set(diffs)) == 1:
-            diff = fmt(diffs[0])
-            next_vals = generate_arithmetic(seq[-1], diffs[0], count_requested)
-            if count_requested == 1:
-                return f"Es una progresión aritmética con diferencia {diff}. El siguiente valor es: **{next_vals[0]}** 📊"
-            else:
-                vals_str = ', '.join(str(v) for v in next_vals)
-                return f"Es una progresión aritmética con diferencia {diff}. Los siguientes {count_requested} valores son: **{vals_str}** 📊"
+        result = cls._check_geometric(seq, count_requested)
+        if result:
+            return result
         
-        # 2. Progresión geométrica (razón constante)
-        if 0 not in seq:
-            ratios = [seq[i+1] / seq[i] for i in range(len(seq)-1)]
-            if len({round(r, 6) for r in ratios}) == 1:
-                ratio = fmt(ratios[0])
-                next_vals = generate_geometric(seq[-1], ratios[0], count_requested)
-                if count_requested == 1:
-                    return f"Es una progresión geométrica con razón {ratio}. El siguiente valor es: **{next_vals[0]}** 📈"
-                else:
-                    vals_str = ', '.join(str(v) for v in next_vals)
-                    return f"Es una progresión geométrica con razón {ratio}. Los siguientes {count_requested} valores son: **{vals_str}** 📈"
+        result = cls._check_fibonacci(seq, count_requested)
+        if result:
+            return result
         
-        # 3. Fibonacci-like (cada elemento es suma de los dos anteriores)
-        is_fib = True
-        for i in range(2, len(seq)):
-            if seq[i] != seq[i-1] + seq[i-2]:
-                is_fib = False
-                break
-        if is_fib:
-            next_vals = generate_fibonacci(seq, count_requested)
-            if count_requested == 1:
-                return f"Es una secuencia tipo Fibonacci. El siguiente valor es: **{next_vals[0]}** 🌀"
-            else:
-                vals_str = ', '.join(str(v) for v in next_vals)
-                return f"Es una secuencia tipo Fibonacci. Los siguientes {count_requested} valores son: **{vals_str}** 🌀"
+        result = cls._check_powers(seq)
+        if result:
+            return result
         
-        # 4. Potencias (2^n, 3^n, etc.)
-        if len(seq) >= 3 and seq[0] != 0:
-            for base in [2, 3, 4, 5, 10]:
-                is_power = True
-                exp_start = None
-                for i, val in enumerate(seq):
-                    found = False
-                    for exp in range(-5, 20):
-                        if base ** exp == val:
-                            if exp_start is None:
-                                exp_start = exp
-                            elif exp != exp_start + i:
-                                is_power = False
-                            found = True
-                            break
-                    if not found:
-                        is_power = False
-                        break
-                if is_power and exp_start is not None:
-                    next_exp = exp_start + len(seq)
-                    next_val = base ** next_exp
-                    return f"Es una secuencia de potencias de {base}. El siguiente valor es: **{next_val}** ⚡"
+        result = cls._check_quadratic(seq, diffs)
+        if result:
+            return result
         
-        # 5. Segunda diferencia constante (cuadrática)
-        if len(seq) >= 4:
-            second_diffs = [diffs[i+1] - diffs[i] for i in range(len(diffs)-1)]
-            if len({round(d, 6) for d in second_diffs}) == 1:
-                next_diff = diffs[-1] + second_diffs[0]
-                next_val = seq[-1] + next_diff
-                next_display = int(next_val) if next_val == int(next_val) else round(next_val, 2)
-                return f"Es una secuencia cuadrática. El siguiente valor es: **{next_display}** 📐"
-        
-        # Si no encuentra patrón, usar ESN para predicción (método avanzado)
+        # Fallback: predicción lineal simple
         return f"No identifiqué un patrón simple. Basándome en la tendencia, podría ser aproximadamente **{round(seq[-1] + (seq[-1] - seq[-2]), 2)}**, pero el patrón no es obvio. 🤔"
     
     @classmethod
@@ -883,6 +931,17 @@ class EonChat:
         # Respuesta genérica si no encuentra
         return "Es un concepto interesante. Mi base de conocimiento está creciendo. ¿Hay algo específico que quieras saber sobre IA, redes neuronales, o mi arquitectura? 📚"
     
+    @staticmethod
+    def _detect_subsystem(message_lower: str) -> str:
+        """Detecta el tipo de subsistema mencionado en el mensaje."""
+        if "comunicación" in message_lower or "comunicacion" in message_lower:
+            return "comunicación"
+        if "energía" in message_lower or "energia" in message_lower:
+            return "energía"
+        if "sensor" in message_lower:
+            return "sensor"
+        return "general"
+    
     @classmethod
     def _query_sensor(cls, message: str) -> str:
         """Simula consulta a sensores del sistema colectivo."""
@@ -908,9 +967,7 @@ class EonChat:
             # Si es un reporte de falla
             if is_failure_report:
                 # Extraer tipo de falla
-                subsystem = "comunicación" if "comunicación" in message_lower or "comunicacion" in message_lower else \
-                           "energía" if "energía" in message_lower or "energia" in message_lower else \
-                           "sensor" if "sensor" in message_lower else "general"
+                subsystem = cls._detect_subsystem(message_lower)
                 
                 responses = [
                     f"""⚠️ **Alerta registrada para SENSOR-{sensor_id}:**
@@ -1068,6 +1125,21 @@ El subsistema de {subsystem} ha reportado una anomalía.
         return docs
     
     @classmethod
+    @staticmethod
+    def _extract_relevant_context(lines: list, query_words: set, max_lines: int = 10) -> str:
+        """Extrae líneas relevantes que contienen las palabras clave."""
+        relevant_lines = []
+        for i, line in enumerate(lines):
+            line_lower = line.lower()
+            if any(word in line_lower for word in query_words if len(word) > 2):
+                start = max(0, i - 1)
+                end = min(len(lines), i + 3)
+                relevant_lines.extend(lines[start:end])
+                if len(relevant_lines) >= max_lines:
+                    break
+        return '\n'.join(relevant_lines[:max_lines])
+    
+    @classmethod
     def _search_docs(cls, query: str) -> Optional[str]:
         """Busca información relevante en los documentos cargados (RAG ligero)."""
         docs = cls._load_docs_for_rag()
@@ -1093,25 +1165,9 @@ El subsistema de {subsystem} ha reportado una anomalía.
             if score > best_score:
                 best_score = score
                 best_match = doc_name
-                
-                # Extraer contexto relevante (primeras líneas que contienen las palabras clave)
-                relevant_lines = []
-                for i, line in enumerate(lines):
-                    line_lower = line.lower()
-                    if any(word in line_lower for word in query_words if len(word) > 2):
-                        # Incluir línea anterior y posterior para contexto
-                        start = max(0, i - 1)
-                        end = min(len(lines), i + 3)
-                        context_lines = lines[start:end]
-                        relevant_lines.extend(context_lines)
-                        if len(relevant_lines) >= 10:
-                            break
-                
-                # Limpiar y limitar contexto
-                best_context = '\n'.join(relevant_lines[:10])
+                best_context = cls._extract_relevant_context(lines, query_words)
         
         if best_score >= 2 and best_context:
-            # Limpiar formato markdown excesivo
             best_context = best_context.replace('```', '').strip()
             return f"📚 **Encontrado en {best_match}:**\n\n{best_context[:500]}..."
         
@@ -1158,6 +1214,39 @@ El subsistema de {subsystem} ha reportado una anomalía.
         return None
 
     @classmethod
+    def _handle_special_marker(cls, response: str, message: str) -> Optional[str]:
+        """Procesa marcadores especiales en respuestas."""
+        marker_handlers = {
+            '__CALC__': lambda: cls._solve_math(message) or 
+                "Veo que mencionas números, pero no pude identificar una operación clara. Prueba con algo como '2+2' o '34*5'.",
+            '__STORY__': lambda: cls._generate_story(message),
+            '__RECOMMEND__': lambda: cls._generate_recommendation(message),
+            '__SEQUENCE__': lambda: cls._predict_sequence(message),
+            '__MEMORY_STORE__': lambda: cls._store_personal_fact(message),
+            '__MEMORY_RECALL__': lambda: cls._recall_personal_fact(message),
+            '__KNOWLEDGE__': lambda: cls._get_knowledge(message),
+            '__SENSOR__': lambda: cls._query_sensor(message),
+            '__COMPLETE__': lambda: cls._complete_text(message),
+        }
+        handler = marker_handlers.get(response)
+        return handler() if handler else None
+    
+    @classmethod
+    def _personalize_response(cls, response: str, intent: str, aeon_status: dict) -> str:
+        """Personaliza respuesta según contexto."""
+        if intent == 'estado':
+            response += f" Mi edad actual es {aeon_status.get('age', 'desconocida')}."
+        elif intent == 'nombre':
+            response = response.replace('Eón', aeon_status.get('name', 'Eón'))
+        elif intent == 'saludo' and cls._context['user_name'] and cls._context['interaction_count'] > 1:
+            response = f"¡Hola de nuevo, {cls._context['user_name']}! ¿En qué puedo ayudarte?"
+        
+        if '{user_name}' in response and cls._context['user_name']:
+            response = response.format(user_name=cls._context['user_name'])
+        
+        return response
+    
+    @classmethod
     def get_response(cls, message: str, aeon_status: dict, use_lm: bool = True) -> str:
         """Genera una respuesta basada en el mensaje y contexto."""
         import random
@@ -1169,14 +1258,15 @@ El subsistema de {subsystem} ha reportado una anomalía.
         if extracted_name:
             cls._context['user_name'] = extracted_name
         
-        # NUEVO: Primero intentar manejar mensajes factuales (estados que cambian)
+        # Primero intentar manejar mensajes factuales (estados que cambian)
         factual_response = cls._handle_factual_message(message)
         if factual_response:
             return factual_response
         
-        # NUEVO: Intentar buscar en documentación (RAG ligero)
+        # Intentar buscar en documentación (RAG ligero)
         message_lower = message.lower()
-        if any(keyword in message_lower for keyword in ['protocolo', 'protocol', '1-bit', 'p2p', 'mqtt', 'arquitectura', 'whitepaper']):
+        rag_keywords = ['protocolo', 'protocol', '1-bit', 'p2p', 'mqtt', 'arquitectura', 'whitepaper']
+        if any(keyword in message_lower for keyword in rag_keywords):
             doc_response = cls._search_docs(message)
             if doc_response:
                 return doc_response
@@ -1186,15 +1276,11 @@ El subsistema de {subsystem} ha reportado una anomalía.
         
         # Manejar presentación del usuario
         if intent == 'presentacion' and cls._context['user_name']:
-            responses = cls.RESPONSES['presentacion']
-            response = random.choice(responses)
-            return response.format(user_name=cls._context['user_name'])
+            return random.choice(cls.RESPONSES['presentacion']).format(user_name=cls._context['user_name'])
         
         # Manejar cuando el usuario dice que es el creador
         if intent == 'creador_usuario' and cls._context['user_name']:
-            responses = cls.RESPONSES['creador_usuario']
-            response = random.choice(responses)
-            return response.format(user_name=cls._context['user_name'])
+            return random.choice(cls.RESPONSES['creador_usuario']).format(user_name=cls._context['user_name'])
         
         # Para intenciones conocidas, usar respuestas predefinidas
         if intent != 'default':
@@ -1202,53 +1288,12 @@ El subsistema de {subsystem} ha reportado una anomalía.
             response = random.choice(responses)
             
             # Manejar marcadores especiales
-            if response == '__CALC__':
-                math_result = cls._solve_math(message)
-                if math_result:
-                    return math_result
-                return "Veo que mencionas números, pero no pude identificar una operación clara. Prueba con algo como '2+2' o '34*5'."
+            special_result = cls._handle_special_marker(response, message)
+            if special_result:
+                return special_result
             
-            if response == '__STORY__':
-                return cls._generate_story(message)
-            
-            if response == '__RECOMMEND__':
-                return cls._generate_recommendation(message)
-            
-            # Nuevos marcadores para capacidades avanzadas
-            if response == '__SEQUENCE__':
-                return cls._predict_sequence(message)
-            
-            if response == '__MEMORY_STORE__':
-                return cls._store_personal_fact(message)
-            
-            if response == '__MEMORY_RECALL__':
-                return cls._recall_personal_fact(message)
-            
-            if response == '__KNOWLEDGE__':
-                return cls._get_knowledge(message)
-            
-            if response == '__SENSOR__':
-                return cls._query_sensor(message)
-            
-            if response == '__COMPLETE__':
-                return cls._complete_text(message)
-            
-            # Personalizar con información del estado y contexto
-            if intent == 'estado':
-                # No agregar "Hola de nuevo" para preguntas de estado
-                response += f" Mi edad actual es {aeon_status.get('age', 'desconocida')}."
-            elif intent == 'nombre':
-                response = response.replace('Eón', aeon_status.get('name', 'Eón'))
-            elif intent == 'saludo':
-                # Solo personalizar si conocemos el nombre, sin repetir saludo
-                if cls._context['user_name'] and cls._context['interaction_count'] > 1:
-                    response = f"¡Hola de nuevo, {cls._context['user_name']}! ¿En qué puedo ayudarte?"
-            
-            # Formatear user_name si está en la respuesta
-            if '{user_name}' in response and cls._context['user_name']:
-                response = response.format(user_name=cls._context['user_name'])
-                
-            return response
+            # Personalizar respuesta
+            return cls._personalize_response(response, intent, aeon_status)
         
         # Para mensajes genéricos, usar respuestas contextuales inteligentes
         return cls._generate_contextual_response(message, aeon_status)
@@ -1773,6 +1818,62 @@ def get_genesis_info():
     })
 
 
+# Paletas de colores para generación de imágenes
+COLOR_PALETTES = {
+    'cosmic': [(138, 43, 226), (75, 0, 130), (0, 191, 255), (255, 20, 147)],
+    'ocean': [(0, 105, 148), (0, 191, 255), (135, 206, 235), (64, 224, 208)],
+    'fire': [(255, 69, 0), (255, 140, 0), (255, 215, 0), (255, 99, 71)],
+    'forest': [(34, 139, 34), (0, 100, 0), (144, 238, 144), (85, 107, 47)],
+    'sunset': [(255, 99, 71), (255, 140, 0), (138, 43, 226), (255, 182, 193)],
+    'night': [(25, 25, 112), (0, 0, 139), (75, 0, 130), (0, 0, 80)],
+    'aurora': [(0, 255, 127), (138, 43, 226), (0, 191, 255), (255, 20, 147)],
+    'lava': [(255, 69, 0), (139, 0, 0), (255, 215, 0), (178, 34, 34)],
+    'ice': [(173, 216, 230), (135, 206, 250), (176, 224, 230), (240, 248, 255)],
+    'neon': [(255, 0, 255), (0, 255, 255), (255, 255, 0), (0, 255, 0)],
+    'earth': [(139, 90, 43), (160, 82, 45), (205, 133, 63), (244, 164, 96)],
+    'dream': [(255, 182, 193), (221, 160, 221), (230, 230, 250), (255, 218, 185)],
+}
+
+PALETTE_KEYWORDS = {
+    'ocean': ['ocean', 'mar', 'agua', 'water'],
+    'fire': ['fire', 'fuego', 'flame', 'llama'],
+    'forest': ['forest', 'bosque', 'tree', 'árbol'],
+    'sunset': ['sunset', 'atardecer', 'amanecer'],
+    'night': ['night', 'noche', 'star', 'estrella'],
+    'aurora': ['aurora', 'northern', 'polar'],
+    'lava': ['lava', 'volcano', 'volcán'],
+    'ice': ['ice', 'hielo', 'snow', 'nieve', 'frozen'],
+    'neon': ['neon', 'cyber', 'digital', 'tech'],
+    'earth': ['earth', 'tierra', 'desert', 'desierto'],
+    'dream': ['dream', 'sueño', 'soft', 'pastel'],
+    'cosmic': ['mariposa', 'butterfly', 'space', 'espacio'],
+}
+
+STYLE_KEYWORDS = {
+    'fractal': ['fractal', 'mandelbrot', 'julia', 'espiral', 'spiral'],
+    'flow': ['flow', 'flujo', 'liquid', 'líquido'],
+    'particles': ['particle', 'partícula', 'star', 'estrella', 'dust', 'polvo'],
+    'waves': ['wave', 'onda', 'sound', 'sonido', 'music', 'música'],
+    'neural': ['neural', 'brain', 'cerebro', 'network', 'red', 'mind', 'mente'],
+}
+
+
+def _detect_palette(prompt_lower: str) -> list:
+    """Detecta la paleta de colores basándose en el prompt."""
+    for palette_name, keywords in PALETTE_KEYWORDS.items():
+        if any(kw in prompt_lower for kw in keywords):
+            return COLOR_PALETTES[palette_name]
+    return COLOR_PALETTES['cosmic']
+
+
+def _detect_style(prompt_lower: str, rng) -> str:
+    """Detecta el estilo de imagen basándose en el prompt."""
+    for style_name, keywords in STYLE_KEYWORDS.items():
+        if any(kw in prompt_lower for kw in keywords):
+            return style_name
+    return rng.choice(['fractal', 'flow', 'particles', 'waves', 'neural'])
+
+
 @app.route('/api/generate-image', methods=['POST'])
 def generate_image():
     """
@@ -1809,61 +1910,12 @@ def generate_image():
         if len(reservoir_output) > 0:
             reservoir_output = (reservoir_output - reservoir_output.min()) / (reservoir_output.max() - reservoir_output.min() + 1e-8)
         
-        # Paletas de colores expandidas
-        color_palettes = {
-            'cosmic': [(138, 43, 226), (75, 0, 130), (0, 191, 255), (255, 20, 147)],
-            'ocean': [(0, 105, 148), (0, 191, 255), (135, 206, 235), (64, 224, 208)],
-            'fire': [(255, 69, 0), (255, 140, 0), (255, 215, 0), (255, 99, 71)],
-            'forest': [(34, 139, 34), (0, 100, 0), (144, 238, 144), (85, 107, 47)],
-            'sunset': [(255, 99, 71), (255, 140, 0), (138, 43, 226), (255, 182, 193)],
-            'night': [(25, 25, 112), (0, 0, 139), (75, 0, 130), (0, 0, 80)],
-            'aurora': [(0, 255, 127), (138, 43, 226), (0, 191, 255), (255, 20, 147)],
-            'lava': [(255, 69, 0), (139, 0, 0), (255, 215, 0), (178, 34, 34)],
-            'ice': [(173, 216, 230), (135, 206, 250), (176, 224, 230), (240, 248, 255)],
-            'neon': [(255, 0, 255), (0, 255, 255), (255, 255, 0), (0, 255, 0)],
-            'earth': [(139, 90, 43), (160, 82, 45), (205, 133, 63), (244, 164, 96)],
-            'dream': [(255, 182, 193), (221, 160, 221), (230, 230, 250), (255, 218, 185)],
-        }
-        
-        # Detectar paleta basada en keywords del prompt
+        # Detectar paleta y estilo basados en prompt
         prompt_lower = prompt.lower()
-        colors = color_palettes['cosmic']  # Default
+        colors = _detect_palette(prompt_lower)
         
-        keyword_map = {
-            'ocean': 'ocean', 'mar': 'ocean', 'agua': 'ocean', 'water': 'ocean',
-            'fire': 'fire', 'fuego': 'fire', 'flame': 'fire', 'llama': 'fire',
-            'forest': 'forest', 'bosque': 'forest', 'tree': 'forest', 'árbol': 'forest',
-            'sunset': 'sunset', 'atardecer': 'sunset', 'amanecer': 'sunset',
-            'night': 'night', 'noche': 'night', 'star': 'night', 'estrella': 'night',
-            'aurora': 'aurora', 'northern': 'aurora', 'polar': 'aurora',
-            'lava': 'lava', 'volcano': 'lava', 'volcán': 'lava',
-            'ice': 'ice', 'hielo': 'ice', 'snow': 'ice', 'nieve': 'ice', 'frozen': 'ice',
-            'neon': 'neon', 'cyber': 'neon', 'digital': 'neon', 'tech': 'neon',
-            'earth': 'earth', 'tierra': 'earth', 'desert': 'earth', 'desierto': 'earth',
-            'dream': 'dream', 'sueño': 'dream', 'soft': 'dream', 'pastel': 'dream',
-            'mariposa': 'cosmic', 'butterfly': 'cosmic', 'space': 'cosmic', 'espacio': 'cosmic',
-        }
-        
-        for keyword, palette_name in keyword_map.items():
-            if keyword in prompt_lower:
-                colors = color_palettes[palette_name]
-                break
-        
-        # Auto-seleccionar estilo basado en prompt si es 'auto'
         if style == 'auto':
-            style_keywords = {
-                'fractal': ['fractal', 'mandelbrot', 'julia', 'espiral', 'spiral'],
-                'flow': ['flow', 'flujo', 'liquid', 'líquido', 'wave', 'onda'],
-                'particles': ['particle', 'partícula', 'star', 'estrella', 'dust', 'polvo'],
-                'waves': ['wave', 'onda', 'sound', 'sonido', 'music', 'música'],
-                'neural': ['neural', 'brain', 'cerebro', 'network', 'red', 'mind', 'mente'],
-            }
-            
-            style = rng.choice(['fractal', 'flow', 'particles', 'waves', 'neural'])
-            for s, keywords in style_keywords.items():
-                if any(k in prompt_lower for k in keywords):
-                    style = s
-                    break
+            style = _detect_style(prompt_lower, rng)
         
         # Crear imagen
         img_data = np.zeros((size, size, 3), dtype=np.uint8)
@@ -2006,6 +2058,23 @@ def _generate_flow_field(size, colors, _rng, params):
     return img
 
 
+def _draw_glow_point(img, px, py, radius, color, brightness, size):
+    """Dibuja un punto con efecto glow."""
+    for dy in range(-radius*2, radius*2+1):
+        for dx in range(-radius*2, radius*2+1):
+            nx, ny = px + dx, py + dy
+            if 0 <= nx < size and 0 <= ny < size:
+                dist = np.sqrt(dx*dx + dy*dy)
+                if dist < radius * 2:
+                    intensity = max(0, 1 - dist / (radius * 2))
+                    intensity = intensity ** 2 * brightness
+                    img[ny, nx] = [
+                        min(255, img[ny, nx][0] + int(color[0] * intensity)),
+                        min(255, img[ny, nx][1] + int(color[1] * intensity)),
+                        min(255, img[ny, nx][2] + int(color[2] * intensity))
+                    ]
+
+
 def _generate_particles(size, colors, rng, params):
     """Genera patrón de partículas/estrellas."""
     img = np.zeros((size, size, 3), dtype=np.uint8)
@@ -2025,22 +2094,7 @@ def _generate_particles(size, colors, rng, params):
         radius = rng.integers(1, 4 + int(params['amplitude'] * 3))
         color = colors[rng.integers(0, len(colors))]
         brightness = 0.5 + rng.random() * 0.5
-        
-        # Dibujar partícula con glow
-        for dy in range(-radius*2, radius*2+1):
-            for dx in range(-radius*2, radius*2+1):
-                nx, ny = px + dx, py + dy
-                if 0 <= nx < size and 0 <= ny < size:
-                    dist = np.sqrt(dx*dx + dy*dy)
-                    if dist < radius * 2:
-                        intensity = max(0, 1 - dist / (radius * 2))
-                        intensity = intensity ** 2 * brightness
-                        
-                        img[ny, nx] = [
-                            min(255, img[ny, nx][0] + int(color[0] * intensity)),
-                            min(255, img[ny, nx][1] + int(color[1] * intensity)),
-                            min(255, img[ny, nx][2] + int(color[2] * intensity))
-                        ]
+        _draw_glow_point(img, px, py, radius, color, brightness, size)
     
     return img
 
@@ -2079,6 +2133,42 @@ def _generate_waves(size, colors, rng, params):
     return img
 
 
+def _draw_neural_connection(img, x1, y1, x2, y2, color, intensity, size):
+    """Dibuja una conexión entre dos neuronas."""
+    steps = max(abs(x2-x1), abs(y2-y1))
+    if steps <= 0:
+        return
+    for t in range(steps):
+        px = int(x1 + (x2-x1) * t / steps)
+        py = int(y1 + (y2-y1) * t / steps)
+        if 0 <= px < size and 0 <= py < size:
+            fade = 1 - abs(t/steps - 0.5) * 0.5
+            factor = intensity * fade * 0.3
+            img[py, px] = [
+                min(255, img[py, px][0] + int(color[0] * factor)),
+                min(255, img[py, px][1] + int(color[1] * factor)),
+                min(255, img[py, px][2] + int(color[2] * factor))
+            ]
+
+
+def _draw_node_glow(img, nx, ny, color, intensity, size):
+    """Dibuja un nodo con efecto de brillo."""
+    radius = int(3 + intensity * 5)
+    for dy in range(-radius*2, radius*2+1):
+        for dx in range(-radius*2, radius*2+1):
+            px, py = nx + dx, ny + dy
+            if 0 <= px < size and 0 <= py < size:
+                dist = np.sqrt(dx*dx + dy*dy)
+                if dist < radius * 2:
+                    glow = max(0, 1 - dist / (radius * 2))
+                    glow = glow ** 1.5 * intensity
+                    img[py, px] = [
+                        min(255, img[py, px][0] + int(color[0] * glow)),
+                        min(255, img[py, px][1] + int(color[1] * glow)),
+                        min(255, img[py, px][2] + int(color[2] * glow))
+                    ]
+
+
 def _generate_neural_pattern(size, colors, rng, params, reservoir_output):
     """Genera patrón inspirado en redes neuronales."""
     img = np.zeros((size, size, 3), dtype=np.uint8)
@@ -2092,52 +2182,21 @@ def _generate_neural_pattern(size, colors, rng, params, reservoir_output):
     
     # Dibujar conexiones
     for i, (x1, y1) in enumerate(nodes):
-        # Conectar con algunos otros nodos
         n_connections = rng.integers(2, 5)
         connected = rng.choice(len(nodes), n_connections, replace=False)
         
         for j in connected:
             if i != j:
                 x2, y2 = nodes[j]
-                
-                # Intensidad basada en reservoir
                 intensity = reservoir_output[i % len(reservoir_output)] * 0.7 + 0.3
                 color = colors[i % len(colors)]
-                
-                # Dibujar línea con anti-aliasing simple
-                steps = max(abs(x2-x1), abs(y2-y1))
-                if steps > 0:
-                    for t in range(steps):
-                        px = int(x1 + (x2-x1) * t / steps)
-                        py = int(y1 + (y2-y1) * t / steps)
-                        if 0 <= px < size and 0 <= py < size:
-                            fade = 1 - abs(t/steps - 0.5) * 0.5
-                            img[py, px] = [
-                                min(255, img[py, px][0] + int(color[0] * intensity * fade * 0.3)),
-                                min(255, img[py, px][1] + int(color[1] * intensity * fade * 0.3)),
-                                min(255, img[py, px][2] + int(color[2] * intensity * fade * 0.3))
-                            ]
+                _draw_neural_connection(img, x1, y1, x2, y2, color, intensity, size)
     
     # Dibujar nodos con glow
     for i, (nx, ny) in enumerate(nodes):
         color = colors[i % len(colors)]
         intensity = reservoir_output[i % len(reservoir_output)] * 0.8 + 0.2
-        radius = int(3 + intensity * 5)
-        
-        for dy in range(-radius*2, radius*2+1):
-            for dx in range(-radius*2, radius*2+1):
-                px, py = nx + dx, ny + dy
-                if 0 <= px < size and 0 <= py < size:
-                    dist = np.sqrt(dx*dx + dy*dy)
-                    if dist < radius * 2:
-                        glow = max(0, 1 - dist / (radius * 2))
-                        glow = glow ** 1.5 * intensity
-                        
-                        img[py, px] = [
-                            min(255, img[py, px][0] + int(color[0] * glow)),
-                            min(255, img[py, px][1] + int(color[1] * glow)),
-                            min(255, img[py, px][2] + int(color[2] * glow))
-                        ]
+        _draw_node_glow(img, nx, ny, color, intensity, size)
     
     return img
 

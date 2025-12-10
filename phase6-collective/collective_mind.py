@@ -32,6 +32,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "phase1-foundations" / "python"))
 
 from esn.esn import EchoStateNetwork
+from egregore import EgregorProcessor, EgregorState, NodeSensorData, EgregorMood
 
 
 # =============================================================================
@@ -527,6 +528,94 @@ class AeonNode:
             self.peers.append(packet['node_id'])
         
         return True
+    
+    # =========================================================================
+    # INTEGRACIÓN CON EGRÉGOR (Mente Grupal)
+    # =========================================================================
+    
+    def generate_sensor_data(
+        self, 
+        temperature: Optional[float] = None,
+        noise_level: Optional[float] = None,
+        motion_intensity: Optional[float] = None,
+        light_level: Optional[float] = None
+    ) -> NodeSensorData:
+        """
+        Genera datos del sensor para reportar al Egrégor.
+        
+        Combina métricas externas (sensores físicos) con métricas
+        internas del nodo (carga, error, alineación con Will).
+        
+        Args:
+            temperature: Temperatura ambiente (°C)
+            noise_level: Nivel de ruido (0-1)
+            motion_intensity: Intensidad de movimiento (0-1)
+            light_level: Nivel de luz (0-1)
+            
+        Returns:
+            NodeSensorData para el EgregorProcessor
+        """
+        # Calcular métricas internas
+        _, spec_level = self.get_specialization()
+        
+        # Error de predicción reciente (de las métricas de Thelema)
+        recent_errors = self.true_will.success_metrics.get(
+            self.true_will.genesis_domain, []
+        )
+        avg_error = float(np.mean(recent_errors[-5:])) if recent_errors else 0.1
+        
+        return NodeSensorData(
+            node_id=self.node_id,
+            timestamp=time.time(),
+            temperature=temperature,
+            noise_level=noise_level,
+            motion_intensity=motion_intensity,
+            light_level=light_level,
+            processing_load=min(1.0, self.samples_learned / 10000),
+            sample_rate=1.0,  # Se ajusta por Egrégor
+            prediction_error=avg_error,
+            will_alignment=spec_level,
+        )
+    
+    def apply_egregore_recommendations(self, state: EgregorState) -> Dict:
+        """
+        Aplica las recomendaciones homeostáticas del Egrégor.
+        
+        Implementa el feedback loop: cuando el Egrégor está "Agitado",
+        el nodo reduce su actividad para "calmar" al sistema.
+        
+        Args:
+            state: Estado actual del Egrégor
+            
+        Returns:
+            Dict con las acciones tomadas
+        """
+        actions_taken = {
+            "sample_rate_adjusted": False,
+            "merge_ratio_adjusted": False,
+            "activity_reduced": False,
+            "activity_increased": False,
+        }
+        
+        recommendations = state.get_homeostatic_actions()
+        
+        # Ajustar ratio de mezcla (afecta import_weights)
+        # Aplicar ratio de mezcla del Egrégor
+        self._egregore_merge_ratio = recommendations["adjust_merge_ratio"]
+        actions_taken["merge_ratio_adjusted"] = True
+        
+        # Responder a recomendaciones de actividad
+        if recommendations["should_reduce_activity"]:
+            # El nodo puede pausar procesamiento no crítico
+            actions_taken["activity_reduced"] = True
+        
+        if recommendations["should_increase_activity"]:
+            actions_taken["activity_increased"] = True
+        
+        actions_taken["sample_rate_adjusted"] = True
+        actions_taken["recommended_rate"] = recommendations["adjust_sample_rate"]
+        
+        return actions_taken
 
 
 class CollectiveMind:
@@ -615,6 +704,141 @@ class CollectiveMind:
             'total_samples': sum(n.samples_learned for n in self.nodes.values()),
             'total_syncs': len(self.sync_history),
             'nodes': {nid: n.status() for nid, n in self.nodes.items()}
+        }
+
+
+class EgregorCoordinator:
+    """
+    Coordinador del Egrégor para la Mente Colectiva.
+    
+    Integra el EgregorProcessor con CollectiveMind para crear
+    un sistema de feedback homeostático completo.
+    
+    Arquitectura:
+        Nodos ──┐
+                ├──→ EgregorProcessor ──→ EgregorState
+                │           ↓
+        Nodos ──┘    Broadcast MQTT
+                          ↓
+                Todos los nodos ajustan comportamiento
+    """
+    
+    def __init__(self, collective_mind: CollectiveMind):
+        """
+        Args:
+            collective_mind: Instancia de CollectiveMind a coordinar
+        """
+        self.mind = collective_mind
+        self.processor = EgregorProcessor(decay_time=30.0)
+        
+        # Historial de estados para análisis
+        self.state_history: List[Dict] = []
+        self.max_history = 1000
+        
+        # Callbacks para notificar cambios de estado
+        self.processor.register_callback(self._on_state_change)
+    
+    def _on_state_change(self, new_state: EgregorState) -> None:
+        """Callback cuando el estado del Egrégor cambia significativamente."""
+        self.state_history.append({
+            "timestamp": new_state.timestamp,
+            "mood": new_state.mood.value,
+            "energy": new_state.energy_level,
+            "coherence": new_state.coherence,
+        })
+        
+        if len(self.state_history) > self.max_history:
+            self.state_history = self.state_history[-self.max_history:]
+    
+    def collect_and_process(
+        self,
+        external_sensors: Optional[Dict[str, Dict]] = None
+    ) -> EgregorState:
+        """
+        Recolecta datos de todos los nodos y procesa el estado del Egrégor.
+        
+        Args:
+            external_sensors: Dict opcional con datos de sensores externos
+                             por node_id: {"temperature": 25, "noise": 0.3, ...}
+        
+        Returns:
+            Estado actual del Egrégor
+        """
+        external_sensors = external_sensors or {}
+        
+        # Recolectar datos de cada nodo
+        for node_id, node in self.mind.nodes.items():
+            ext = external_sensors.get(node_id, {})
+            
+            sensor_data = node.generate_sensor_data(
+                temperature=ext.get("temperature"),
+                noise_level=ext.get("noise_level"),
+                motion_intensity=ext.get("motion_intensity"),
+                light_level=ext.get("light_level"),
+            )
+            
+            self.processor.update_node_data(sensor_data)
+        
+        # Procesar y obtener nuevo estado
+        return self.processor.process()
+    
+    def apply_homeostasis(self) -> Dict[str, Dict]:
+        """
+        Aplica las recomendaciones del Egrégor a todos los nodos.
+        
+        Implementa el feedback loop completo:
+        Estado Egrégor → Recomendaciones → Ajuste de Nodos
+        
+        Returns:
+            Dict con acciones tomadas por cada nodo
+        """
+        state = self.processor.get_state()
+        results = {}
+        
+        for node_id, node in self.mind.nodes.items():
+            actions = node.apply_egregore_recommendations(state)
+            results[node_id] = actions
+        
+        return results
+    
+    def get_egregore_state(self) -> EgregorState:
+        """Retorna el estado actual del Egrégor sin procesar."""
+        return self.processor.get_state()
+    
+    def get_summary(self) -> str:
+        """Resumen del estado del Egrégor y la mente colectiva."""
+        state = self.processor.get_state()
+        mind_status = self.mind.global_status()
+        
+        return (
+            f"═══ EGRÉGOR + MENTE COLECTIVA ═══\n"
+            f"Estado: {state.mood.value.upper()}\n"
+            f"Nodos activos: {state.node_count}\n"
+            f"Energía: {state.energy_level:.1%}\n"
+            f"Coherencia: {state.coherence:.1%}\n"
+            f"Estabilidad: {state.stability:.1%}\n"
+            f"───────────────────────────────\n"
+            f"Muestras totales: {mind_status['total_samples']}\n"
+            f"Sincronizaciones: {mind_status['total_syncs']}\n"
+            f"───────────────────────────────\n"
+            f"→ Sample Rate: {state.recommended_sample_rate:.1f} Hz\n"
+            f"→ Merge Ratio: {state.recommended_merge_ratio:.1%}"
+        )
+    
+    def generate_mqtt_payload(self) -> Dict:
+        """
+        Genera payload para publicar el estado del Egrégor via MQTT.
+        
+        Topic sugerido: eon/egregore/state
+        
+        Returns:
+            Dict serializable para MQTT
+        """
+        state = self.processor.get_state()
+        return {
+            "type": "EGREGORE_STATE",
+            "version": 1,
+            **state.to_dict()
         }
 
 

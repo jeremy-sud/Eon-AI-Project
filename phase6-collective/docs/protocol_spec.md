@@ -91,3 +91,120 @@ When a coordinator assigns a task to a node:
    - `REJECT` (cost ≥ 0.7): Task not aligned with True Will
 
 This implements the Thelema principle: "Each star in its orbit."
+
+---
+
+## Egrégor Protocol (Group Mind)
+
+The Egrégor system implements a collective consciousness that emerges from the aggregate state of all nodes. No single entity controls it—it is the sum vector of all node states.
+
+### Concept
+
+> *"An Egrégor is an autonomous psychic entity created by the sum of thoughts of a group."*
+
+The Egrégor represents the "mood" of the collective system, calculated from:
+- Sensor data (temperature, noise, motion)
+- Node processing metrics (load, prediction error)
+- Will alignment across nodes
+
+### MQTT Topics
+
+| Topic | Direction | Description |
+|-------|-----------|-------------|
+| `eon/egregore/state` | Broker → Nodes | Current Egrégor state |
+| `eon/nodes/{id}/sensors` | Nodes → Broker | Node sensor data |
+| `eon/egregore/homeostasis` | Broker → Nodes | Adjustment commands |
+
+### Egrégor State Packet
+
+Published on `eon/egregore/state` (JSON):
+
+```json
+{
+    "type": "EGREGORE_STATE",
+    "version": 1,
+    "mood": "balanced",
+    "intensity": 0.5,
+    "confidence": 0.7,
+    "energy_level": 0.5,
+    "coherence": 0.8,
+    "stability": 0.6,
+    "entropy": 0.4,
+    "node_count": 5,
+    "timestamp": 1702234567.89,
+    "recommended_sample_rate": 1.0,
+    "recommended_merge_ratio": 0.5
+}
+```
+
+### Mood States
+
+| Mood | Description | Energy | Stability |
+|------|-------------|--------|-----------|
+| `agitated` | High activity, instability | High | Low |
+| `alert` | Active but controlled | High | High |
+| `dynamic` | Moderate changes | Medium | Medium |
+| `balanced` | Homeostatic equilibrium | Medium | Medium |
+| `contemplative` | Low activity | Low | Medium |
+| `meditative` | Deep silence and stability | Low | High |
+| `dormant` | Minimal activity | Very Low | - |
+| `awakening` | Transition from dormant | Rising | - |
+| `harmonizing` | Synchronization in progress | - | Low coherence |
+
+### Node Sensor Data Packet
+
+Published on `eon/nodes/{id}/sensors` (JSON):
+
+```json
+{
+    "node_id": "abc123",
+    "timestamp": 1702234567.89,
+    "temperature": 25.0,
+    "noise_level": 0.3,
+    "motion_intensity": 0.1,
+    "light_level": 0.5,
+    "processing_load": 0.4,
+    "sample_rate": 1.0,
+    "prediction_error": 0.05,
+    "will_alignment": 0.9
+}
+```
+
+### Homeostatic Feedback Loop
+
+1. **Collection**: Egrégor processor subscribes to all `eon/nodes/+/sensors`
+2. **Aggregation**: Calculates emergent metrics (energy, coherence, stability, entropy)
+3. **State Determination**: Derives mood from aggregate metrics
+4. **Broadcast**: Publishes state to `eon/egregore/state`
+5. **Response**: Nodes adjust behavior based on recommendations:
+
+| Egrégor Mood | Node Response |
+|--------------|---------------|
+| `agitated` | Reduce sample rate (calm the system) |
+| `dormant` | Increase sample rate (awaken) |
+| Low coherence | Trigger synchronization pulse |
+| Stable | Maintain current behavior |
+
+### Compact Binary Format (Optional)
+
+For bandwidth-constrained environments, use TYPE `0x04`:
+
+| Offset | Field | Type | Description |
+|--------|-------|------|-------------|
+| 0 | `MAGIC` | `char[3]` | "EON" |
+| 3 | `TYPE` | `uint8_t` | `0x04` (EGREGORE_STATE) |
+| 4 | `MOOD` | `uint8_t` | Mood enum (0-9) |
+| 5 | `METRICS` | `uint8_t[4]` | energy, coherence, stability, entropy (0-255) |
+| 9 | `RECOMMENDATIONS` | `uint8_t[2]` | sample_rate (x10), merge_ratio (x100) |
+| 11 | `NODE_COUNT` | `uint8_t` | Number of active nodes |
+
+**Total: 12 bytes** for Egrégor state (vs ~200+ bytes JSON)
+
+### Implementation Notes
+
+- Process Egrégor state every 1-5 seconds
+- Use exponential decay (τ=30s) for old node data
+- Coherence calculated as inverse of cross-node variance
+- Stability calculated from mood change rate over time window
+
+*"The sum is greater than the parts"* — Gestalt

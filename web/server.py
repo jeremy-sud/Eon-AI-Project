@@ -21,6 +21,7 @@ if _language_dir not in sys.path:
 
 from core.aeon_birth import AeonBirth
 from core.genesis import get_genesis
+from core.alchemy import AlchemicalPipeline, AlchemicalConfig, AlchemicalPhase
 from esn.esn import generate_mackey_glass
 
 # Importar sistema de aprendizaje continuo
@@ -2342,6 +2343,193 @@ def list_instances():
                 instances.append(name)
         
         return jsonify({'success': True, 'instances': instances})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# =============================================================================
+#                    ALCHEMICAL TRANSMUTATION API
+# =============================================================================
+
+# Pipeline alquímico global
+_alchemy_pipeline = AlchemicalPipeline(AlchemicalConfig(
+    kalman_process_noise=0.01,
+    kalman_measurement_noise=0.1,
+    remove_outliers=True,
+    outlier_threshold=2.5,
+    use_moving_average=True,
+    window_size=5,
+    normalize=True
+))
+
+
+@app.route('/api/alchemy/status', methods=['GET'])
+def alchemy_status():
+    """
+    Obtiene el estado actual de la transmutación alquímica.
+    
+    Returns:
+        JSON con estado de las fases y métricas de transmutación
+    """
+    try:
+        viz_state = _alchemy_pipeline.get_visualization_state()
+        return jsonify({
+            'success': True,
+            'alchemy': viz_state
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/alchemy/transmute', methods=['POST'])
+def alchemy_transmute():
+    """
+    Ejecuta transmutación alquímica completa en datos proporcionados.
+    
+    Fases:
+    1. NIGREDO (⚫) - Ingesta de datos crudos
+    2. ALBEDO (⚪) - Purificación con filtro Kalman
+    3. RUBEDO (🔴) - Inferencia/Predicción
+    
+    Request JSON:
+        {
+            "data": [1.2, 1.5, 1.3, ...],  // Datos crudos del sensor
+            "use_esn": true                 // Usar ESN para inferencia (opcional)
+        }
+    
+    Returns:
+        JSON con resultado de la transmutación ("oro")
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'data' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'Se requiere campo "data" con array de valores'
+            }), 400
+        
+        raw_data = np.array(data['data'], dtype=float)
+        use_esn = data.get('use_esn', False)
+        
+        # Obtener ESN si está disponible y se solicita
+        esn = None
+        if use_esn and _aeon_instance is not None:
+            esn = _aeon_instance.esn if hasattr(_aeon_instance, 'esn') else None
+        
+        # Transmutación completa
+        _alchemy_pipeline.reset()
+        result = _alchemy_pipeline.transmute(raw_data, esn=esn)
+        
+        # Convertir numpy a float para JSON
+        if isinstance(result.get('gold'), np.ndarray):
+            result['gold'] = result['gold'].tolist()
+        elif isinstance(result.get('gold'), (np.floating, np.integer)):
+            result['gold'] = float(result['gold'])
+        
+        return jsonify({
+            'success': True,
+            'transmutation': result,
+            'state': _alchemy_pipeline.get_visualization_state()
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/alchemy/nigredo', methods=['POST'])
+def alchemy_nigredo():
+    """
+    Fase NIGREDO: Ingesta de datos crudos (putrefacción).
+    
+    Request JSON:
+        {"data": [1.2, 1.5, 1.3, ...]}
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'data' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'Se requiere campo "data"'
+            }), 400
+        
+        raw_data = np.array(data['data'], dtype=float)
+        _alchemy_pipeline.reset()
+        _alchemy_pipeline.nigredo(raw_data)
+        
+        return jsonify({
+            'success': True,
+            'phase': 'NIGREDO',
+            'symbol': '⚫',
+            'samples': len(raw_data),
+            'state': _alchemy_pipeline.get_visualization_state()
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/alchemy/albedo', methods=['POST'])
+def alchemy_albedo():
+    """
+    Fase ALBEDO: Purificación de datos (filtrado Kalman).
+    
+    Debe ejecutarse después de nigredo.
+    """
+    try:
+        purified = _alchemy_pipeline.albedo()
+        
+        return jsonify({
+            'success': True,
+            'phase': 'ALBEDO',
+            'symbol': '⚪',
+            'samples': len(purified),
+            'noise_removed_percent': _alchemy_pipeline.state.noise_removed_percent,
+            'purified_preview': purified[:10].tolist() if len(purified) > 10 else purified.tolist(),
+            'state': _alchemy_pipeline.get_visualization_state()
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/alchemy/rubedo', methods=['POST'])
+def alchemy_rubedo():
+    """
+    Fase RUBEDO: Iluminación (inferencia final).
+    
+    Debe ejecutarse después de albedo.
+    
+    Request JSON (opcional):
+        {"use_esn": true}
+    """
+    try:
+        data = request.get_json() or {}
+        use_esn = data.get('use_esn', False)
+        
+        esn = None
+        if use_esn and _aeon_instance is not None:
+            esn = _aeon_instance.esn if hasattr(_aeon_instance, 'esn') else None
+        
+        result = _alchemy_pipeline.rubedo(esn=esn)
+        
+        # Convertir numpy para JSON
+        if isinstance(result.get('gold'), np.ndarray):
+            result['gold'] = result['gold'].tolist()
+        elif isinstance(result.get('gold'), (np.floating, np.integer)):
+            result['gold'] = float(result['gold'])
+        
+        return jsonify({
+            'success': True,
+            'phase': 'RUBEDO',
+            'symbol': '🔴',
+            'gold': result['gold'],
+            'confidence': result['confidence'],
+            'transmutation_complete': result['transmutation_complete'],
+            'state': _alchemy_pipeline.get_visualization_state()
+        })
+        
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 

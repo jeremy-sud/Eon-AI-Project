@@ -23,7 +23,8 @@ import time
 import hashlib
 from pathlib import Path
 from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
+from enum import Enum
 import numpy as np
 
 # Path del proyecto
@@ -31,6 +32,224 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "phase1-foundations" / "python"))
 
 from esn.esn import EchoStateNetwork
+
+
+# =============================================================================
+# SISTEMA DE VOLUNTAD VERDADERA (THELEMA)
+# =============================================================================
+# "Hacer tu Voluntad será el todo de la Ley"
+# Cada nodo tiene una órbita única y no debe desviarse de ella.
+# =============================================================================
+
+class DataDomain(Enum):
+    """Dominios de datos que un nodo puede procesar."""
+    TEMPERATURE = "temperature"
+    HUMIDITY = "humidity"
+    AUDIO = "audio"
+    MOTION = "motion"
+    LIGHT = "light"
+    PRESSURE = "pressure"
+    VIBRATION = "vibration"
+    VOLTAGE = "voltage"
+    TIMESERIES = "timeseries"
+    GENERIC = "generic"
+
+
+class TrueWillVector:
+    """
+    Vector de Voluntad Verdadera (Thelema).
+    
+    Cada nodo desarrolla una "Voluntad" basada en:
+    - Lo que nació procesando (genesis domain)
+    - Lo que ha aprendido mejor (experiencia)
+    - Su inercia hacia ciertos tipos de datos
+    
+    La Voluntad determina qué tareas acepta/rechaza.
+    
+    Filosofía:
+    ---------
+    "Cada estrella tiene su órbita. No hay colisión si cada una
+    sigue su camino. La fricción del sistema se minimiza cuando
+    cada nodo hace SOLO lo que nació para hacer."
+    
+    Implementación:
+    --------------
+    - affinity[domain] ∈ [0, 1]: Afinidad hacia un dominio
+    - inertia: Resistencia a cambiar de dominio
+    - cost_function: Penalización por tareas fuera de voluntad
+    """
+    
+    def __init__(self, genesis_domain: DataDomain = DataDomain.GENERIC):
+        """
+        Args:
+            genesis_domain: Dominio inicial/nativo del nodo
+        """
+        self.genesis_domain = genesis_domain
+        
+        # Afinidad por cada dominio [0-1]
+        # El dominio genesis comienza con afinidad máxima
+        self.affinity: Dict[DataDomain, float] = {
+            domain: 0.1 for domain in DataDomain
+        }
+        self.affinity[genesis_domain] = 1.0
+        
+        # Inercia: resistencia al cambio (aumenta con experiencia)
+        self.inertia: float = 0.5
+        
+        # Historial de procesamiento por dominio
+        self.processing_history: Dict[DataDomain, int] = {
+            domain: 0 for domain in DataDomain
+        }
+        self.processing_history[genesis_domain] = 1
+        
+        # Métricas de éxito por dominio (MSE promedio)
+        self.success_metrics: Dict[DataDomain, List[float]] = {
+            domain: [] for domain in DataDomain
+        }
+        
+        # Umbrales de rechazo
+        self.rejection_threshold: float = 0.3  # Rechaza si afinidad < esto
+        self.high_cost_threshold: float = 0.5  # Costo alto si afinidad < esto
+    
+    def calculate_true_will_vector(self) -> Dict[str, float]:
+        """
+        Calcula el vector de Voluntad Verdadera normalizado.
+        
+        Retorna un diccionario con la "fuerza de voluntad" hacia cada dominio.
+        La suma de todos los valores = 1.0
+        
+        Returns:
+            Dict[domain_name, will_strength]
+        """
+        # Combinar afinidad con experiencia
+        will_vector = {}
+        total = 0.0
+        
+        for domain in DataDomain:
+            # Experiencia normalizada
+            total_processing = sum(self.processing_history.values())
+            experience = self.processing_history[domain] / max(1, total_processing)
+            
+            # Éxito promedio (menor MSE = mayor éxito)
+            if self.success_metrics[domain]:
+                avg_mse = np.mean(self.success_metrics[domain][-10:])  # Últimos 10
+                success = 1.0 / (1.0 + avg_mse)  # Inversamente proporcional
+            else:
+                success = 0.5 if domain == self.genesis_domain else 0.1
+            
+            # Voluntad = afinidad * (1 + experiencia) * éxito
+            will = self.affinity[domain] * (1 + experience) * success
+            will_vector[domain.value] = will
+            total += will
+        
+        # Normalizar
+        if total > 0:
+            for key in will_vector:
+                will_vector[key] /= total
+        
+        return will_vector
+    
+    def evaluate_task_cost(self, requested_domain: DataDomain) -> Tuple[float, str]:
+        """
+        Evalúa el costo de procesar una tarea en un dominio específico.
+        
+        Retorna:
+        - cost: 0.0 (alineado) a 1.0 (máxima resistencia)
+        - decision: "accept", "high_priority", "low_priority", "reject"
+        
+        Args:
+            requested_domain: Dominio de la tarea solicitada
+            
+        Returns:
+            (cost, decision)
+        """
+        affinity = self.affinity[requested_domain]
+        
+        # Costo base inversamente proporcional a afinidad
+        base_cost = 1.0 - affinity
+        
+        # Modificar por inercia (nodos con mucha inercia resisten más)
+        adjusted_cost = base_cost * (1 + self.inertia)
+        adjusted_cost = min(1.0, adjusted_cost)
+        
+        # Determinar decisión
+        if affinity >= self.high_cost_threshold:
+            decision = "accept" if affinity >= 0.8 else "high_priority"
+        elif affinity >= self.rejection_threshold:
+            decision = "low_priority"
+        else:
+            decision = "reject"
+        
+        return adjusted_cost, decision
+    
+    def should_accept_task(self, requested_domain: DataDomain) -> bool:
+        """
+        Decisión binaria: ¿debería este nodo aceptar esta tarea?
+        
+        Basado en el principio Thelemático: "Cada estrella en su órbita."
+        Un nodo no debe desviarse de su Voluntad Verdadera.
+        """
+        _, decision = self.evaluate_task_cost(requested_domain)
+        return decision != "reject"
+    
+    def record_processing(self, domain: DataDomain, mse: float) -> None:
+        """
+        Registra el procesamiento de datos en un dominio.
+        
+        Esto actualiza la afinidad y experiencia del nodo.
+        
+        Args:
+            domain: Dominio procesado
+            mse: Error cuadrático medio del procesamiento
+        """
+        # Incrementar experiencia
+        self.processing_history[domain] += 1
+        
+        # Registrar métrica de éxito
+        self.success_metrics[domain].append(mse)
+        
+        # Actualizar afinidad basada en éxito
+        if mse < 0.1:  # Muy exitoso
+            self.affinity[domain] = min(1.0, self.affinity[domain] + 0.05)
+        elif mse < 0.3:  # Aceptable
+            self.affinity[domain] = min(1.0, self.affinity[domain] + 0.02)
+        elif mse > 0.7:  # Malo - reducir afinidad
+            self.affinity[domain] = max(0.0, self.affinity[domain] - 0.03)
+        
+        # Aumentar inercia con experiencia total
+        total_exp = sum(self.processing_history.values())
+        self.inertia = min(0.95, 0.5 + (total_exp / 1000))
+    
+    def get_specialization(self) -> Tuple[DataDomain, float]:
+        """
+        Retorna el dominio de especialización del nodo y su nivel.
+        
+        Returns:
+            (domain, specialization_level)
+        """
+        max_affinity = 0.0
+        specialized_domain = self.genesis_domain
+        
+        for domain, affinity in self.affinity.items():
+            if affinity > max_affinity:
+                max_affinity = affinity
+                specialized_domain = domain
+        
+        return specialized_domain, max_affinity
+    
+    def export_will(self) -> Dict:
+        """Exporta el vector de voluntad para sincronización."""
+        return {
+            'genesis_domain': self.genesis_domain.value,
+            'affinity': {d.value: v for d, v in self.affinity.items()},
+            'inertia': self.inertia,
+            'will_vector': self.calculate_true_will_vector(),
+            'specialization': {
+                'domain': self.get_specialization()[0].value,
+                'level': self.get_specialization()[1]
+            },
+            'processing_history': {d.value: v for d, v in self.processing_history.items()}
+        }
 
 
 class AeonNode:
@@ -42,13 +261,17 @@ class AeonNode:
     - Exportar sus pesos W_out
     - Importar pesos de otros nodos
     - Mezclar conocimiento (promedio ponderado)
+    - Calcular su Voluntad Verdadera (Thelema)
+    - Aceptar/rechazar tareas según su especialización
     """
     
-    def __init__(self, node_id: str = None, n_reservoir: int = 32):
+    def __init__(self, node_id: str = None, n_reservoir: int = 32,
+                 genesis_domain: DataDomain = DataDomain.GENERIC):
         """
         Args:
             node_id: Identificador único (auto-generado si None)
             n_reservoir: Tamaño del reservoir
+            genesis_domain: Dominio nativo del nodo (para Thelema)
         """
         self.node_id = node_id or self._generate_id()
         self.n_reservoir = n_reservoir
@@ -67,19 +290,24 @@ class AeonNode:
         self.last_sync = None
         self.peers: List[str] = []
         
+        # Sistema de Voluntad Verdadera (Thelema)
+        self.true_will = TrueWillVector(genesis_domain)
+        
     def _generate_id(self) -> str:
         """Genera ID único basado en timestamp + random."""
         rng = np.random.default_rng(int(time.time() * 1000) % (2**32))
         data = f"{time.time()}-{rng.random()}"
         return hashlib.sha256(data.encode()).hexdigest()[:12]
     
-    def train(self, data: np.ndarray, washout: int = 20) -> float:
+    def train(self, data: np.ndarray, washout: int = 20,
+              domain: DataDomain = DataDomain.TIMESERIES) -> float:
         """
         Entrena localmente con datos.
         
         Args:
             data: Serie temporal 1D
             washout: Muestras a descartar
+            domain: Dominio de los datos (para Thelema)
             
         Returns:
             MSE del entrenamiento
@@ -94,7 +322,45 @@ class AeonNode:
         predictions = self.esn.predict(X)
         mse = np.mean((predictions - Y) ** 2)
         
+        # Registrar en sistema Thelema
+        self.true_will.record_processing(domain, float(mse))
+        
         return float(mse)
+    
+    def evaluate_task(self, domain: DataDomain) -> Tuple[bool, float, str]:
+        """
+        Evalúa si este nodo debería aceptar una tarea en un dominio específico.
+        
+        Implementa el principio de "Voluntad Verdadera" (Thelema):
+        - Si la tarea está alineada con la Voluntad del nodo → acepta
+        - Si está desalineada → rechaza o baja prioridad
+        
+        Args:
+            domain: Dominio de la tarea solicitada
+            
+        Returns:
+            (should_accept, cost, decision)
+        """
+        cost, decision = self.true_will.evaluate_task_cost(domain)
+        should_accept = self.true_will.should_accept_task(domain)
+        return should_accept, cost, decision
+    
+    def calculate_true_will_vector(self) -> Dict[str, float]:
+        """
+        Calcula el vector de Voluntad Verdadera del nodo.
+        
+        Este vector representa la "órbita natural" del nodo:
+        qué tipos de datos procesa mejor y debería seguir procesando.
+        
+        Returns:
+            Dict con fuerza de voluntad por dominio (suma = 1.0)
+        """
+        return self.true_will.calculate_true_will_vector()
+    
+    def get_specialization(self) -> Tuple[str, float]:
+        """Retorna el dominio de especialización y su nivel."""
+        domain, level = self.true_will.get_specialization()
+        return domain.value, level
     
     def predict(self, input_value: float) -> float:
         """Predice siguiente valor."""
@@ -149,7 +415,8 @@ class AeonNode:
         return True
     
     def status(self) -> Dict:
-        """Estado actual del nodo."""
+        """Estado actual del nodo, incluyendo Voluntad Verdadera."""
+        spec_domain, spec_level = self.get_specialization()
         return {
             'node_id': self.node_id,
             'created_at': self.created_at,
@@ -158,7 +425,15 @@ class AeonNode:
             'sync_count': self.sync_count,
             'last_sync': self.last_sync,
             'peers_count': len(self.peers),
-            'peers': self.peers
+            'peers': self.peers,
+            # Thelema: Voluntad Verdadera
+            'true_will': {
+                'genesis_domain': self.true_will.genesis_domain.value,
+                'specialization': spec_domain,
+                'specialization_level': spec_level,
+                'inertia': self.true_will.inertia,
+                'will_vector': self.calculate_true_will_vector()
+            }
         }
     
     def export_weights_1bit(self, scale: float = 0.5) -> Dict:

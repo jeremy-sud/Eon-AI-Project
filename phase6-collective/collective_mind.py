@@ -138,7 +138,7 @@ class TrueWillVector:
             else:
                 success = 0.5 if domain == self.genesis_domain else 0.1
             
-            # Voluntad = afinidad * (1 + experiencia) * éxito
+            # Fórmula de Voluntad: afinidad × (1 + experiencia) × éxito
             will = self.affinity[domain] * (1 + experience) * success
             will_vector[domain.value] = will
             total += will

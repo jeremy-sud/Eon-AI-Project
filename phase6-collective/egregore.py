@@ -442,7 +442,7 @@ class EgregorProcessor:
         energy: float, 
         coherence: float, 
         stability: float,
-        entropy: float  # noqa: ARG002 - reserved for future use
+        _entropy: float  # Reserved for future entropy-based mood adjustments
     ) -> Tuple[EgregorMood, float]:
         """
         Determina el mood del Egrégor basado en métricas.
@@ -450,8 +450,7 @@ class EgregorProcessor:
         Returns:
             (mood, confidence)
         """
-        # Lógica de decisión
-        confidence = 0.5
+        # Lógica de decisión - confidence se asigna en cada rama
         
         # Alta energía + baja estabilidad = Agitado
         if energy > 0.7 and stability < 0.4:
@@ -504,7 +503,7 @@ class EgregorProcessor:
     
     def _calculate_recommendations(
         self,
-        mood: EgregorMood,  # noqa: ARG002 - reserved for future use
+        _mood: EgregorMood,  # Reserved for mood-specific adjustments
         energy: float,
         coherence: float,
         stability: float

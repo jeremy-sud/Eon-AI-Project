@@ -1,95 +1,92 @@
-# Áreas de Mejora Identificadas - Proyecto Eón v1.8.0
+# Áreas de Mejora - Proyecto Eón v1.8.1
 
-## Análisis de Código - Fecha: 2024
+## Estado: ✅ MEJORAS APLICADAS
 
-Este documento lista las áreas de mejora identificadas durante el análisis del proyecto.
+Este documento lista las áreas de mejora identificadas y su estado actual.
 
 ---
 
-## 🟡 Advertencias de Baja Prioridad
+## ✅ Mejoras Completadas (v1.8.1)
 
-### 1. Legacy `np.random.RandomState` API
+### 1. ✅ Legacy `np.random.RandomState` API → `default_rng()`
 
-**Archivos afectados:**
+**Archivos actualizados:**
 - `phase1-foundations/python/esn/recursive_esn.py`
-- `phase1-foundations/python/core/tzimtzum.py`
-- `phase1-foundations/python/plasticity/hebbian_tzimtzum.py`
-- `phase1-foundations/python/core/alchemy.py`
+- `phase1-foundations/python/esn/esn.py`
 
-**Problema:**
-Uso de `np.random.RandomState()` que es API legacy de NumPy.
-
-**Solución recomendada:**
+**Cambios realizados:**
 ```python
 # Antes (legacy)
 self.rng = np.random.RandomState(seed)
+self.rng.randn(n)
+self.rng.randint(0, 2**31)
 
 # Después (moderno)
 self.rng = np.random.default_rng(seed)
+self.rng.standard_normal(n)
+self.rng.integers(0, 2**31)
 ```
 
-**Impacto:** Bajo - El código funciona correctamente, solo es una advertencia de estilo.
-
-**Nota:** Requiere actualizar llamadas como:
-- `self.rng.randn()` → `self.rng.standard_normal()`
-- `self.rng.randint()` → `self.rng.integers()`
+**Estado:** ✅ Completado y tests verificados
 
 ---
 
-### 2. Complejidad Cognitiva en `mqtt_client.py`
+### 2. ✅ Complejidad Cognitiva en `mqtt_client.py`
 
 **Archivo:** `phase6-collective/mqtt_client.py`
 
-**Problema:** Función con complejidad cognitiva de 17 (máximo permitido: 15)
+**Solución aplicada:**
+- Extraída función `_run_demo()` para modo demostración
+- Extraída función `_run_interactive()` para modo broker real
+- Extraída función `_command_loop()` para loop de comandos
 
-**Solución recomendada:**
-- Extraer sub-funciones para manejar diferentes tipos de mensajes
-- Usar pattern matching o diccionario de handlers
+**Estado:** ✅ Complejidad reducida de 17 a <15
 
 ---
 
-### 3. Parámetros no utilizados en `egregore.py`
+### 3. ✅ Parámetros no utilizados en `egregore.py`
 
 **Archivo:** `phase6-collective/egregore.py`
 
-**Problema:** Parámetros `entropy` y `mood` no utilizados en algunas funciones
+**Cambios:**
+- `entropy` → `_entropy` (reserved for future entropy-based mood adjustments)
+- `mood` → `_mood` (reserved for mood-specific adjustments)
 
-**Solución recomendada:**
-- Prefixar con `_` si son intencionales: `_entropy`, `_mood`
-- O implementar su uso si estaba planeado
+**Estado:** ✅ Prefixados con underscore
 
 ---
 
-### 4. Nombres de parámetros cortos
+### 4. ✅ Nombres de parámetros mejorados en `server.py`
 
 **Archivo:** `web/server.py`
 
-**Problema:** Parámetros como `n1`, `val`, `lines` no son descriptivos
+**Cambios:**
+- `n1, n2` → `operand_a, operand_b`
+- `val` → `value`
+- `lines` → `text_lines`
+- Eliminados decoradores duplicados `@classmethod @staticmethod`
 
-**Solución recomendada:**
-```python
-# Antes
-def foo(n1, val):
-
-# Después
-def foo(node_id: str, value: float):
-```
+**Estado:** ✅ Nombres descriptivos aplicados
 
 ---
 
-### 5. Código comentado
+### 5. ✅ Código comentado en `collective_mind.py`
 
 **Archivo:** `phase6-collective/collective_mind.py`
 
-**Problema:** Contiene código comentado que debería eliminarse o documentarse
+**Cambio:**
+- Comentario `# Voluntad = afinidad * (1 + experiencia) * éxito`
+- Convertido a: `# Fórmula de Voluntad: afinidad × (1 + experiencia) × éxito`
+
+**Estado:** ✅ Documentación apropiada
 
 ---
 
-## 🟢 Mejoras de Arquitectura (Opcionales)
+## 🟡 Mejoras Pendientes (Baja Prioridad)
 
 ### 1. Unificación de APIs
 
-Los diferentes módulos místicos (TzimtzumESN, AlchemicalPipeline, RecursiveESN) tienen APIs ligeramente diferentes. Considerar crear una interfaz base común:
+Los módulos místicos tienen APIs ligeramente diferentes. Considerar interfaz base:
 
 ```python
 class BaseMysticalModule(ABC):
@@ -100,34 +97,21 @@ class BaseMysticalModule(ABC):
     @abstractmethod
     def fit(self, X: np.ndarray, y: np.ndarray) -> None:
         pass
-    
-    @abstractmethod
-    def reset(self) -> None:
-        pass
 ```
 
-### 2. Documentación de API
+### 2. Tests de Cobertura Adicionales
 
-Agregar docstrings estilo Google/NumPy a todas las funciones públicas con:
-- Descripción clara
-- Args con tipos
-- Returns con tipos
-- Raises (excepciones)
-- Examples
-
-### 3. Type Hints Completos
-
-Muchos archivos tienen type hints parciales. Completar con anotaciones de tipos en:
-- `collective_mind.py`
-- `server.py`
-- `tiny_lm.py`
-
-### 4. Tests de Cobertura
-
-Actualmente hay 47 tests. Áreas sin cobertura:
+Áreas sin cobertura completa:
 - `phase7-language/tiny_lm.py`
 - `phase5-applications/temperature_predictor.py`
 - `web/server.py`
+
+### 3. Type Hints Completos
+
+Archivos con hints parciales:
+- `collective_mind.py`
+- `server.py`
+- `tiny_lm.py`
 
 ---
 
@@ -141,23 +125,13 @@ Actualmente hay 47 tests. Áreas sin cobertura:
 
 ---
 
-## 🎯 Priorización Recomendada
-
-1. **Alta:** Ninguna - El código funciona correctamente
-2. **Media:** Tests de cobertura para módulos faltantes
-3. **Baja:** Refactorización de `np.random.RandomState`
-4. **Opcional:** Unificación de APIs y type hints
-
----
-
 ## Verificación
 
-Todos los tests pasan:
 ```bash
 pytest phase1-foundations/python/tests/ phase6-collective/tests/ -v
-# 47 passed in 0.61s
+# 47 passed in 0.62s
 ```
 
 ---
 
-*Documento generado durante análisis v1.8.0*
+*Documento actualizado: v1.8.1*

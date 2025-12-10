@@ -438,6 +438,83 @@ class AeonMQTTNode:
 # CLI Principal
 # ============================================================
 
+def _run_demo(node: AeonMQTTNode):
+    """Ejecuta demostración sin broker real."""
+    print("[MODO DEMO - Sin broker real]")
+    print()
+    
+    # Crear paquete binario
+    packet = node._create_binary_packet()
+    print("Paquete binario creado:")
+    print(f"  Tamaño: {len(packet)} bytes")
+    print(f"  Header: {packet[:14].hex()}")
+    print()
+    
+    # Decodificar
+    decoded = node._decode_binary_packet(packet)
+    print("Paquete decodificado:")
+    print(f"  Magic: {decoded['magic']}")
+    print(f"  Type: {PACKET_TYPE_NAMES.get(decoded['type'], 'UNKNOWN')}")
+    print(f"  Seed: {decoded['seed']}")
+    print(f"  Count: {decoded['count']} pesos")
+    print(f"  Scale: {decoded['scale']:.4f}")
+    print(f"  Compresión: {decoded['compression']}x")
+    print()
+    
+    # Métricas
+    print("=== MÉTRICAS 1-BIT ===")
+    print(f"Tamaño float32: {decoded['original_size']} bytes")
+    print(f"Tamaño 1-bit:   {decoded['compressed_size']} bytes")
+    print(f"Ahorro:         {(1-decoded['compressed_size']/decoded['original_size'])*100:.1f}%")
+    print()
+    print("✓ Demo completado")
+
+
+def _run_interactive(node: AeonMQTTNode, broker: str, port: int):
+    """Ejecuta modo interactivo con broker real."""
+    print(f"Conectando a {broker}:{port}...")
+    
+    if not node.connect():
+        print("✗ No se pudo conectar al broker")
+        print("  Asegúrese de que el broker esté corriendo.")
+        print("  Para instalar Mosquitto: sudo apt install mosquitto mosquitto-clients")
+        return
+    
+    print("✓ Conectado")
+    
+    # Callbacks
+    node.on_sync_received = lambda peer, pkt: print(f"  Sync de {peer}: {pkt['count']} pesos")
+    node.on_peer_discovered = lambda peer, info: print(f"  Peer descubierto: {peer}")
+    
+    # Iniciar heartbeat
+    node.start_heartbeat(30)
+    
+    try:
+        _command_loop(node)
+    except KeyboardInterrupt:
+        print("\n")
+    finally:
+        node.disconnect()
+        print("Desconectado")
+
+
+def _command_loop(node: AeonMQTTNode):
+    """Loop de comandos interactivo."""
+    print("\nEscuchando mensajes (Ctrl+C para salir)...")
+    print("Comandos: 'sync' para publicar pesos, 'quit' para salir\n")
+    
+    while True:
+        cmd = input("> ").strip().lower()
+        
+        if cmd == "sync":
+            node.publish_weights()
+        elif cmd == "status":
+            print(f"Peers conocidos: {list(node.peers.keys())}")
+            print(f"Syncs recibidos: {node.sync_count}")
+        elif cmd in ("quit", "exit", "q"):
+            break
+
+
 def main():
     parser = argparse.ArgumentParser(description="Eón MQTT Client")
     parser.add_argument("--broker", default="localhost", help="Broker MQTT")
@@ -461,77 +538,10 @@ def main():
     )
     
     if args.demo:
-        # Demo sin broker real
-        print("[MODO DEMO - Sin broker real]")
-        print()
-        
-        # Crear paquete binario
-        packet = node._create_binary_packet()
-        print("Paquete binario creado:")
-        print(f"  Tamaño: {len(packet)} bytes")
-        print(f"  Header: {packet[:14].hex()}")
-        print()
-        
-        # Decodificar
-        decoded = node._decode_binary_packet(packet)
-        print("Paquete decodificado:")
-        print(f"  Magic: {decoded['magic']}")
-        print(f"  Type: {PACKET_TYPE_NAMES.get(decoded['type'], 'UNKNOWN')}")
-        print(f"  Seed: {decoded['seed']}")
-        print(f"  Count: {decoded['count']} pesos")
-        print(f"  Scale: {decoded['scale']:.4f}")
-        print(f"  Compresión: {decoded['compression']}x")
-        print()
-        
-        # Métricas
-        print("=== MÉTRICAS 1-BIT ===")
-        print(f"Tamaño float32: {decoded['original_size']} bytes")
-        print(f"Tamaño 1-bit:   {decoded['compressed_size']} bytes")
-        print(f"Ahorro:         {(1-decoded['compressed_size']/decoded['original_size'])*100:.1f}%")
-        print()
-        print("✓ Demo completado")
-        
+        _run_demo(node)
     else:
-        # Conectar a broker real
-        print(f"Conectando a {args.broker}:{args.port}...")
-        
-        if node.connect():
-            print("✓ Conectado")
-            
-            # Callbacks
-            node.on_sync_received = lambda peer, pkt: print(f"  Sync de {peer}: {pkt['count']} pesos")
-            node.on_peer_discovered = lambda peer, info: print(f"  Peer descubierto: {peer}")
-            
-            # Iniciar heartbeat
-            node.start_heartbeat(30)
-            
-            try:
-                # Loop principal
-                print("\nEscuchando mensajes (Ctrl+C para salir)...")
-                print("Comandos: 'sync' para publicar pesos, 'quit' para salir\n")
-                
-                while True:
-                    cmd = input("> ").strip().lower()
-                    
-                    if cmd == "sync":
-                        node.publish_weights()
-                    elif cmd == "status":
-                        print(f"Peers conocidos: {list(node.peers.keys())}")
-                        print(f"Syncs recibidos: {node.sync_count}")
-                    elif cmd in ("quit", "exit", "q"):
-                        break
-                        
-            except KeyboardInterrupt:
-                print("\n")
-                
-            finally:
-                node.disconnect()
-                print("Desconectado")
-        else:
-            print("✗ No se pudo conectar al broker")
-            print("  Asegúrese de que el broker esté corriendo.")
-            print("  Para instalar Mosquitto: sudo apt install mosquitto mosquitto-clients")
-            
+        _run_interactive(node, args.broker, args.port)
+
 
 if __name__ == "__main__":
     main()

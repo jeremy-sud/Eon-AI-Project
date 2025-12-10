@@ -43,8 +43,8 @@ class EchoStateNetwork:
         self.sparsity = sparsity
         self.noise = noise
         
-        # Inicializar generador aleatorio
-        self.rng = np.random.RandomState(random_state)
+        # Inicializar generador aleatorio (API moderno)
+        self.rng = np.random.default_rng(random_state)
         
         # === MOMENTO CERO (Standardized DNA) ===
         import time
@@ -115,7 +115,7 @@ class EchoStateNetwork:
         reservoir_contribution = np.dot(self.W_reservoir, self.state)
         
         # Ruido para regularización
-        noise_contribution = self.noise * self.rng.randn(self.n_reservoir)
+        noise_contribution = self.noise * self.rng.standard_normal(self.n_reservoir)
         
         # Nuevo estado con no-linealidad tanh
         self.state = np.tanh(input_contribution + reservoir_contribution + noise_contribution)

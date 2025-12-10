@@ -492,9 +492,8 @@ class EonChat:
             return True
         return False
     
-    @classmethod
     @staticmethod
-    def _calculate_operation(n1: float, n2: float, op: str) -> Optional[float]:
+    def _calculate_operation(operand_a: float, operand_b: float, operator: str) -> Optional[float]:
         """Ejecuta una operación matemática básica."""
         operations = {
             '+': lambda a, b: a + b,
@@ -502,8 +501,8 @@ class EonChat:
             '*': lambda a, b: a * b,
             '/': lambda a, b: a / b if b != 0 else None,
         }
-        func = operations.get(op)
-        return func(n1, n2) if func else None
+        func = operations.get(operator)
+        return func(operand_a, operand_b) if func else None
     
     @classmethod
     def _solve_math(cls, message: str) -> Optional[str]:
@@ -637,12 +636,11 @@ class EonChat:
         
         return random.choice(recommendations['default'])
     
-    @classmethod
     # Helper functions para detección de patrones de secuencia
     @staticmethod
-    def _fmt_number(val):
+    def _fmt_number(value):
         """Formatea número como int si es entero, sino como float con 2 decimales."""
-        return int(val) if val == int(val) else round(val, 2)
+        return int(value) if value == int(value) else round(value, 2)
     
     @classmethod
     def _generate_arithmetic(cls, last, diff, count):
@@ -704,12 +702,11 @@ class EonChat:
         vals_str = ', '.join(str(v) for v in next_vals)
         return f"Es una secuencia tipo Fibonacci. Los siguientes {count_requested} valores son: **{vals_str}** 🌀"
     
-    @classmethod
     @staticmethod
-    def _find_exponent_for_base(val: float, base: int) -> Optional[int]:
-        """Encuentra el exponente si val es una potencia de base."""
+    def _find_exponent_for_base(value: float, base: int) -> Optional[int]:
+        """Encuentra el exponente si value es una potencia de base."""
         for exp in range(-5, 20):
-            if base ** exp == val:
+            if base ** exp == value:
                 return exp
         return None
     
@@ -1125,17 +1122,16 @@ El subsistema de {subsystem} ha reportado una anomalía.
         cls._docs_loaded_time = time.time()
         return docs
     
-    @classmethod
     @staticmethod
-    def _extract_relevant_context(lines: list, query_words: set, max_lines: int = 10) -> str:
+    def _extract_relevant_context(text_lines: list, query_words: set, max_lines: int = 10) -> str:
         """Extrae líneas relevantes que contienen las palabras clave."""
         relevant_lines = []
-        for i, line in enumerate(lines):
+        for i, line in enumerate(text_lines):
             line_lower = line.lower()
             if any(word in line_lower for word in query_words if len(word) > 2):
                 start = max(0, i - 1)
-                end = min(len(lines), i + 3)
-                relevant_lines.extend(lines[start:end])
+                end = min(len(text_lines), i + 3)
+                relevant_lines.extend(text_lines[start:end])
                 if len(relevant_lines) >= max_lines:
                     break
         return '\n'.join(relevant_lines[:max_lines])

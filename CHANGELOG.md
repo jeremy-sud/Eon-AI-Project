@@ -2,6 +2,40 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [1.8.1] - 2025-12-10
+
+### Mejoras de Código y Calidad
+
+#### 🔧 Modernización de NumPy Random API
+- **esn.py**: Migrado de `np.random.RandomState` a `np.random.default_rng()`
+- **recursive_esn.py**: Actualizado `randn()` → `standard_normal()`, `randint()` → `integers()`
+- Mantiene compatibilidad con semillas reproducibles
+
+#### 📉 Reducción de Complejidad Cognitiva
+- **mqtt_client.py**: Refactorizado `main()` extrayendo funciones auxiliares
+  - `_run_demo()`: Modo demostración sin broker
+  - `_run_interactive()`: Modo con broker real
+  - `_command_loop()`: Loop de comandos interactivo
+- Complejidad reducida de 17 a <15
+
+#### 🏷️ Mejoras de Nomenclatura
+- **egregore.py**: Prefixados parámetros reservados `_entropy`, `_mood`
+- **server.py**: Renombrados parámetros no descriptivos
+  - `n1, n2` → `operand_a, operand_b`
+  - `val` → `value`
+  - `lines` → `text_lines`
+- **server.py**: Eliminados decoradores duplicados `@classmethod @staticmethod`
+
+#### 📝 Documentación
+- **collective_mind.py**: Mejorada documentación de fórmula de Voluntad
+- **IMPROVEMENT_AREAS.md**: Actualizado con estado de mejoras completadas
+
+#### ✅ Tests
+- 47 tests ejecutándose exitosamente
+- Verificación completa post-refactorización
+
+---
+
 ## [1.8.0] - 2025-12-10
 
 ### Fase 11: Filosofía Mística Integrada 🔮

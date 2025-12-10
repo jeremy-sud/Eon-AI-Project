@@ -63,7 +63,7 @@ class MicroReservoir:
         time_scale: float = 1.0,
         spectral_radius: float = 0.9,
         sparsity: float = 0.8,
-        rng: Optional[np.random.RandomState] = None
+        rng: Optional[np.random.Generator] = None
     ):
         """
         Args:
@@ -72,14 +72,14 @@ class MicroReservoir:
             time_scale: Escala temporal (mayor = más lento, más memoria)
             spectral_radius: Radio espectral
             sparsity: Escasez de conexiones
-            rng: Generador aleatorio
+            rng: Generador aleatorio (np.random.Generator)
         """
         self.n_inputs = n_inputs
         self.n_internal = n_internal
         self.time_scale = time_scale
         self.spectral_radius = spectral_radius
         self.sparsity = sparsity
-        self.rng = rng or np.random.RandomState()
+        self.rng = rng if rng is not None else np.random.default_rng()
         
         # Pesos internos
         self.W_in = self.rng.uniform(-1, 1, (n_internal, n_inputs))
@@ -130,7 +130,7 @@ class MicroReservoir:
             # Ecuación estándar del reservoir
             input_contribution = np.dot(self.W_in, avg_input)
             internal_contribution = np.dot(self.W_internal, self.state)
-            noise_contribution = noise * self.rng.randn(self.n_internal)
+            noise_contribution = noise * self.rng.standard_normal(self.n_internal)
             
             self.state = np.tanh(
                 input_contribution + internal_contribution + noise_contribution
@@ -213,8 +213,8 @@ class RecursiveEchoStateNetwork:
         self.n_micro_neurons = n_micro_neurons
         self.noise = noise
         
-        # Generador aleatorio
-        self.rng = np.random.RandomState(random_state)
+        # Generador aleatorio (API moderno)
+        self.rng = np.random.default_rng(random_state)
         
         # === NIVEL MICRO (Abajo) ===
         # Crear micro-reservoirs con diferentes escalas temporales
@@ -233,7 +233,7 @@ class RecursiveEchoStateNetwork:
                 time_scale=scale,
                 spectral_radius=spectral_radius,
                 sparsity=sparsity,
-                rng=np.random.RandomState(self.rng.randint(0, 2**31))
+                rng=np.random.default_rng(self.rng.integers(0, 2**31))
             )
             self.micro_reservoirs.append(micro)
         
@@ -264,7 +264,7 @@ class RecursiveEchoStateNetwork:
     
     def _calculate_birth_hash(self) -> None:
         """Genera hash de nacimiento."""
-        state = self.rng.randint(0, 2**31) ^ self.birth_time
+        state = int(self.rng.integers(0, 2**31)) ^ self.birth_time
         bytes_list = []
         curr = state & 0xFFFFFFFF
         for _ in range(16):

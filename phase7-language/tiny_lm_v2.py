@@ -4,7 +4,7 @@ Proyecto Eón - TinyLM v2: Modelo de Lenguaje Mejorado
 
 Versión mejorada con:
 - Tokenización por palabras (no caracteres)
-- Embeddings densos
+- Embeddings densos (o Gematria para resonancia matemática)
 - Reservoir más grande (256 neuronas)
 - Greedy/Beam decoding
 
@@ -14,7 +14,7 @@ Versión mejorada con:
 import sys
 import numpy as np
 from pathlib import Path
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Literal
 from collections import Counter
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -22,6 +22,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "phase1-foundations" / "python"))
 
 from esn.esn import EchoStateNetwork
 from src.trie_vocab import TrieVocab
+from src.gematria import GematriaTokenizer, GematriaEmbeddingLayer
 
 
 class WordTokenizer:
@@ -124,7 +125,7 @@ class TinyLMv2:
     
     Características:
     - Tokenización por palabras
-    - Embeddings densos
+    - Embeddings densos o gemátricos
     - Reservoir grande
     - Múltiples estrategias de decodificación
     """
@@ -132,12 +133,33 @@ class TinyLMv2:
     def __init__(self, 
                  n_reservoir: int = 256,
                  vocab_size: int = 500,
-                 embedding_dim: int = 32):
+                 embedding_dim: int = 32,
+                 tokenizer_type: Literal["word", "gematria"] = "word"):
+        """
+        Inicializa el modelo de lenguaje.
+        
+        Args:
+            n_reservoir: Neuronas en el reservoir
+            vocab_size: Tamaño máximo del vocabulario
+            embedding_dim: Dimensión de embeddings
+            tokenizer_type: Tipo de tokenizador ("word" o "gematria")
+        """
         self.n_reservoir = n_reservoir
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
+        self.tokenizer_type = tokenizer_type
         
-        self.tokenizer = WordTokenizer(vocab_size, embedding_dim)
+        # Seleccionar tokenizador según tipo
+        if tokenizer_type == "gematria":
+            # 93 buckets = valor de Thelema en gematria
+            self.tokenizer = GematriaTokenizer(
+                embedding_dim=embedding_dim,
+                n_buckets=93,
+                min_freq=1
+            )
+        else:
+            self.tokenizer = WordTokenizer(vocab_size, embedding_dim)
+        
         self.esn = None
         self.is_trained = False
         
@@ -213,6 +235,56 @@ class TinyLMv2:
             'total_tokens': len(all_indices)
         }
     
+    def _get_embedding(self, idx: int) -> np.ndarray:
+        """Obtiene el embedding para un índice."""
+        if hasattr(self.tokenizer, '_embeddings') and self.tokenizer._embeddings is not None:
+            return self.tokenizer._embeddings[idx]
+        return self.tokenizer.embeddings[idx]
+    
+    def _get_token_id(self, token: str) -> int:
+        """Obtiene el ID de un token especial."""
+        if hasattr(self.tokenizer, 'word2idx'):
+            return self.tokenizer.word2idx.get(token, 0)
+        return self.tokenizer.vocab.get_id(token)
+    
+    def _select_next_greedy(self, logits: np.ndarray) -> int:
+        """Selección greedy del siguiente token."""
+        return int(np.argmax(logits))
+    
+    def _select_next_sampling(
+        self, 
+        logits: np.ndarray, 
+        temperature: float, 
+        top_k: int
+    ) -> int:
+        """Selección por sampling con top-k."""
+        import time
+        
+        # Aplicar temperatura
+        logits = logits / (temperature + 1e-8)
+        
+        # Top-k filtering
+        top_k_indices = np.argsort(logits)[-top_k:]
+        top_k_logits = logits[top_k_indices]
+        
+        # Softmax
+        exp_logits = np.exp(top_k_logits - np.max(top_k_logits))
+        probs = exp_logits / np.sum(exp_logits)
+        
+        # Samplear
+        rng = np.random.default_rng(int(time.time() * 1000) % (2**32))
+        chosen = rng.choice(len(top_k_indices), p=probs)
+        return int(top_k_indices[chosen])
+    
+    def _avoid_special_tokens(self, next_idx: int, logits: np.ndarray) -> int:
+        """Evita seleccionar tokens especiales (PAD, UNK)."""
+        if next_idx in [0, 1]:
+            sorted_indices = np.argsort(logits)[::-1]
+            for idx in sorted_indices:
+                if idx not in [0, 1]:
+                    return int(idx)
+        return next_idx
+    
     def generate(self, 
                  prompt: str, 
                  max_tokens: int = 30,
@@ -243,57 +315,31 @@ class TinyLMv2:
         
         # Calentar el reservoir con el prompt
         for idx in prompt_indices:
-            emb = self.tokenizer.embeddings[idx]
+            emb = self._get_embedding(idx)
             self.esn._update_state(emb)
         
         # Generar
         generated = list(prompt_indices)
-        current_idx = prompt_indices[-1] if len(prompt_indices) > 0 else self.tokenizer.vocab.get_id(self.tokenizer.BOS)
+        bos_token = getattr(self.tokenizer, 'BOS_TOKEN', self.tokenizer.BOS)
+        current_idx = prompt_indices[-1] if len(prompt_indices) > 0 else self._get_token_id(bos_token)
         
-        eos_idx = self.tokenizer.vocab.get_id(self.tokenizer.EOS)
+        eos_token = getattr(self.tokenizer, 'EOS_TOKEN', self.tokenizer.EOS)
+        eos_idx = self._get_token_id(eos_token)
         
         for _ in range(max_tokens):
-            # Embedding actual
-            emb = self.tokenizer.embeddings[current_idx]
-            
-            # Actualizar estado y obtener logits
+            emb = self._get_embedding(current_idx)
             state = self.esn._update_state(emb)
             logits = np.dot(state, self.esn.W_out)
             
-            # Seleccionar siguiente token según estrategia
             if strategy == 'greedy':
-                next_idx = np.argmax(logits)
-            else:  # sampling con top-k
-                # Aplicar temperatura
-                logits = logits / (temperature + 1e-8)
-                
-                # Top-k filtering
-                top_k_indices = np.argsort(logits)[-top_k:]
-                top_k_logits = logits[top_k_indices]
-                
-                # Softmax
-                exp_logits = np.exp(top_k_logits - np.max(top_k_logits))
-                probs = exp_logits / np.sum(exp_logits)
-                
-                # Samplear (usar tiempo como seed para variación)
-                import time
-                rng = np.random.default_rng(int(time.time() * 1000) % (2**32))
-                chosen = rng.choice(len(top_k_indices), p=probs)
-                next_idx = top_k_indices[chosen]
+                next_idx = self._select_next_greedy(logits)
+            else:
+                next_idx = self._select_next_sampling(logits, temperature, top_k)
             
-            # Evitar tokens especiales
-            if next_idx in [0, 1]:  # PAD, UNK
-                # Elegir el siguiente mejor
-                sorted_indices = np.argsort(logits)[::-1]
-                for idx in sorted_indices:
-                    if idx not in [0, 1]:
-                        next_idx = idx
-                        break
-            
+            next_idx = self._avoid_special_tokens(next_idx, logits)
             generated.append(next_idx)
             current_idx = next_idx
             
-            # Parar en EOS
             if next_idx == eos_idx:
                 break
         

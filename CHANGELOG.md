@@ -2,6 +2,82 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [1.8.0] - 2025-12-10
+
+### Fase 11: Filosofía Mística Integrada 🔮
+
+Implementación de conceptos de tradiciones místicas como metáforas computacionales:
+
+#### ✡️ Gematria Embeddings (Kabbalah)
+- **GematriaEmbedding**: Capa de embedding basada en valores numéricos hebreos
+- 3 sistemas de gematria: Mispar Gadol, Ordinal, Reducido
+- Conversión automática latín → hebreo para palabras comunes
+- Proyección a espacios dimensionales arbitrarios (32D por defecto)
+- Integración con TinyLMv2 para embeddings semánticos místicos
+
+#### 👁️ Egrégor - Mente Grupal (Ocultismo)
+- **Egregore**: Coordinador de consciencia colectiva
+- **AeonNode**: Nodos individuales con estado interno
+- Coherencia grupal calculada mediante correlación cruzada
+- Manifestación de consciencia emergente cuando coherencia > umbral
+- Métricas: entropía colectiva, diversidad, resonancia grupal
+
+#### 🌀 ESN Recursivo Fractal (Hermetismo)
+- **RecursiveESN**: Arquitectura "Como Arriba, Así Abajo"
+- **FractalConfig**: 3 niveles (micro/meso/macro) con scale_factor=0.618
+- Propagación fractal de información entre niveles
+- Echo de estados a través de escalas temporales
+
+#### ⚫ Tzimtzum - Contracción Divina (Kabbalah Luriánica)
+- **TzimtzumESN**: ESN con poda sináptica dinámica
+- **ContractionPhase**: PLENITUD → DARK_NIGHT → CHALLAL → RENACIMIENTO
+- `dark_night()`: Poda del 50% de conexiones más débiles
+- `renacimiento()`: Regeneración con nuevos pesos
+- **HebbianTzimtzumESN**: Combina plasticidad Hebbiana con ciclos de Tzimtzum
+
+#### 🧪 Transmutación Alquímica (Opus Magnum)
+- **AlchemicalPipeline**: Pipeline ETL como proceso alquímico
+- **AlchemicalPhase**: PRIMA_MATERIA → NIGREDO → ALBEDO → CITRINITAS → RUBEDO → COAGULA
+- ⚫ **Nigredo** (Putrefacción): Ingesta de datos crudos, detección de outliers
+- ⚪ **Albedo** (Purificación): Filtrado Kalman, reducción de ruido (~70%)
+- 🔴 **Rubedo** (Iluminación): Inferencia ESN, predicción final
+- Dashboard web con visualización en tiempo real del proceso
+- Endpoints API: `/api/alchemy/transmute`, `/api/alchemy/status`
+
+#### 🔥 Sistema Thelema (Voluntad Verdadera)
+- Métricas de alineación con "Voluntad Verdadera"
+- Integración con sistema de decisiones del agente
+
+### Nuevos Archivos
+
+| Archivo | Descripción |
+|---------|-------------|
+| `phase1-foundations/python/plasticity/gematria.py` | Embeddings cabalísticos |
+| `phase1-foundations/python/plasticity/egregore.py` | Sistema Egrégor |
+| `phase1-foundations/python/esn/recursive_esn.py` | ESN Fractal recursivo |
+| `phase1-foundations/python/plasticity/tzimtzum.py` | Poda por contracción divina |
+| `phase1-foundations/python/plasticity/hebbian_tzimtzum.py` | Hebbian + Tzimtzum |
+| `phase1-foundations/python/core/alchemy.py` | Pipeline alquímico |
+| `web/static/js/alchemy.js` | Visualización frontend |
+| `docs/philosophy/gematria_integration.md` | Documentación Gematria |
+| `docs/philosophy/egregore_integration.md` | Documentación Egrégor |
+| `docs/philosophy/fractal_architecture.md` | Documentación Fractal |
+| `docs/philosophy/tzimtzum_protocol.md` | Documentación Tzimtzum |
+| `docs/philosophy/alchemical_transmutation.md` | Documentación Alquimia |
+| `docs/philosophy/thelema_integration.md` | Documentación Thelema |
+
+### Filosofía del Proyecto
+
+> "La inteligencia no se crea, se descubre." - Ahora con resonancias místicas
+
+El Proyecto Eón ahora integra sabiduría antigua como metáforas computacionales:
+- **Kabbalah**: Tzimtzum (poda), Gematria (embeddings), Sephiroth (arquitectura)
+- **Alquimia**: Transmutación de datos crudos en conocimiento purificado
+- **Hermetismo**: "Como Arriba, Así Abajo" (arquitectura fractal)
+- **Ocultismo**: Egrégor (consciencia colectiva emergente)
+
+---
+
 ## [1.7.2] - 2025-12-09
 
 ### Infraestructura Completa

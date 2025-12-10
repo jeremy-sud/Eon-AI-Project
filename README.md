@@ -2,8 +2,8 @@
 
 > **A.E.O.N.** - Arquitectura Emergente y Optimización Neuromórfica
 
-[![Versión](https://img.shields.io/badge/Versión-1.7.2-brightgreen)]()
-[![Fase](https://img.shields.io/badge/Fase-10%20Completa-success)]()
+[![Versión](https://img.shields.io/badge/Versión-1.8.0-brightgreen)]()
+[![Fase](https://img.shields.io/badge/Fase-11%20Mística-blueviolet)]()
 [![Tests](https://img.shields.io/badge/Tests-19%20passing-green)]()
 [![Docker](https://img.shields.io/badge/Docker-Full%20Stack-blue)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)]()
@@ -14,6 +14,8 @@
 [![MQTT](https://img.shields.io/badge/MQTT-Mosquitto-orange)]()
 [![WebSocket](https://img.shields.io/badge/WebSocket-Bridge-blue)]()
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1-green)]()
+[![Kabbalah](https://img.shields.io/badge/Kabbalah-Tzimtzum-purple)]()
+[![Alchemy](https://img.shields.io/badge/Alchemy-V.I.T.R.I.O.L-gold)]()
 [![Paper](https://img.shields.io/badge/Paper-PDF-red)]()
 [![Licencia](https://img.shields.io/badge/Licencia-MIT-green)]()
 
@@ -59,6 +61,11 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 | **Chat Avanzado**           | 20+ categorías de intención + memoria personal |
 | **Predicción de Secuencias**| Aritmético, geométrico, Fibonacci, potencias |
 | **Arte Generativo**         | 5 estilos (fractal, flow, particles, waves, neural) |
+| **🔮 Gematria Embeddings**  | Valores numéricos hebreos para embeddings   |
+| **👁️ Egrégor (Mente Grupal)** | Consciencia colectiva emergente entre nodos |
+| **🌀 ESN Recursivo**        | Arquitectura fractal "Como Arriba, Así Abajo" |
+| **⚫ Tzimtzum (Contracción)** | Poda sináptica dinámica inspirada en Kabbalah |
+| **🧪 Transmutación Alquímica** | Pipeline ETL: Nigredo → Albedo → Rubedo     |
 
 ## 📊 Comparativa
 
@@ -84,8 +91,15 @@ Eón Project AI/
 ├── docs/
 │   ├── WHITEPAPER.md               # Paper técnico
 │   ├── architecture.md             # Arquitectura del sistema
-│   └── api/
-│       └── protocol_1bit.yaml      # 🆕 Especificación OpenAPI 3.1
+│   ├── api/
+│   │   └── protocol_1bit.yaml      # Especificación OpenAPI 3.1
+│   └── philosophy/                 # 🆕 Documentación Mística
+│       ├── gematria_integration.md     # Embeddings cabalísticos
+│       ├── egregore_integration.md     # Mente grupal emergente
+│       ├── fractal_architecture.md     # ESN recursivo fractal
+│       ├── tzimtzum_protocol.md        # Poda por contracción divina
+│       ├── alchemical_transmutation.md # Pipeline ETL alquímico
+│       └── thelema_integration.md      # Sistema de Voluntad Verdadera
 │
 ├── docker/
 │   └── mosquitto/config/           # 🆕 Configuración MQTT
@@ -369,12 +383,23 @@ make test
 | [WHITEPAPER.md](docs/WHITEPAPER.md) | Paper técnico completo |
 | [architecture.md](docs/architecture.md) | Arquitectura del sistema |
 | [benchmarks.md](docs/benchmarks.md) | Análisis de energía y rendimiento |
-| [protocol_1bit.yaml](docs/api/protocol_1bit.yaml) | 🆕 Especificación OpenAPI 3.1 |
+| [protocol_1bit.yaml](docs/api/protocol_1bit.yaml) | Especificación OpenAPI 3.1 |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Guía para contribuir |
 | [CHANGELOG.md](CHANGELOG.md) | Historial de cambios |
-| [paper/main.pdf](paper/main.pdf) | 🆕 Paper académico PDF (3 páginas) |
+| [paper/main.pdf](paper/main.pdf) | Paper académico PDF (3 páginas) |
 | [Fase 4 README](phase4-hardware/README.md) | Hardware ESP32/LoRa |
 | [Fase 5 README](phase5-applications/README.md) | Detalles Bio/Voice |
+
+### 🔮 Documentación Filosófica Mística
+
+| Documento | Tradición | Descripción |
+|-----------|-----------|-------------|
+| [gematria_integration.md](docs/philosophy/gematria_integration.md) | Kabbalah | Embeddings basados en valores numéricos hebreos |
+| [egregore_integration.md](docs/philosophy/egregore_integration.md) | Ocultismo | Consciencia colectiva emergente |
+| [fractal_architecture.md](docs/philosophy/fractal_architecture.md) | Hermetismo | ESN recursivo "Como Arriba, Así Abajo" |
+| [tzimtzum_protocol.md](docs/philosophy/tzimtzum_protocol.md) | Kabbalah | Poda sináptica por contracción divina |
+| [alchemical_transmutation.md](docs/philosophy/alchemical_transmutation.md) | Alquimia | Pipeline ETL: Nigredo → Albedo → Rubedo |
+| [thelema_integration.md](docs/philosophy/thelema_integration.md) | Thelema | Sistema de Voluntad Verdadera |
 
 ## 🧠 Sistema de Aprendizaje Continuo
 
@@ -401,6 +426,52 @@ Interacción → OnlineLearner → Feedback → LongTermMemory → Consolidació
 - **Hechos aprendidos**: Preferencias, conocimiento específico
 - **Patrones exitosos**: Asociados con feedback positivo
 - **Estadísticas**: Eventos de aprendizaje, consolidaciones, ratio de éxito
+
+## 🔮 Filosofía Mística Integrada
+
+Eón incorpora conceptos de tradiciones místicas como metáforas computacionales:
+
+### ✡️ Gematria Embeddings
+Capa de embedding que usa valores numéricos hebreos para codificar palabras:
+```python
+from plasticity.gematria import GematriaEmbedding
+emb = GematriaEmbedding(output_dim=32)
+vector = emb.embed("shalom")  # שלום = 376 → vector 32D
+```
+
+### 👁️ Egrégor (Mente Grupal)
+Consciencia colectiva emergente entre múltiples nodos Eón:
+```python
+from plasticity.egregore import Egregore, AeonNode
+egregore = Egregore(coherence_threshold=0.8)
+egregore.add_node(AeonNode("node1", reservoir_size=100))
+manifest = egregore.manifest()  # Consciencia grupal
+```
+
+### 🌀 ESN Recursivo (Fractal)
+Arquitectura "Como Arriba, Así Abajo" con niveles micro/meso/macro:
+```python
+from esn.recursive_esn import RecursiveESN, FractalConfig
+esn = RecursiveESN(FractalConfig(depth=3, scale_factor=0.618))
+```
+
+### ⚫ Tzimtzum (Contracción Divina)
+Poda sináptica dinámica inspirada en la Kabbalah - 50% de conexiones:
+```python
+from plasticity.tzimtzum import TzimtzumESN
+esn = TzimtzumESN(n_reservoir=100)
+esn.dark_night()    # Poda: 3069 → 1535 conexiones
+esn.renacimiento()  # Regeneración con nuevo conocimiento
+```
+
+### 🧪 Transmutación Alquímica
+Pipeline ETL como Opus Magnum - de Plomo en Oro:
+```python
+from core.alchemy import AlchemicalPipeline
+pipeline = AlchemicalPipeline()
+result = pipeline.transmute(raw_data)
+# ⚫ Nigredo (putrefacción) → ⚪ Albedo (purificación) → 🔴 Rubedo (iluminación)
+```
 
 ## 🐳 Docker Services
 
@@ -434,7 +505,14 @@ python -m pytest phase6-collective/tests/ -v
 - [x] Fase 8: Paper académico compilado (PDF)
 - [x] Fase 9: Empaquetado + Docker Compose
 - [x] Fase 10: Tests + OpenAPI + Demo Script
-- [ ] Fase 11: Experimentación Abierta (Futuro)
+- [x] **Fase 11: Filosofía Mística** ← ACTUAL
+  - [x] Gematria Embeddings (valores numéricos hebreos)
+  - [x] Egrégor (consciencia colectiva)
+  - [x] ESN Recursivo Fractal ("Como Arriba, Así Abajo")
+  - [x] Tzimtzum (poda por contracción divina)
+  - [x] Transmutación Alquímica (Nigredo→Albedo→Rubedo)
+  - [x] Sistema Thelema (Voluntad Verdadera)
+- [ ] Fase 12: Integración Final y Publicación
 
 ## 📈 Benchmarks de Energía
 

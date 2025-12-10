@@ -2,13 +2,14 @@
 
 Este documento detalla el análisis de consumo energético y uso de recursos del Motor Eón.
 
-## Benchmark Integral v2.0
+## Benchmark Integral v2.1
 
 Ejecutar con:
 ```bash
-python benchmark_full.py --quick  # Modo rápido (~30s)
-python benchmark_full.py          # Modo completo (~2min)
-python benchmark_full.py --export # Exportar a JSON
+cd phase1-foundations/python
+python benchmark.py --quick   # Modo rápido (~30s)
+python benchmark.py           # Modo completo (~2min)
+python benchmark.py --export  # Exportar a JSON
 ```
 
 ## 1. Tamaño del Reservoir
@@ -32,17 +33,40 @@ python benchmark_full.py --export # Exportar a JSON
 
 **Hallazgo**: Cuantización 8-bit retiene 99.6% de precisión con 8x menos memoria.
 
-## 3. Plasticidad
+## 3. Plasticidad Hebbiana
 
 | Modelo              | MSE      | Adaptaciones |
 |---------------------|----------|--------------|
 | ESN Estándar        | 0.092    | 0            |
-| ESN + hebbian       | 0.087    | 500          |
-| ESN + anti_hebbian  | 0.089    | 500          |
+| ESN + Hebbian       | 0.087    | 500          |
+| ESN + Anti-Hebbian  | 0.089    | 500          |
 
 **Hallazgo**: Plasticidad Hebbiana mejora ligeramente el rendimiento.
 
-## 4. Sistema de Aprendizaje (NUEVO)
+## 4. Módulos Místicos (Fase 11)
+
+### TzimtzumESN - Poda Dinámica
+| Fase           | Conexiones Activas | MSE   | Descripción |
+|----------------|--------------------|-------|-------------|
+| PLENITUD       | 100%               | 0.087 | Estado inicial |
+| DARK_NIGHT     | 50%                | 0.095 | Poda del 50% conexiones débiles |
+| RENACIMIENTO   | 100%               | 0.082 | Regeneración con nuevos pesos |
+
+### AlchemicalPipeline - ETL Transmutación
+| Fase           | Reducción Ruido | Latencia | Descripción |
+|----------------|-----------------|----------|-------------|
+| NIGREDO        | 0%              | <1ms     | Ingesta datos crudos |
+| ALBEDO         | ~70%            | <5ms     | Filtrado Kalman |
+| RUBEDO         | N/A             | <10ms    | Inferencia ESN |
+
+### RecursiveESN - Arquitectura Fractal
+| Nivel   | Neuronas | Escala Temporal | Uso |
+|---------|----------|-----------------|-----|
+| Micro   | 8/unidad | 1x-8x           | Patrones rápidos |
+| Macro   | 10 unid. | Variable        | Patrones lentos |
+| Total   | ~80      | Multi-escala    | Memoria jerárquica |
+
+## 5. Sistema de Aprendizaje
 
 ### Componentes
 - **OnlineLearner**: Actualización en tiempo real
@@ -58,32 +82,20 @@ python benchmark_full.py --export # Exportar a JSON
 | Almacenamiento/hecho       | ~150 bytes   |
 | Tiempo de consolidación    | < 100ms      |
 
-## 5. Generación de Imágenes
+## 6. Tests de Regresión
 
-| Estilo    | Tiempo (s) | Tamaño (KB) | Colores |
-|-----------|------------|-------------|---------|
-| fractal   | 0.15       | 45-60       | 12 paletas |
-| flow      | 0.12       | 40-55       | 12 paletas |
-| particles | 0.18       | 50-70       | 12 paletas |
-| waves     | 0.10       | 35-50       | 12 paletas |
-| neural    | 0.20       | 55-75       | 12 paletas |
-
-## 6. Comparativa con TinyML
-
-| Métrica                     | Eón Core (Reservoir) | TinyML (MLP Estático) | Diferencia   |
-| :-------------------------- | :------------------- | :-------------------- | :----------- |
-| **Memoria (RAM)**           | **1.3 KB**           | ~4 KB                 | **3x Menor** |
-| **Memoria (Flash)**         | 4 KB                 | ~10 KB                | 2.5x Menor   |
-| **Energía / Inferencia**    | 0.0045 μJ            | **0.0015 μJ**         | 3x Mayor     |
-| **Capacidad Temporal**      | **SÍ**               | NO                    | N/A          |
-| **Entrenamiento On-Device** | **SÍ**               | NO                    | ∞            |
-| **Aprendizaje Continuo**    | **SÍ**               | NO                    | ∞            |
+| Suite                    | Tests | Estado | Tiempo |
+|--------------------------|-------|--------|--------|
+| test_mystical_modules.py | 28    | ✅     | 0.21s  |
+| test_ws_bridge.py        | 19    | ✅     | 0.40s  |
+| **Total**                | **47**| **✅** | 0.62s  |
 
 ## Metodología
 
-- **Plataforma**: Python 3.13 + simulación Cortex-M4F
-- **Tarea**: Predicción Mackey-Glass
+- **Plataforma**: Python 3.13 + NumPy (default_rng)
+- **Tarea**: Predicción Mackey-Glass (τ=17)
 - **Series de datos**: 3000 puntos (70% train, 30% test)
+- **Hardware simulado**: ARM Cortex-M4F equivalente
 
 ## Conclusión
 
@@ -93,8 +105,9 @@ Eón es la solución óptima cuando se requiere:
 2.  **Procesamiento de Series Temporales** (contexto histórico)
 3.  **Restricciones extremas de RAM** (< 2KB)
 4.  **Cuantización 8-bit** sin pérdida significativa (99.6% precisión)
-5.  **Memoria persistente** de usuarios y hechos
+5.  **Arquitecturas místicas** (Tzimtzum, Alquimia, Fractal)
+6.  **47 tests automatizados** garantizando calidad
 
 ---
 
-*Última actualización: 2024-12-08 (v2.0)*
+*Última actualización: 2025-12-10 (v2.1)*

@@ -1,12 +1,40 @@
-# Dependencias mínimas para Proyecto Eón
-# Filosofía: Solo lo esencial
+# ===========================================
+# Proyecto Eón - Dependencias Python
+# ===========================================
+# Filosofía: Solo lo esencial, minimalismo TinyML
+# Versión: 1.8.1
+# ===========================================
 
-# Core
-numpy>=1.21.0
+# =====================
+# CORE (Obligatorias)
+# =====================
+numpy>=1.21.0           # Operaciones matriciales ESN
 
-# Visualización
-matplotlib>=3.5.0
+# =====================
+# WEB SERVER
+# =====================
+flask>=2.0.0            # Servidor web dashboard
+pillow>=9.0.0           # Generación de imágenes
 
-# Servidor Web
-flask>=2.0.0
-pillow>=9.0.0  # Para generación de imágenes
+# =====================
+# VISUALIZACIÓN (Opcional)
+# =====================
+matplotlib>=3.5.0       # Gráficos para demos/benchmarks
+
+# =====================
+# TESTING
+# =====================
+pytest>=7.0.0           # Framework de tests
+pytest-asyncio>=0.21.0  # Tests asíncronos
+
+# =====================
+# FASE 6: MENTE COLECTIVA (Opcional)
+# =====================
+# Descomentar si usas ws_bridge.py o mqtt_client.py
+# websockets>=11.0        # WebSocket server
+# paho-mqtt>=1.6.0        # Cliente MQTT
+
+# =====================
+# DESARROLLO (Opcional)
+# =====================
+# setuptools>=65.0.0      # Para pip install -e .

@@ -24,6 +24,10 @@ from dataclasses import dataclass
 from typing import Optional, Tuple, Callable, List
 from enum import Enum
 import time
+import logging
+
+# Configure module logger
+logger = logging.getLogger(__name__)
 
 
 class ResonanceType(Enum):
@@ -191,14 +195,13 @@ class UniversalMiner:
             ExcavationError: Si no se encuentra inteligencia en el rango
         """
         if verbose:
-            print("╔════════════════════════════════════════════════════════╗")
-            print("║     INICIANDO EXCAVACIÓN EN EL ESPACIO LATENTE        ║")
-            print("╠════════════════════════════════════════════════════════╣")
-            print(f"║  Resonance Type: {self.resonance_type.value:<30}     ║")
-            print(f"║  Target Range: [{self.target_resonance[0]:.2f}, {self.target_resonance[1]:.2f}]" + " " * 22 + "║")
-            print(f"║  Reservoir Size: {self.reservoir_size:<30}    ║")
-            print("╚════════════════════════════════════════════════════════╝")
-            print()
+            logger.info("╔════════════════════════════════════════════════════════╗")
+            logger.info("║     INICIANDO EXCAVACIÓN EN EL ESPACIO LATENTE        ║")
+            logger.info("╠════════════════════════════════════════════════════════╣")
+            logger.info(f"║  Resonance Type: {self.resonance_type.value:<30}     ║")
+            logger.info(f"║  Target Range: [{self.target_resonance[0]:.2f}, {self.target_resonance[1]:.2f}]" + " " * 22 + "║")
+            logger.info(f"║  Reservoir Size: {self.reservoir_size:<30}    ║")
+            logger.info("╚════════════════════════════════════════════════════════╝")
         
         start_time = time.time()
         min_res, max_res = self.target_resonance
@@ -232,9 +235,9 @@ class UniversalMiner:
             if verbose and (attempt + 1) % 10000 == 0:
                 elapsed = time.time() - start_time
                 rate = (attempt + 1) / elapsed
-                print(f"  ⛏️  Excavando... {attempt + 1:,} semillas | "
-                      f"Mejor: seed={best_seed}, resonance={best_resonance:.4f} | "
-                      f"{rate:.0f} seeds/s")
+                logger.info(f"  ⛏️  Excavando... {attempt + 1:,} semillas | "
+                            f"Mejor: seed={best_seed}, resonance={best_resonance:.4f} | "
+                            f"{rate:.0f} seeds/s")
             
             # 4. ¿Encontramos inteligencia resonante?
             if min_res <= resonance <= max_res:
@@ -253,15 +256,15 @@ class UniversalMiner:
                     elapsed = time.time() - start_time
                     
                     if verbose:
-                        print()
-                        print("╔════════════════════════════════════════════════════════╗")
-                        print("║  ✨ ESTRUCTURA INTELIGENTE DESCUBIERTA ✨              ║")
-                        print("╠════════════════════════════════════════════════════════╣")
-                        print(f"║  Sacred Seed: {seed:<38}   ║")
-                        print(f"║  Natural Resonance: {resonance:<32.6f} ║")
-                        print(f"║  Excavation Depth: {attempt + 1:<33,} ║")
-                        print(f"║  Time Elapsed: {elapsed:<35.2f}s ║")
-                        print("╚════════════════════════════════════════════════════════╝")
+                        logger.info("")
+                        logger.info("╔════════════════════════════════════════════════════════╗")
+                        logger.info("║  ✨ ESTRUCTURA INTELIGENTE DESCUBIERTA ✨              ║")
+                        logger.info("╠════════════════════════════════════════════════════════╣")
+                        logger.info(f"║  Sacred Seed: {seed:<38}   ║")
+                        logger.info(f"║  Natural Resonance: {resonance:<32.6f} ║")
+                        logger.info(f"║  Excavation Depth: {attempt + 1:<33,} ║")
+                        logger.info(f"║  Time Elapsed: {elapsed:<35.2f}s ║")
+                        logger.info("╚════════════════════════════════════════════════════════╝")
                     
                     result = ExcavationResult(
                         sacred_seed=seed,
@@ -284,8 +287,8 @@ class UniversalMiner:
         # No encontramos nada - usar el mejor candidato
         elapsed = time.time() - start_time
         if verbose:
-            print(f"\n⚠️  Excavación completa. Usando mejor candidato encontrado.")
-            print(f"   Seed: {best_seed}, Resonance: {best_resonance:.6f}")
+            logger.warning("⚠️  Excavación completa. Usando mejor candidato encontrado.")
+            logger.warning(f"   Seed: {best_seed}, Resonance: {best_resonance:.6f}")
         
         matrix = self.chaos_sample(best_seed)
         _, eigenspectrum = self.measure_resonance(matrix)

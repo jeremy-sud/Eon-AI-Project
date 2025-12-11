@@ -75,8 +75,8 @@ def _load_stats():
                 import json
                 saved = json.load(f)
                 _stats.update(saved)
-    except Exception:
-        pass
+    except (IOError, json.JSONDecodeError, KeyError):
+        pass  # Archivo corrupto o no existente - usar defaults
     _stats['session_start'] = __import__('time').time()
 
 def _save_stats():
@@ -85,8 +85,8 @@ def _save_stats():
         with open(STATS_FILE, 'w') as f:
             import json
             json.dump(_stats, f, indent=2)
-    except Exception:
-        pass
+    except (IOError, OSError):
+        pass  # No se puede escribir - silencioso
 
 # Historial de conversaciones
 _chat_history = []
@@ -101,7 +101,7 @@ def _load_chat_history():
                 _chat_history = json.load(f)
                 # Limitar a últimos 100 mensajes
                 _chat_history = _chat_history[-100:]
-    except Exception:
+    except (IOError, json.JSONDecodeError, KeyError):
         _chat_history = []
 
 def _save_chat_history():
@@ -111,8 +111,8 @@ def _save_chat_history():
             import json
             # Guardar solo últimos 100 mensajes
             json.dump(_chat_history[-100:], f, indent=2)
-    except Exception:
-        pass
+    except (IOError, OSError):
+        pass  # No se puede escribir - silencioso
 
 def _add_to_history(role: str, content: str):
     """Añadir mensaje al historial."""
@@ -183,8 +183,11 @@ if _tinylm_available:
         
         stats = _tinylm_model.train(_training_text, epochs=2, washout=30)
         print(f" [INFO] TinyLMv2 entrenado: {stats['accuracy']:.1%} accuracy, {stats['vocab_size']} palabras")
-    except Exception as e:
+    except (ImportError, AttributeError) as e:
         print(f" [WARN] Error inicializando TinyLMv2: {e}")
+        _tinylm_model = None
+    except (ValueError, RuntimeError) as e:
+        print(f" [WARN] Error entrenando TinyLMv2: {e}")
         _tinylm_model = None
 
 

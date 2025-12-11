@@ -22,6 +22,15 @@ from .archaic_protocol import (
     HEXAGRAMS
 )
 
+# Pipeline Alquímico (ETL Transmutation)
+from .alchemy import (
+    AlchemicalPipeline,
+    AlchemicalConfig,
+    AlchemicalPhase,
+    TransmutationState,
+    KalmanFilter
+)
+
 __all__ = [
     # Core
     'AeonBirth',
@@ -40,4 +49,11 @@ __all__ = [
     'Trigram',
     'HexagramStream',
     'HEXAGRAMS',
+    
+    # Alchemical Pipeline
+    'AlchemicalPipeline',
+    'AlchemicalConfig',
+    'AlchemicalPhase',
+    'TransmutationState',
+    'KalmanFilter',
 ]

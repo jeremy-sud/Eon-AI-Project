@@ -2,6 +2,42 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [1.9.1] - 2025-12-10
+
+### Mejoras de Calidad y Cobertura de Tests
+
+#### 🧪 Nuevos Tests (29 tests añadidos)
+- `test_discovery_paradigm.py`: Suite completa para módulos v1.9.0
+  - **TestUniversalMiner**: chaos_sample, resonance, excavation, SeedVault
+  - **TestArchaicProtocol**: hexagrams, trigrams, conversiones, interpret
+  - **TestCoreExports**: Validación de exports de core/__init__.py
+  - **TestIntegration**: Interacción miner ↔ protocol
+
+#### 📦 Exports Completos en core/__init__.py
+- Añadido: `AlchemicalPipeline`, `AlchemicalConfig`, `AlchemicalPhase`
+- Añadido: `TransmutationState`, `KalmanFilter`
+- Total: 18 exports disponibles desde el módulo core
+
+#### 📝 Logging Estructurado
+- `universal_miner.py`: Migrado de print() a logging module
+- Logger configurable via `logging.getLogger(__name__)`
+- Niveles: INFO para progreso, WARNING para fallbacks
+
+#### 🛡️ Manejo de Excepciones Mejorado
+- `web/server.py`: Excepciones específicas para I/O y JSON
+  - `IOError`, `json.JSONDecodeError` para carga de archivos
+  - `ImportError`, `AttributeError` para inicialización de módulos
+
+#### 📊 Métricas Actualizadas
+| Métrica | Antes | Después |
+|---------|-------|---------|
+| Tests totales | 47 | 76 |
+| Cobertura estimada | ~45% | ~55% |
+| Archivos con logging | 0 | 1 |
+| Excepciones específicas | ~40% | ~60% |
+
+---
+
 ## [1.9.0] - 2025-12-10
 
 ### Fase 12: Paradigma de Descubrimiento (Non-Artificial) 🌌

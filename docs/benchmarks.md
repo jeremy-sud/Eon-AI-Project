@@ -2,7 +2,7 @@
 
 Este documento detalla el análisis de consumo energético y uso de recursos del Motor Eón.
 
-## Benchmark Integral v2.1
+## Benchmark Integral v2.2
 
 Ejecutar con:
 ```bash
@@ -14,34 +14,38 @@ python benchmark.py --export  # Exportar a JSON
 
 ## 1. Tamaño del Reservoir
 
-| Neuronas | MSE      | Memoria  | Train (ms) | Pred/sec |
-|----------|----------|----------|------------|----------|
-| 25       | 0.048    | 5.47 KB  | 10.2       | 258,005  |
-| 50       | 0.039    | 20.70 KB | 3.7        | 227,704  |
-| 100      | 0.092    | 80.47 KB | 18.6       | 58,101   |
+| Neuronas | MSE        | Memoria    | Train (ms) | Predict (ms) |
+|----------|------------|------------|------------|--------------|
+| 10       | 0.000498   | 1.02 KB    | 32.3       | 16.5         |
+| 25       | 0.000568   | 5.47 KB    | 29.0       | 11.9         |
+| **50**   | **0.000317** | **20.70 KB** | 25.8    | 12.2         |
+| 75       | 0.000427   | 45.70 KB   | 26.7       | 12.1         |
+| 100      | 0.000369   | 80.47 KB   | 81.6       | 32.1         |
+| 150      | 0.000427   | 179.30 KB  | 101.9      | 31.8         |
+| 200      | 0.000365   | 317.19 KB  | 253.8      | 32.5         |
 
-**Hallazgo**: 50 neuronas ofrecen el mejor balance MSE/memoria.
+**Hallazgo**: 50 neuronas logran MSE 0.000317 con solo 20.70 KB - comparable a modelos 4x más grandes.
 
 ## 2. Cuantización
 
-| Precisión      | MSE      | Memoria (KB) | Precisión (%) | Compresión |
-|----------------|----------|--------------|---------------|------------|
-| float64 (base) | 0.087    | 80.47        | 100.0%        | 1.0x       |
-| **8-bit**      | 0.087    | 9.96         | **99.6%**     | **8.1x**   |
-| 4-bit          | 10.84    | 4.98         | 0.0%          | 16.2x      |
-| binario (1-bit)| 14.96    | 1.25         | 0.0%          | 64.6x      |
+| Precisión      | MSE        | Memoria (KB) | Precisión (%) | Compresión |
+|----------------|------------|--------------|---------------|------------|
+| float64 (base) | 0.000369   | 80.47        | 100.0%        | 1.0x       |
+| **8-bit**      | 0.000543   | 9.96         | **52.9%**     | **8.1x**   |
+| 4-bit          | 0.691686   | 4.98         | 0.0%          | 16.2x      |
+| binario (1-bit)| 1.215819   | 1.25         | 0.0%          | 64.6x      |
 
-**Hallazgo**: Cuantización 8-bit retiene 99.6% de precisión con 8x menos memoria.
+**Hallazgo**: Cuantización 8-bit retiene rendimiento aceptable con 8x menos memoria.
 
 ## 3. Plasticidad Hebbiana
 
-| Modelo              | MSE      | Adaptaciones |
-|---------------------|----------|--------------|
-| ESN Estándar        | 0.092    | 0            |
-| ESN + Hebbian       | 0.087    | 500          |
-| ESN + Anti-Hebbian  | 0.089    | 500          |
+| Modelo              | MSE        | Adaptaciones |
+|---------------------|------------|--------------|
+| ESN Estándar        | 0.000356   | 0            |
+| ESN + Hebbian       | 0.062474   | 2999         |
+| **ESN + Anti-Hebbian** | **0.000057** | **2999** |
 
-**Hallazgo**: Plasticidad Hebbiana mejora ligeramente el rendimiento.
+**Hallazgo**: Anti-Hebbian logra 6x mejor MSE que el estándar con aprendizaje continuo sin reentrenamiento.
 
 ## 4. Módulos Místicos (Fase 11)
 
@@ -82,13 +86,36 @@ python benchmark.py --export  # Exportar a JSON
 | Almacenamiento/hecho       | ~150 bytes   |
 | Tiempo de consolidación    | < 100ms      |
 
-## 6. Tests de Regresión
+## 6. Motor ESN Optimizado (v1.9.2)
 
-| Suite                    | Tests | Estado | Tiempo |
-|--------------------------|-------|--------|--------|
-| test_mystical_modules.py | 28    | ✅     | 0.21s  |
-| test_ws_bridge.py        | 19    | ✅     | 0.40s  |
-| **Total**                | **47**| **✅** | 0.62s  |
+### Nuevas Características
+| Característica            | Descripción                                      | Impacto           |
+|---------------------------|--------------------------------------------------|-------------------|
+| **Leaky Integration**     | Parámetro `leak_rate` para integración suave     | +Estabilidad      |
+| **Ridge Optimizado**      | `np.linalg.solve()` vs inversión directa         | **3x más rápido** |
+| **Validación Parámetros** | Verificación en `__init__`                       | +Robustez         |
+| **Estabilidad Numérica**  | Detección NaN/Inf antes de fallo                 | +Confiabilidad    |
+| **Radio Espectral O(n²)** | Power iteration vs eigenvalores O(n³)            | +Eficiencia       |
+
+### Módulo utils/matrix_init.py
+| Función                    | Propósito                              |
+|----------------------------|----------------------------------------|
+| `generate_birth_hash()`    | Hash portable sin dependencia de SO    |
+| `compute_spectral_radius()`| Cálculo eficiente O(n²)               |
+| `create_reservoir_matrix()`| Matriz de reservoir centralizada       |
+| `validate_esn_parameters()`| Validación de parámetros ESN           |
+| `validate_training_data()` | Verificación dimensiones X, y          |
+| `check_numerical_stability()`| Detección de NaN/Inf                 |
+| `ridge_regression()`       | Regresión ridge optimizada             |
+
+## 7. Tests de Regresión
+
+| Suite                        | Tests | Estado | Cobertura                          |
+|------------------------------|-------|--------|------------------------------------|
+| test_discovery_paradigm.py   | 30    | ✅     | Core ESN, Genesis, Quantizer       |
+| test_engine_improvements.py  | 34    | ✅     | Utils, validación, optimizaciones  |
+| test_mystical_modules.py     | 28    | ✅     | Tzimtzum, Alquimia, Fractal        |
+| **Total**                    | **92**| **✅** | **0.23s**                          |
 
 ## Metodología
 
@@ -96,18 +123,19 @@ python benchmark.py --export  # Exportar a JSON
 - **Tarea**: Predicción Mackey-Glass (τ=17)
 - **Series de datos**: 3000 puntos (70% train, 30% test)
 - **Hardware simulado**: ARM Cortex-M4F equivalente
+- **Motor ESN**: v1.9.2 con leaky integration y ridge optimizado
 
 ## Conclusión
 
 Eón es la solución óptima cuando se requiere:
 
-1.  **Aprendizaje Continuo** en el borde (OnlineLearner + Feedback)
-2.  **Procesamiento de Series Temporales** (contexto histórico)
-3.  **Restricciones extremas de RAM** (< 2KB)
-4.  **Cuantización 8-bit** sin pérdida significativa (99.6% precisión)
-5.  **Arquitecturas místicas** (Tzimtzum, Alquimia, Fractal)
-6.  **47 tests automatizados** garantizando calidad
+1.  **Eficiencia Extrema** - 50 neuronas logran MSE 0.000317 con 20.70 KB
+2.  **Aprendizaje Continuo** - Anti-Hebbian logra 6x mejor MSE sin reentrenamiento
+3.  **Cuantización Efectiva** - 8-bit reduce 8x memoria manteniendo utilidad
+4.  **Motor Optimizado** (v1.9.2) - Ridge 3x más rápido, validación robusta
+5.  **Arquitecturas Místicas** - Tzimtzum, Alquimia, Fractal
+6.  **92 tests automatizados** garantizando calidad en 0.23s
 
 ---
 
-*Última actualización: 2025-12-10 (v2.1)*
+*Última actualización: 2025-12-10 (v2.2)*

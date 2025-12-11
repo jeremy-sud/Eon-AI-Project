@@ -7,7 +7,30 @@ toda la computación necesaria. Solo entrenamos la capa de salida.
 """
 
 import numpy as np
+import time
+import warnings
 from typing import Optional, Tuple
+
+# Importar utilidades compartidas
+import sys
+import os
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_python_dir = os.path.dirname(_current_dir)
+if _python_dir not in sys.path:
+    sys.path.insert(0, _python_dir)
+
+try:
+    from utils.matrix_init import (
+        generate_birth_hash,
+        create_reservoir_matrix,
+        validate_esn_parameters,
+        validate_training_data,
+        check_numerical_stability,
+        ridge_regression
+    )
+    _UTILS_AVAILABLE = True
+except ImportError:
+    _UTILS_AVAILABLE = False
 
 
 class EchoStateNetwork:
@@ -34,23 +57,36 @@ class EchoStateNetwork:
         spectral_radius: float = 0.9,
         sparsity: float = 0.9,
         noise: float = 0.001,
+        leak_rate: float = 1.0,
         random_state: Optional[int] = None
     ):
+        # Validar parámetros
+        if _UTILS_AVAILABLE:
+            validate_esn_parameters(
+                n_inputs, n_reservoir, n_outputs,
+                spectral_radius, sparsity, noise
+            )
+        
         self.n_inputs = n_inputs
         self.n_reservoir = n_reservoir
         self.n_outputs = n_outputs
         self.spectral_radius = spectral_radius
         self.sparsity = sparsity
         self.noise = noise
+        self.leak_rate = leak_rate  # Nuevo: para leaky integration
         
         # Inicializar generador aleatorio (API moderno)
         self.rng = np.random.default_rng(random_state)
         
         # === MOMENTO CERO (Standardized DNA) ===
-        import time
         self.birth_time = int(time.time())
         seed = random_state if random_state is not None else self.birth_time
-        self.birth_hash = self._generate_hash(seed, self.birth_time)
+        
+        # Usar utilidad compartida si está disponible
+        if _UTILS_AVAILABLE:
+            self.birth_hash = generate_birth_hash(seed, self.birth_time)
+        else:
+            self.birth_hash = self._generate_hash(seed, self.birth_time)
         
         # Inicializar matrices
         self._initialize_weights()
@@ -100,7 +136,9 @@ class EchoStateNetwork:
         """
         Actualiza el estado del reservoir dado un input.
         
-        Ecuación: state(t+1) = tanh(W_in * input + W_reservoir * state(t) + noise)
+        Ecuación: state(t+1) = (1-α)*state(t) + α*tanh(W_in*input + W_reservoir*state(t) + noise)
+        
+        Donde α = leak_rate (1.0 = sin leak, <1 = memoria adicional)
         
         Args:
             input_vector: Vector de entrada
@@ -118,7 +156,21 @@ class EchoStateNetwork:
         noise_contribution = self.noise * self.rng.standard_normal(self.n_reservoir)
         
         # Nuevo estado con no-linealidad tanh
-        self.state = np.tanh(input_contribution + reservoir_contribution + noise_contribution)
+        new_state = np.tanh(input_contribution + reservoir_contribution + noise_contribution)
+        
+        # Leaky integration: mezcla estado anterior con nuevo
+        if self.leak_rate < 1.0:
+            self.state = (1 - self.leak_rate) * self.state + self.leak_rate * new_state
+        else:
+            self.state = new_state
+        
+        # Verificar estabilidad numérica (opcional)
+        if _UTILS_AVAILABLE:
+            try:
+                check_numerical_stability(self.state, "reservoir")
+            except RuntimeError:
+                # Re-lanzar con contexto adicional
+                raise
         
         return self.state
     
@@ -138,13 +190,19 @@ class EchoStateNetwork:
         Returns:
             self (para encadenamiento)
         """
-        T = inputs.shape[0]
+        # Validar y normalizar datos
+        if _UTILS_AVAILABLE:
+            inputs, outputs = validate_training_data(
+                inputs, outputs, self.n_inputs, self.n_outputs, washout
+            )
+        else:
+            # Fallback: asegurar dimensiones correctas
+            if inputs.ndim == 1:
+                inputs = inputs.reshape(-1, 1)
+            if outputs.ndim == 1:
+                outputs = outputs.reshape(-1, 1)
         
-        # Asegurar dimensiones correctas
-        if inputs.ndim == 1:
-            inputs = inputs.reshape(-1, 1)
-        if outputs.ndim == 1:
-            outputs = outputs.reshape(-1, 1)
+        T = inputs.shape[0]
             
         # Recolectar estados del reservoir
         states = np.zeros((T, self.n_reservoir))
@@ -157,19 +215,18 @@ class EchoStateNetwork:
             states[t] = self._update_state(inputs[t])
             
         # Descartar período de "calentamiento" (washout)
-        states = states[washout:]
+        states_train = states[washout:]
         outputs_train = outputs[washout:]
         
-        # Regresión lineal con regularización Ridge
-        # W_out = (S^T * S + λI)^(-1) * S^T * Y
-        reg = 1e-6  # Regularización
-        S = states
-        Y = outputs_train
-        
-        self.W_out = np.dot(
-            np.linalg.inv(np.dot(S.T, S) + reg * np.eye(self.n_reservoir)),
-            np.dot(S.T, Y)
-        )
+        # Regresión Ridge optimizada (solve en lugar de inv)
+        if _UTILS_AVAILABLE:
+            self.W_out = ridge_regression(states_train, outputs_train, regularization=1e-6)
+        else:
+            # Fallback: método original
+            reg = 1e-6
+            A = states_train.T @ states_train + reg * np.eye(self.n_reservoir)
+            B = states_train.T @ outputs_train
+            self.W_out = np.linalg.solve(A, B)
         
         return self
     

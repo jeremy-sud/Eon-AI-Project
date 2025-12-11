@@ -2,7 +2,7 @@
 # Proyecto Eón - Dependencias Python
 # ===========================================
 # Filosofía: Solo lo esencial, minimalismo TinyML
-# Versión: 1.9.0
+# Versión: 1.9.1
 # ===========================================
 
 # =====================
@@ -37,4 +37,5 @@ pytest-asyncio>=0.21.0  # Tests asíncronos
 # =====================
 # DESARROLLO (Opcional)
 # =====================
+pdoc>=14.0.0            # Generación de documentación API
 # setuptools>=65.0.0      # Para pip install -e .

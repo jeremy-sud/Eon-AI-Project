@@ -257,7 +257,7 @@ class BaseMysticalModule(ABC):
 | `core/alchemy.py` | ~90% | ✅ Cubierto |
 | `core/universal_miner.py` | ~75% | ✅ Nuevo (v1.9.0) |
 | `core/archaic_protocol.py` | ~80% | ✅ Nuevo (v1.9.0) |
-| `phase7-language/tiny_lm*.py` | 0% | ❌ Sin tests |
+| `phase7-language/tiny_lm_v2.py` | ~70% | ✅ 22 tests (v1.9.1) |
 | `web/server.py` | 0% | ❌ Sin tests |
 | `phase5-applications/*.py` | 0% | ❌ Sin tests |
 
@@ -274,37 +274,48 @@ class BaseMysticalModule(ABC):
 - ✅ `plasticity/hebbian.py`
 - ✅ `core/universal_miner.py`
 - ✅ `core/archaic_protocol.py`
+- ✅ `collective_mind.py` (type hints completos)
 
 **Archivos con hints parciales o sin hints:**
 - ❌ `web/server.py` (2545 líneas)
-- ❌ `collective_mind.py`
-- ❌ `phase7-language/tiny_lm*.py`
 
 **Estado:** 🟡 Pendiente
 
 ---
 
-### 4. Documentación de API
+### 4. ✅ Documentación de API
 
-**Problema:** No existe `/docs/api/` con referencia de clases
+**Solución:** Generada documentación con pdoc
 
-**Recomendación:**
+**Archivos generados en `/docs/api/`:**
+- `index.html` - Página principal
+- `core.html` - Módulos core (AeonBirth, UniversalMiner, ArchaicProtocol, AlchemicalPipeline)
+- `esn.html` - EchoStateNetwork y variantes
+- `plasticity.html` - Plasticidad Hebbiana
+- `collective_mind.html` - Mente Colectiva y Thelema
+- `egregore.html` - Procesador Egregor
+- `tiny_lm_v2.html` - Modelo de lenguaje TinyLM v2
+
+**Comando:**
 ```bash
-pdoc phase1-foundations/python --output-dir docs/api
+pdoc --output-dir docs/api phase1-foundations/python/esn phase1-foundations/python/core phase1-foundations/python/plasticity
+pdoc --output-dir docs/api phase6-collective/collective_mind.py phase6-collective/egregore.py phase7-language/tiny_lm_v2.py
 ```
 
-**Estado:** 🟡 Pendiente
+**Estado:** ✅ Completado (v1.9.1)
 
 ---
 
-### 5. Verificar Dockerfiles
+### 5. ✅ Verificar Dockerfiles
 
 **docker-compose.yml referencia:**
-- `phase6-collective/Dockerfile.bridge` - ⚠️ Verificar existencia
-- `web/Dockerfile` - ⚠️ Verificar existencia
-- `phase7-language/Dockerfile` - ⚠️ Verificar existencia
+- `phase6-collective/Dockerfile.bridge` - ✅ Existe
+- `web/Dockerfile` - ✅ Existe
+- `phase7-language/Dockerfile` - ✅ Existe
+- `phase6-collective/Dockerfile` - ✅ Existe (adicional)
+- `phase2-core/Dockerfile` - ✅ Existe (adicional)
 
-**Estado:** 🟡 Pendiente verificación
+**Estado:** ✅ Verificado
 
 ---
 
@@ -338,6 +349,7 @@ pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language
 - `phase6-collective/ws_bridge.py` - Excepciones específicas (2 bloques)
 - `phase7-language/server.py` - Excepciones específicas (2 bloques) + numpy import
 - `phase1-foundations/python/core/universal_miner.py` - Logger añadido
+- `docs/api/` - Documentación API generada (7 módulos)
 
 ### Tests Añadidos
 - `tests/test_discovery_paradigm.py` - 30 tests para UniversalMiner, ArchaicProtocol, AlchemicalPipeline

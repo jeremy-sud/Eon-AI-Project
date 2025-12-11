@@ -343,6 +343,22 @@ class TestCoreExports:
         from core import AeonBirth
         
         assert AeonBirth is not None
+    
+    def test_alchemical_pipeline_exports(self):
+        """Test AlchemicalPipeline exports from core."""
+        from core import (
+            AlchemicalPipeline,
+            AlchemicalConfig,
+            AlchemicalPhase,
+            TransmutationState,
+            KalmanFilter
+        )
+        
+        assert AlchemicalPipeline is not None
+        assert AlchemicalConfig is not None
+        assert AlchemicalPhase is not None
+        assert TransmutationState is not None
+        assert KalmanFilter is not None
 
 
 class TestIntegration:

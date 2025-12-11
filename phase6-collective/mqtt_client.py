@@ -176,7 +176,7 @@ class AeonMQTTNode:
             elif "/status/" in topic:
                 self._handle_status_message(topic, payload)
                 
-        except Exception as e:
+        except (ValueError, KeyError, IndexError) as e:
             print(f"✗ [{self.node_id}] Error procesando mensaje: {e}")
             
     def _handle_sync_message(self, topic: str, payload: bytes):
@@ -210,7 +210,7 @@ class AeonMQTTNode:
                 if self.on_sync_received:
                     self.on_sync_received(sender_id, packet)
                     
-        except Exception as e:
+        except (ValueError, KeyError, IndexError, struct.error) as e:
             print(f"✗ [{self.node_id}] Error en sync: {e}")
             
     def _handle_status_message(self, _topic: str, payload: bytes):
@@ -259,7 +259,7 @@ class AeonMQTTNode:
                 
             return False
             
-        except Exception as e:
+        except OSError as e:
             print(f"✗ [{self.node_id}] Error conectando: {e}")
             return False
             
@@ -318,7 +318,7 @@ class AeonMQTTNode:
                 print(f"✗ [{self.node_id}] Error publicando: {result.rc}")
                 return False
                 
-        except Exception as e:
+        except (AttributeError, OSError, ValueError) as e:
             print(f"✗ [{self.node_id}] Error: {e}")
             return False
             
@@ -394,7 +394,7 @@ class AeonMQTTNode:
                 "compression": round(count * 4 / len(data), 1),
             }
             
-        except Exception as e:
+        except (struct.error, ValueError, IndexError) as e:
             print(f"Error decodificando: {e}")
             return None
             

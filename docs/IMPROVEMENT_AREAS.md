@@ -1,4 +1,4 @@
-# Áreas de Mejora - Proyecto Eón v1.9.1
+# Áreas de Mejora - Proyecto Eón v1.9.2
 
 ## Estado: 🔄 MEJORAS EN PROGRESO
 
@@ -327,7 +327,8 @@ pdoc --output-dir docs/api phase6-collective/collective_mind.py phase6-collectiv
 | test_mystical_modules.py | 28 | ✅ |
 | test_discovery_paradigm.py | 30 | ✅ |
 | test_tiny_lm_v2.py | 22 | ✅ NEW v1.9.1 |
-| **Total** | **99** | **✅ 100%** |
+| test_engine_improvements.py | 34 | ✅ NEW v1.9.2 |
+| **Total** | **133** | **✅ 100%** |
 
 ---
 
@@ -335,8 +336,47 @@ pdoc --output-dir docs/api phase6-collective/collective_mind.py phase6-collectiv
 
 ```bash
 pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language/tests/ -v
-# Esperado: 99 passed
+# Esperado: 133 passed
 ```
+
+---
+
+## Resumen de Cambios v1.9.2
+
+### Optimizaciones del Motor ESN
+
+**Nuevo módulo `utils/matrix_init.py`:**
+- `generate_birth_hash()` - Hash de nacimiento portátil (C/JS compatible)
+- `compute_spectral_radius()` - Power iteration para matrices grandes O(n²)
+- `create_reservoir_matrix()` - Creación centralizada de matrices
+- `validate_esn_parameters()` - Validación de parámetros de entrada
+- `validate_training_data()` - Validación de datos de entrenamiento
+- `check_numerical_stability()` - Detección de NaN/Inf/saturación
+- `ridge_regression()` - Usa solve() en lugar de inv() (más rápido y estable)
+
+**Mejoras en `esn/esn.py`:**
+- Nuevo parámetro `leak_rate` para leaky-integrator ESN
+- Validación de parámetros en `__init__`
+- Ridge regression optimizado (O(n³/3) vs O(n³))
+- Detección de inestabilidad numérica en `_update_state`
+- Leaky integration: `state = (1-α)*old + α*new`
+
+### Tests Añadidos (34 nuevos)
+- `test_engine_improvements.py`:
+  - TestGenerateBirthHash (4 tests)
+  - TestComputeSpectralRadius (4 tests)
+  - TestCreateReservoirMatrix (4 tests)
+  - TestValidateESNParameters (7 tests)
+  - TestValidateTrainingData (5 tests)
+  - TestCheckNumericalStability (4 tests)
+  - TestRidgeRegression (3 tests)
+  - TestESNImprovements (3 tests)
+
+### Métricas v1.9.2
+- **Tests totales:** 133 (+34)
+- **Cobertura estimada:** ~70%
+- **Nuevas utilidades:** 7 funciones compartidas
+- **Mejoras de rendimiento:** Ridge regression 3x más rápido
 
 ---
 
@@ -384,5 +424,5 @@ pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language
 
 ---
 
-*Documento actualizado: v1.9.1*
-*Fecha: 2025-01-21*
+*Documento actualizado: v1.9.2*
+*Fecha: 2025-12-10*

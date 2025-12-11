@@ -7,6 +7,7 @@ Proyecto Eón - TinyLM v2 Web Server
 
 import sys
 from pathlib import Path
+import numpy as np
 from flask import Flask, render_template_string, request, jsonify
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -280,7 +281,7 @@ def train():
             'vocab_size': stats['vocab_size'],
             'memory_kb': model_stats['memory_kb']
         })
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, np.linalg.LinAlgError) as e:
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)})
@@ -307,7 +308,7 @@ def generate_text():
         )
         
         return jsonify({'success': True, 'text': text})
-    except Exception as e:
+    except (ValueError, KeyError, IndexError, TypeError) as e:
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)})

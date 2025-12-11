@@ -86,7 +86,7 @@ def decode_1bit_packet(data: bytes) -> Optional[Dict[str, Any]]:
             "original_size": count * 4,
             "compression": round(count * 4 / len(data), 1),
         }
-    except Exception as e:
+    except (struct.error, ValueError, ZeroDivisionError) as e:
         return {"error": str(e)}
 
 
@@ -331,7 +331,7 @@ class MQTTWebSocketBridge:
                 self.mqtt_client.connect(self.mqtt_broker, self.mqtt_port)
                 self.mqtt_client.loop_start()
                 return True
-            except Exception as e:
+            except (OSError, ValueError) as e:
                 print(f"✗ Error conectando MQTT: {e}")
                 return False
         return False

@@ -154,7 +154,7 @@ class LongTermMemory:
                 with open(self.filepath, 'r', encoding='utf-8') as f:
                     saved = json.load(f)
                     self.memory.update(saved)
-        except Exception as e:
+        except (IOError, json.JSONDecodeError, KeyError) as e:
             print(f" [WARN] Error cargando memoria: {e}")
     
     def _save(self):
@@ -163,7 +163,7 @@ class LongTermMemory:
         try:
             with open(self.filepath, 'w', encoding='utf-8') as f:
                 json.dump(self.memory, f, indent=2, ensure_ascii=False)
-        except Exception as e:
+        except (IOError, TypeError) as e:
             print(f" [WARN] Error guardando memoria: {e}")
     
     # === USUARIOS ===
@@ -336,7 +336,7 @@ class FeedbackSystem:
                     data = json.load(f)
                     self.feedback_log = data.get('log', [])
                     self.pattern_scores = data.get('scores', {})
-        except Exception:
+        except (IOError, json.JSONDecodeError, KeyError, TypeError):
             pass
     
     def _save(self):
@@ -346,7 +346,7 @@ class FeedbackSystem:
                     'log': self.feedback_log[-1000:],  # Últimos 1000
                     'scores': self.pattern_scores
                 }, f, indent=2)
-        except Exception:
+        except (IOError, TypeError):
             pass
     
     def _hash_interaction(self, user_message: str, bot_response: str) -> str:
@@ -504,7 +504,7 @@ class ConsolidationEngine:
             
             print(f" [CONSOLIDATION] Completado: {removed} hechos eliminados")
             
-        except Exception as e:
+        except (IOError, KeyError, ValueError, TypeError) as e:
             print(f" [CONSOLIDATION] Error: {e}")
     
     def force_consolidation(self):

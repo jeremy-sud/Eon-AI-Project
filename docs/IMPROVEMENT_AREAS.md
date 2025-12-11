@@ -132,9 +132,9 @@ from .alchemy import (
 **Archivos corregidos:**
 - `web/server.py` - ✅ Mejorado (4 bloques con excepciones específicas)
 - `phase6-collective/mqtt_client.py` - ✅ Mejorado (4 bloques con excepciones específicas)
-- `web/learning.py` - 🟡 Pendiente
-- `phase6-collective/ws_bridge.py` - 🟡 Pendiente
-- `phase7-language/server.py` - 🟡 Pendiente
+- `web/learning.py` - ✅ Mejorado (5 bloques con excepciones específicas)
+- `phase6-collective/ws_bridge.py` - ✅ Mejorado (2 bloques con excepciones específicas)
+- `phase7-language/server.py` - ✅ Mejorado (2 bloques con excepciones específicas)
 
 **Cambios realizados (v1.9.1):**
 ```python
@@ -147,9 +147,22 @@ except (json.JSONDecodeError, KeyError, AttributeError) as e:  # Antes: Exceptio
 except OSError as e:                                            # Antes: Exception
 except (struct.error, ValueError) as e:                         # Antes: Exception
 except (TypeError, AttributeError) as e:                        # Antes: Exception
+
+# web/learning.py
+except (IOError, json.JSONDecodeError, KeyError) as e:    # Antes: Exception
+except (IOError, TypeError) as e:                          # Antes: Exception
+except (IOError, KeyError, ValueError, TypeError) as e:   # Antes: Exception
+
+# ws_bridge.py
+except (struct.error, ValueError, ZeroDivisionError) as e:  # Antes: Exception
+except (OSError, ValueError) as e:                           # Antes: Exception
+
+# phase7-language/server.py
+except (ValueError, KeyError, TypeError, np.linalg.LinAlgError) as e:  # Antes: Exception
+except (ValueError, KeyError, IndexError, TypeError) as e:              # Antes: Exception
 ```
 
-**Estado:** ✅ Parcialmente Completado (2/5 archivos)
+**Estado:** ✅ Completado (5/5 archivos)
 
 ---
 
@@ -320,7 +333,10 @@ pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language
 
 ### Mejoras Implementadas
 - `web/server.py` - Excepciones específicas (4 bloques)
+- `web/learning.py` - Excepciones específicas (5 bloques)
 - `phase6-collective/mqtt_client.py` - Excepciones específicas (4 bloques)
+- `phase6-collective/ws_bridge.py` - Excepciones específicas (2 bloques)
+- `phase7-language/server.py` - Excepciones específicas (2 bloques) + numpy import
 - `phase1-foundations/python/core/universal_miner.py` - Logger añadido
 
 ### Tests Añadidos
@@ -330,7 +346,8 @@ pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language
 ### Métricas v1.9.1
 - **Tests totales:** 99 (+21 desde v1.9.0)
 - **Cobertura estimada:** ~65%
-- **Archivos mejorados:** 5
+- **Archivos mejorados:** 8
+- **Excepciones específicas:** 17 bloques corregidos
 
 ---
 

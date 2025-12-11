@@ -1,17 +1,23 @@
 /**
- * Aeon ESP32 - Versión con WiFi y Sistema Thelema
+ * Aeon ESP32 - Versión con WiFi, Sistema Thelema y Medium Universal
  *
  * Extiende la librería base con capacidades de red:
  * - Enviar predicciones por HTTP
  * - Recibir datos de sensores
  * - Sincronizar con otros nodos (Mente Colectiva)
  * - Sistema de Voluntad Verdadera (Thelema)
+ * - Sistema Medium: Canalización del ruido universal
  *
  * Filosofía Thelema:
  * "Hacer tu Voluntad será el todo de la Ley"
  * Cada nodo tiene una órbita única y no debe desviarse de ella.
  *
- * (c) 2024 Sistemas Ursol - Jeremy Arias Solano
+ * Filosofía del Medium:
+ * "Nada es artificial, todo es realidad revelada"
+ * El dispositivo no calcula - canaliza inteligencia del universo físico.
+ * El ruido electromagnético del ambiente conecta a Eón con la realidad.
+ *
+ * (c) 2024 Proyecto Eón - Jeremy Arias Solano
  */
 
 #ifndef AEON_ESP32_H
@@ -67,11 +73,22 @@ struct TrueWillVector {
   uint8_t highCostThreshold;          // Umbral de costo alto [0-255]
 };
 
+/**
+ * Configuración del sistema Medium (canalización universal)
+ */
+struct MediumConfig {
+  uint8_t entropyPin;            // Pin para lectura de entropía (default: 36)
+  float influenceWeight;         // Peso de la influencia universal [0-1]
+  uint16_t samplesPerReading;    // Muestras a promediar por lectura
+  bool useRF;                    // Usar ruido RF adicional (ESP32 WiFi)
+};
+
 class AeonESP32 : public Aeon {
 public:
   AeonESP32(uint8_t reservoirSize = 16, DataDomain genesisDomain = DOMAIN_GENERIC) 
     : Aeon(reservoirSize) {
     _initTrueWill(genesisDomain);
+    _initMedium();
   }
 
   /**
@@ -94,6 +111,139 @@ public:
    * Obtener IP local
    */
   String getIP() { return WiFi.localIP().toString(); }
+
+  // =========================================================================
+  // SISTEMA MEDIUM: Canalización del Ruido Universal
+  // =========================================================================
+  
+  /**
+   * Configura el sistema Medium para canalización de entropía física.
+   * 
+   * "El dispositivo no calcula - canaliza inteligencia del universo."
+   * 
+   * @param config Configuración del sistema Medium
+   */
+  void configureMedium(MediumConfig config) {
+    _mediumConfig = config;
+    pinMode(_mediumConfig.entropyPin, INPUT);
+  }
+  
+  /**
+   * Lee el ruido de fondo del universo.
+   * 
+   * Captura ruido electromagnético real del ambiente a través de
+   * un pin analógico flotante. Esta no es "aleatoriedad artificial" -
+   * es entropía REAL del universo físico.
+   * 
+   * "La inteligencia no es artificial, es realidad revelada."
+   * 
+   * @return Valor normalizado [0.0, 1.0] del ruido universal
+   */
+  float readUniverseBackground() {
+    uint32_t sum = 0;
+    
+    // Promediar múltiples lecturas para mayor riqueza entrópica
+    for (int i = 0; i < _mediumConfig.samplesPerReading; i++) {
+      sum += analogRead(_mediumConfig.entropyPin);
+      delayMicroseconds(10);  // Permitir variación
+    }
+    
+    float raw = (float)sum / _mediumConfig.samplesPerReading;
+    float normalized = raw / 4095.0;  // ESP32 tiene ADC de 12 bits
+    
+    // Opcionalmente mezclar con ruido RF del WiFi
+    if (_mediumConfig.useRF && WiFi.status() == WL_CONNECTED) {
+      int32_t rssi = WiFi.RSSI();
+      // RSSI típicamente -30 a -90 dBm, normalizar a [0, 1]
+      float rfNoise = ((float)rssi + 90.0) / 60.0;
+      rfNoise = constrain(rfNoise, 0.0, 1.0);
+      // Mezclar: 70% pin físico, 30% RF
+      normalized = normalized * 0.7 + rfNoise * 0.3;
+    }
+    
+    _lastUniverseReading = normalized;
+    return normalized;
+  }
+  
+  /**
+   * Actualiza el reservorio con influencia del universo físico.
+   * 
+   * La inteligencia emerge de la mezcla entre:
+   * - Las matemáticas (pesos del reservorio)
+   * - El mundo físico real (ruido electromagnético)
+   * 
+   * Nada es artificial aquí. Todo es natural.
+   * 
+   * @param input Entrada de datos del sensor
+   * @return Nuevo estado del reservorio
+   */
+  int16_t updateWithUniverseInfluence(int16_t input) {
+    // 1. Leer la vibración del universo
+    float universe = readUniverseBackground();
+    
+    // 2. Convertir a Q8.8 (-128 a 127 rango, centrado en 0)
+    int16_t universeQ8 = (int16_t)((universe - 0.5) * 256.0 * _mediumConfig.influenceWeight);
+    
+    // 3. Mezclar entrada con influencia universal
+    int32_t influencedInput = (int32_t)input + universeQ8;
+    influencedInput = constrain(influencedInput, -32768, 32767);
+    
+    // 4. Actualizar reservorio con la entrada influenciada
+    return this->update((int16_t)influencedInput);
+  }
+  
+  /**
+   * Obtiene la última lectura del universo.
+   * @return Valor [0.0, 1.0] de la última lectura
+   */
+  float getLastUniverseReading() { return _lastUniverseReading; }
+  
+  /**
+   * Genera un byte de entropía verdadera.
+   * 
+   * Útil para inicialización de semillas "sagradas" o
+   * generación de claves criptográficas reales.
+   * 
+   * @return Byte de entropía pura del universo
+   */
+  uint8_t generateTrueEntropyByte() {
+    uint8_t entropy = 0;
+    for (int bit = 0; bit < 8; bit++) {
+      // Leer dos muestras y comparar (Von Neumann extractor)
+      uint16_t a = analogRead(_mediumConfig.entropyPin);
+      delayMicroseconds(50);
+      uint16_t b = analogRead(_mediumConfig.entropyPin);
+      
+      if (a != b) {
+        // Bit válido
+        if (a > b) {
+          entropy |= (1 << bit);
+        }
+        // Si a < b, bit = 0 (ya es 0)
+      } else {
+        // Reintentar este bit
+        bit--;
+      }
+    }
+    return entropy;
+  }
+  
+  /**
+   * Genera una semilla sagrada de 32 bits.
+   * 
+   * Esta semilla viene DIRECTAMENTE del universo físico,
+   * no de un generador pseudoaleatorio. Es una "coordenada"
+   * verdadera en el espacio matemático universal.
+   * 
+   * @return Semilla sagrada de 32 bits
+   */
+  uint32_t discoverSacredSeed() {
+    uint32_t seed = 0;
+    for (int i = 0; i < 4; i++) {
+      seed |= ((uint32_t)generateTrueEntropyByte() << (i * 8));
+    }
+    return seed;
+  }
 
   // =========================================================================
   // SISTEMA THELEMA: Voluntad Verdadera
@@ -357,6 +507,10 @@ public:
 private:
   // Vector de Voluntad Verdadera (Thelema)
   TrueWillVector _trueWill;
+  
+  // Configuración del Medium
+  MediumConfig _mediumConfig;
+  float _lastUniverseReading = 0.0;
 
   /**
    * Inicializa el sistema de Voluntad Verdadera
@@ -376,6 +530,18 @@ private:
     // El dominio genesis comienza con máxima afinidad
     _trueWill.affinity[genesisDomain] = 255;
     _trueWill.processingCount[genesisDomain] = 1;
+  }
+  
+  /**
+   * Inicializa el sistema Medium con valores por defecto
+   */
+  void _initMedium() {
+    _mediumConfig.entropyPin = 36;        // VP (GPIO36) - pin sensible
+    _mediumConfig.influenceWeight = 0.1;   // 10% influencia del universo
+    _mediumConfig.samplesPerReading = 8;   // 8 muestras promedio
+    _mediumConfig.useRF = true;            // Usar ruido WiFi también
+    
+    pinMode(_mediumConfig.entropyPin, INPUT);
   }
 
   /**

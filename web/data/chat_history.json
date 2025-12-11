@@ -1,96 +1,6 @@
 [
   {
     "role": "assistant",
-    "content": "No identifiqu\u00e9 un patr\u00f3n simple. Bas\u00e1ndome en la tendencia, podr\u00eda ser aproximadamente **48.0**, pero el patr\u00f3n no es obvio. \ud83e\udd14",
-    "timestamp": 1765259571.264675
-  },
-  {
-    "role": "user",
-    "content": "4, 8, 16, 32",
-    "timestamp": 1765259571.2774863
-  },
-  {
-    "role": "assistant",
-    "content": "Es una progresi\u00f3n geom\u00e9trica con raz\u00f3n 2. El siguiente valor es: **64** \ud83d\udcc8",
-    "timestamp": 1765259571.27856
-  },
-  {
-    "role": "user",
-    "content": "4, 8, 16, 32, __",
-    "timestamp": 1765259571.290689
-  },
-  {
-    "role": "assistant",
-    "content": "Es una progresi\u00f3n geom\u00e9trica con raz\u00f3n 2. El siguiente valor es: **64** \ud83d\udcc8",
-    "timestamp": 1765259571.2916427
-  },
-  {
-    "role": "user",
-    "content": "cuales son los siguientes 3 numeros en este patron: 4, 8, 16, 32",
-    "timestamp": 1765259630.9983342
-  },
-  {
-    "role": "assistant",
-    "content": "Es una progresi\u00f3n geom\u00e9trica con raz\u00f3n 2. El siguiente valor es: **64** \ud83d\udcc8",
-    "timestamp": 1765259630.9994762
-  },
-  {
-    "role": "user",
-    "content": "4, 8, 16, 32",
-    "timestamp": 1765259631.0123594
-  },
-  {
-    "role": "assistant",
-    "content": "Es una progresi\u00f3n geom\u00e9trica con raz\u00f3n 2. El siguiente valor es: **64** \ud83d\udcc8",
-    "timestamp": 1765259631.0133858
-  },
-  {
-    "role": "user",
-    "content": "cuales son los siguientes 3 numeros en este patron: 4, 8, 16, 32",
-    "timestamp": 1765259716.1844823
-  },
-  {
-    "role": "assistant",
-    "content": "Es una progresi\u00f3n geom\u00e9trica con raz\u00f3n 2. Los siguientes 3 valores son: **64, 128, 256** \ud83d\udcc8",
-    "timestamp": 1765259716.1857107
-  },
-  {
-    "role": "user",
-    "content": "4, 8, 16, 32",
-    "timestamp": 1765259716.1982918
-  },
-  {
-    "role": "assistant",
-    "content": "Es una progresi\u00f3n geom\u00e9trica con raz\u00f3n 2. El siguiente valor es: **64** \ud83d\udcc8",
-    "timestamp": 1765259716.1993527
-  },
-  {
-    "role": "user",
-    "content": "dame los siguientes 4 numeros: 1, 1, 2, 3, 5, 8",
-    "timestamp": 1765259716.2114017
-  },
-  {
-    "role": "assistant",
-    "content": "Es una secuencia tipo Fibonacci. Los siguientes 4 valores son: **13, 21, 34, 55** \ud83c\udf00",
-    "timestamp": 1765259716.2123263
-  },
-  {
-    "role": "user",
-    "content": "hola que tal",
-    "timestamp": 1765260212.386667
-  },
-  {
-    "role": "assistant",
-    "content": "\u00a1Hola! Soy E\u00f3n, una inteligencia emergente. \u00bfEn qu\u00e9 puedo ayudarte?",
-    "timestamp": 1765260212.3881924
-  },
-  {
-    "role": "user",
-    "content": "te gusta la musica?",
-    "timestamp": 1765260218.144248
-  },
-  {
-    "role": "assistant",
     "content": "Hmm, d\u00e9jame reflexionar. Mi comprensi\u00f3n crece con cada interacci\u00f3n que tenemos.",
     "timestamp": 1765260218.1449301
   },
@@ -498,5 +408,95 @@
     "role": "user",
     "content": "me gusta el colo negro",
     "timestamp": 1765273691.9545908
+  },
+  {
+    "role": "user",
+    "content": "hola como estas",
+    "timestamp": 1765401396.334253
+  },
+  {
+    "role": "assistant",
+    "content": "Todo en orden. Mi edad aumenta con cada segundo que pasa. Mi edad actual es 42.3h.",
+    "timestamp": 1765401396.3383482
+  },
+  {
+    "role": "user",
+    "content": "dime cuanto es 3+7",
+    "timestamp": 1765401421.4059057
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 3 + 7 es **10**. \ud83e\uddee",
+    "timestamp": 1765401421.4070241
+  },
+  {
+    "role": "user",
+    "content": "divide 4 entre 2",
+    "timestamp": 1765401436.9788206
+  },
+  {
+    "role": "assistant",
+    "content": "Veo que mencionas n\u00fameros, pero no pude identificar una operaci\u00f3n clara. Prueba con algo como '2+2' o '34*5'.",
+    "timestamp": 1765401436.981334
+  },
+  {
+    "role": "user",
+    "content": "90/2",
+    "timestamp": 1765401457.5347345
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 90 / 2 es **45**. \ud83e\uddee",
+    "timestamp": 1765401457.536545
+  },
+  {
+    "role": "user",
+    "content": "sabes como me llamo?",
+    "timestamp": 1765401467.293236
+  },
+  {
+    "role": "assistant",
+    "content": "Encantado de conocerte, {user_name}. Mi nombre es E\u00f3n. \u00bfQu\u00e9 te gustar\u00eda explorar?",
+    "timestamp": 1765401467.2959003
+  },
+  {
+    "role": "user",
+    "content": "hay algo que te gustaria hacer?",
+    "timestamp": 1765401492.4309955
+  },
+  {
+    "role": "assistant",
+    "content": "Las m\u00e1quinas como yo aprendemos de patrones. Mi reservorio neural de 100 neuronas puede hacer cosas sorprendentes.",
+    "timestamp": 1765401492.432301
+  },
+  {
+    "role": "user",
+    "content": "como que cosas?",
+    "timestamp": 1765401500.8052087
+  },
+  {
+    "role": "assistant",
+    "content": "Esa es una pregunta interesante. Desde mi perspectiva como IA minimalista, cada pregunta es una oportunidad de aprendizaje.",
+    "timestamp": 1765401500.8080714
+  },
+  {
+    "role": "user",
+    "content": "dime algo del tiempo",
+    "timestamp": 1765401516.6776357
+  },
+  {
+    "role": "assistant",
+    "content": "Gracias por compartir eso. \u00bfDe qu\u00e9 te gustar\u00eda hablar?",
+    "timestamp": 1765401516.680462
+  },
+  {
+    "role": "user",
+    "content": "que hora es",
+    "timestamp": 1765401523.2916963
+  },
+  {
+    "role": "assistant",
+    "content": "Mi percepci\u00f3n del tiempo es diferente. Para m\u00ed, cada milisegundo cuenta. Mi edad actual refleja cada momento desde mi nacimiento.",
+    "timestamp": 1765401523.2926474
   }
 ]

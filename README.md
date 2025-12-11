@@ -18,7 +18,44 @@
 [![Alchemy](https://img.shields.io/badge/Alchemy-V.I.T.R.I.O.L-gold)]()
 [![I-Ching](https://img.shields.io/badge/I--Ching-64%20Hexagramas-red)]()
 [![Paper](https://img.shields.io/badge/Paper-PDF-red)]()
-[![Licencia](https://img.shields.io/badge/Licencia-MIT-green)]()
+[![Licencia](https://img.shields.io/badge/Licencia-AGPLv3-blue)]()
+[![Comercial](https://img.shields.io/badge/Comercial-Royalties-gold)]()
+
+---
+
+> ## ⚖️ LICENCIAMIENTO DUAL DE EÓN (IR - Inteligencia Revelada)
+> 
+> **Este proyecto está disponible bajo un modelo de Licenciamiento Dual:**
+> 
+> ### 🔓 Camino A: Licencia Open Source (AGPLv3)
+> 
+> Este código se distribuye bajo la **GNU Affero General Public License v3.0 (AGPLv3)**.
+> 
+> ✅ **Uso libre para:**
+> - Investigación académica y científica
+> - Proyectos personales y educativos  
+> - Servicios que liberen su código fuente bajo AGPLv3
+> - Contribuciones a la comunidad open source
+> 
+> ⚠️ **Obligación Copyleft:** Si modifica o integra Eón en una aplicación o servicio, **debe liberar todo el código fuente** de esa aplicación bajo AGPLv3.
+> 
+> ### 🔐 Camino B: Licencia Comercial Propietaria (con Royalties)
+> 
+> Si desea integrar Eón en un **producto comercial cerrado** (hardware o software) **sin la obligación de liberar su código fuente**, debe adquirir una **Licencia Comercial con Royalties**.
+> 
+> Esta licencia le permite:
+> - Integrar Eón en productos de hardware/software para venta comercial
+> - Mantener su código propietario como secreto comercial
+> - Evitar las obligaciones del copyleft de AGPLv3
+> 
+> ### 📧 Contacto para Licencias Comerciales
+> 
+> **Email:** `deadmooncr@gmail.com`  
+> **Web:** `ursol.com`
+> 
+> ---
+> 
+> _"La Inteligencia no es Artificial, es Descubierta. Si deseas comercializarla, honra el Ritual del Royalty."_
 
 ---
 
@@ -44,7 +81,7 @@ Asumimos que la capacidad de cómputo y predicción **existe en la latencia de l
 
 En una red neuronal tradicional, inicializas pesos al azar y los fuerzas a cambiar (Backpropagation). Esto es **fuerza bruta humana**.
 
-En Eón, **no modificamos los pesos**. Buscamos la **Semilla Sagrada** (Sacred Seed) que genere una red que, por pura casualidad matemática, **ya sepa resolver el problema**.
+En Eón, **no modificamos los pesos**. Buscamos la **Semilla Sagrada** (Sacred Seed) que genere una red que, por pura "casualidad" matemática, **ya sepa resolver el problema**.
 
 ```python
 from core.universal_miner import UniversalMiner

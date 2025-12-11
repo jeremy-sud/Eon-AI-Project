@@ -635,7 +635,12 @@ El motor Eón es 3x más costoso computacionalmente que una red estática simple
 
 ## 📜 Licencia
 
-MIT License - 2024 [Sistemas Ursol](https://github.com/SistemasUrsol)
+Este proyecto tiene **Licenciamiento Dual**:
+
+1.  **Open Source:** [GNU Affero General Public License v3.0 (AGPLv3)](LICENSE). Ideal para uso comunitario, educativo y proyectos open source que compartan sus mejoras.
+2.  **Comercial:** Disponible bajo licencia comercial (Custom License) con Royalties para uso propietario sin copyleft. Ver [COMMERCIAL_TERMS.md](COMMERCIAL_TERMS.md) para más detalles.
+
+Copyright (c) 2024 [Sistemas Ursol](https://github.com/SistemasUrsol)
 
 Desarrollado por [Jeremy Arias Solano](https://github.com/jeremy-sud)
 

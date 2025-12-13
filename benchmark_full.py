@@ -27,7 +27,15 @@ import sys
 import os
 import json
 import argparse
+import logging
 from datetime import datetime
+
+# Configuración de logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 from typing import Dict, List, Any
 
 # Path setup
@@ -282,8 +290,8 @@ class BenchmarkSuite:
                     'accuracy_retained': min(100, accuracy_retained),
                     'compression_ratio': compression
                 })
-            except Exception as e:
-                print(f"  [WARN] Error en cuantización {bits}-bit: {e}")
+            except (ValueError, RuntimeError) as e:
+                logger.warning(f"Error en cuantización {bits}-bit: {e}")
         
         # Mostrar resultados
         headers = ['Precisión', 'MSE', 'Memoria (KB)', 'Precisión (%)', 'Compresión']
@@ -357,8 +365,8 @@ class BenchmarkSuite:
                     'adaptations': stats['total_adaptations'],
                     'type': 'plastic'
                 })
-            except Exception as e:
-                print(f"  [WARN] Error en plasticidad {ptype}: {e}")
+            except (ValueError, RuntimeError, AttributeError) as e:
+                logger.warning(f"Error en plasticidad {ptype}: {e}")
         
         # Mostrar resultados
         headers = ['Modelo', 'MSE', 'Adaptaciones', 'Tipo']

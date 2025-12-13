@@ -29,11 +29,15 @@ Arquitectura:
 """
 
 import time
+import logging
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import numpy as np
+
+# Configuración de logging
+logger = logging.getLogger(__name__)
 
 
 class EgregorMood(Enum):
@@ -596,8 +600,8 @@ class EgregorProcessor:
             for callback in self._state_callbacks:
                 try:
                     callback(new_state)
-                except Exception:
-                    pass
+                except (TypeError, ValueError, RuntimeError) as e:
+                    logger.warning(f"Error en callback de estado Egrégor: {e}")
         
         self.current_state = new_state
         return new_state

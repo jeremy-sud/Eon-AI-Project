@@ -3,12 +3,20 @@ Proyecto Eón - Servidor Web
 API REST para interactuar con el núcleo de Eón.
 """
 
+import logging
 from flask import Flask, request, jsonify, send_from_directory
 from typing import Optional
 import numpy as np
 import re
 import os
 import sys
+
+# Configuración de logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Path setup
 _current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -33,7 +41,7 @@ try:
     _tinylm_available = True
 except ImportError:
     _tinylm_available = False
-    print(" [WARN] TinyLMv2 no disponible, usando respuestas predefinidas")
+    logger.warning("TinyLMv2 no disponible, usando respuestas predefinidas")
 
 
 app = Flask(__name__, static_folder='static')
@@ -1118,8 +1126,8 @@ El subsistema de {subsystem} ha reportado una anomalía.
                                 'lines': content.split('\n'),
                                 'title': filename.replace('.md', '').replace('_', ' ').title()
                             }
-                    except Exception:
-                        pass
+                    except (IOError, OSError, UnicodeDecodeError) as e:
+                        logger.debug(f"No se pudo cargar documento {filename}: {e}")
         
         cls._docs_cache = docs
         cls._docs_loaded_time = time.time()
@@ -1477,8 +1485,8 @@ def chat():
         if len(signal) >= 10:
             reservoir_state = _aeon_instance.esn._update_state(signal[:10]).copy()
             _stats['samples_learned_from_chat'] += 1
-    except Exception:
-        pass
+    except (ValueError, AttributeError) as e:
+        logger.debug(f"No se pudo obtener estado del reservoir: {e}")
     
     # Procesar conversación en el sistema de aprendizaje
     learning_result = _learning_system.process_conversation(
@@ -1738,7 +1746,8 @@ def learn_from_text():
             'message': f'Aprendido texto de {len(text)} caracteres',
             'stats': stats
         })
-    except Exception as e:
+    except (ValueError, TypeError) as e:
+        logger.error(f"Error al aprender texto: {e}")
         return jsonify({
             'success': False,
             'error': str(e)
@@ -1797,7 +1806,8 @@ def upload_file():
             'size': len(content),
             'learned': ext in {'txt', 'md'}
         })
-    except Exception as e:
+    except UnicodeDecodeError as e:
+        logger.error(f"Error procesando archivo {file.filename}: {e}")
         return jsonify({
             'success': False,
             'error': str(e)
@@ -1976,7 +1986,8 @@ def generate_image():
             'prompt': prompt,
             'message': f'Arte vectorial generado por {_aeon_instance.name}'
         })
-    except Exception as e:
+    except (ValueError, RuntimeError) as e:
+        logger.error(f"Error generando imagen: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -2274,7 +2285,8 @@ def learn():
             'result': result,
             'status': _aeon_instance.get_status()
         })
-    except Exception as e:
+    except (ValueError, RuntimeError) as e:
+        logger.error(f"Error aprendiendo patrón {pattern}: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -2303,7 +2315,8 @@ def predict():
             'predictions': predictions.tolist(),
             'input': test_input.tolist()
         })
-    except Exception as e:
+    except (ValueError, RuntimeError) as e:
+        logger.error(f"Error generando predicción para patrón {pattern}: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -2324,7 +2337,8 @@ def load_instance(name):
             'success': False,
             'error': f'Instancia no encontrada: {name}'
         }), 404
-    except Exception as e:
+    except (IOError, ValueError, KeyError) as e:
+        logger.error(f"Error cargando instancia {name}: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -2342,7 +2356,8 @@ def list_instances():
                 instances.append(name)
         
         return jsonify({'success': True, 'instances': instances})
-    except Exception as e:
+    except OSError as e:
+        logger.error(f"Error listando instancias: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -2376,7 +2391,8 @@ def alchemy_status():
             'success': True,
             'alchemy': viz_state
         })
-    except Exception as e:
+    except (ValueError, AttributeError) as e:
+        logger.error(f"Error obteniendo estado alquímico: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -2432,7 +2448,8 @@ def alchemy_transmute():
             'state': _alchemy_pipeline.get_visualization_state()
         })
         
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
+        logger.error(f"Error en transmutación alquímica: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -2465,7 +2482,8 @@ def alchemy_nigredo():
             'state': _alchemy_pipeline.get_visualization_state()
         })
         
-    except Exception as e:
+    except (ValueError, TypeError) as e:
+        logger.error(f"Error en fase NIGREDO: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -2489,7 +2507,8 @@ def alchemy_albedo():
             'state': _alchemy_pipeline.get_visualization_state()
         })
         
-    except Exception as e:
+    except (ValueError, RuntimeError) as e:
+        logger.error(f"Error en fase ALBEDO: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -2529,7 +2548,8 @@ def alchemy_rubedo():
             'state': _alchemy_pipeline.get_visualization_state()
         })
         
-    except Exception as e:
+    except (ValueError, RuntimeError, KeyError) as e:
+        logger.error(f"Error en fase RUBEDO: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 

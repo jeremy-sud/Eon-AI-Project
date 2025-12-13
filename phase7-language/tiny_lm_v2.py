@@ -12,10 +12,14 @@ Versión mejorada con:
 """
 
 import sys
+import logging
 import numpy as np
 from pathlib import Path
 from typing import List, Dict, Tuple, Optional, Literal
 from collections import Counter
+
+# Configuración de logging
+logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "phase1-foundations" / "python"))

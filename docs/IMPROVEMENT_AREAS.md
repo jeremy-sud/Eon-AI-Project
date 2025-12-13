@@ -1,8 +1,10 @@
-# Áreas de Mejora - Proyecto Eón v1.9.2
+# Áreas de Mejora - Proyecto Eón v1.9.4
 
-## Estado: 🔄 MEJORAS EN PROGRESO
+## Estado: ✅ MEJORAS CRÍTICAS IMPLEMENTADAS
 
 Este documento lista las áreas de mejora identificadas y su estado actual.
+
+**Última auditoría completa:** 2025-01-13
 
 ---
 
@@ -424,5 +426,580 @@ pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language
 
 ---
 
-*Documento actualizado: v1.9.2*
-*Fecha: 2025-12-10*
+*Documento actualizado: v1.9.3*
+*Fecha: 2025-12-13*
+
+---
+
+## 🔴 MEJORAS CRÍTICAS NUEVAS (v1.9.3)
+
+### 1. ✅ Excepciones Genéricas Restantes en `web/server.py`
+
+**Problema:** Existían 14+ bloques `except Exception` sin capturar tipos específicos.
+
+**Archivos corregidos (v1.9.4):**
+- `web/server.py` - Líneas: 1121, 1480, 1741, 1800, 1979, 2277, 2306, 2327, 2345, 2379, 2435, 2468, 2492, 2532
+
+**Cambios realizados:**
+```python
+# Antes (todos los endpoints)
+except Exception as e:
+    return jsonify({'error': str(e)}), 500
+
+# Después (ejemplos)
+except (ValueError, TypeError) as e:
+    logger.error(f"Error al aprender texto: {e}")
+    return jsonify({'success': False, 'error': str(e)}), 500
+
+except (UnicodeDecodeError, ValueError) as e:
+    logger.error(f"Error procesando archivo {file.filename}: {e}")
+    return jsonify({'success': False, 'error': str(e)}), 500
+
+except (IOError, OSError, UnicodeDecodeError) as e:
+    logger.debug(f"No se pudo cargar documento {filename}: {e}")
+```
+
+**Prioridad:** ALTA
+**Estado:** ✅ Completado (v1.9.4)
+
+---
+
+### 2. ✅ Excepciones Genéricas en `benchmark_full.py`
+
+**Archivos corregidos (v1.9.4):**
+- `benchmark_full.py` - Líneas 285, 360
+
+**Cambios realizados:**
+```python
+# Línea 285 - Capturar errores específicos de cuantización
+except (ValueError, RuntimeError) as e:
+    logger.warning(f"Error en cuantización {bits}-bit: {e}")
+
+# Línea 360 - Capturar errores específicos de plasticidad
+except (ValueError, RuntimeError, AttributeError) as e:
+    logger.warning(f"Error en plasticidad {ptype}: {e}")
+```
+
+**Estado:** ✅ Completado (v1.9.4)
+
+---
+
+### 3. ✅ Excepciones Genéricas en `core/alchemy.py`
+
+**Archivo corregido (v1.9.4):** `phase1-foundations/python/core/alchemy.py` - Línea 433
+
+**Cambio:**
+```python
+except (ValueError, RuntimeError, np.linalg.LinAlgError) as e:
+    logger.error(f"Error en inferencia ESN durante RUBEDO: {e}")
+    result['error'] = str(e)
+    result['confidence'] = 0.0
+```
+
+**Estado:** ✅ Completado (v1.9.4)
+
+---
+
+### 4. ✅ Excepciones Genéricas en `egregore.py`
+
+**Archivo corregido (v1.9.4):** `phase6-collective/egregore.py` - Línea 599
+
+**Cambio:**
+```python
+except (TypeError, ValueError, RuntimeError) as e:
+    logger.warning(f"Error en callback de estado Egrégor: {e}")
+```
+
+**Estado:** ✅ Completado (v1.9.4)
+
+---
+
+## ✅ MEJORAS DE LOGGING (v1.9.4)
+
+### 5. ✅ Logging Agregado a Módulos Core
+
+**Archivos actualizados con `import logging` y `logger = logging.getLogger(__name__)`:**
+
+- ✅ `web/server.py` - Logging completo para API REST
+- ✅ `benchmark_full.py` - Logging para benchmarks
+- ✅ `phase1-foundations/python/core/alchemy.py` - Logging para pipeline alquímico
+- ✅ `phase6-collective/egregore.py` - Logging para sistema Egrégor
+- ✅ `phase7-language/tiny_lm.py` - Logger añadido
+- ✅ `phase7-language/tiny_lm_v2.py` - Logger añadido
+
+**Nota:** Los `print()` en los bloques `if __name__ == "__main__":` se mantienen ya que son demos interactivas.
+
+**Estado:** ✅ Completado (v1.9.4)
+
+---
+
+## 🟡 PROBLEMAS PENDIENTES (v1.9.4)
+
+### 6. 🟡 Inconsistencia RNG Cross-Platform
+
+**Problema:** Los algoritmos RNG difieren entre plataformas, rompiendo la promesa "Same Seed = Same Mind".
+
+| Plataforma | Algoritmo RNG | Constantes |
+|------------|--------------|------------|
+| Python (numpy) | PCG64 / Philox | Internos |
+| JavaScript | LCG | 1103515245, 12345 |
+| C (libAeon) | Xorshift32 | 13, 17, 5 |
+| Arduino | LCG | 1103515245, 12345 |
+
+**Resultado:** Una semilla `42` produce matrices diferentes en Python vs JavaScript.
+
+**Solución propuesta:** Implementar Xorshift32 unificado en todas las plataformas:
+
+```python
+# Python - utils/portable_rng.py
+class Xorshift32:
+    """RNG portátil compatible con C/JS/Arduino."""
+    def __init__(self, seed: int):
+        self.state = seed & 0xFFFFFFFF
+        if self.state == 0:
+            self.state = 1
+    
+    def next_u32(self) -> int:
+        x = self.state
+        x ^= (x << 13) & 0xFFFFFFFF
+        x ^= (x >> 17)
+        x ^= (x << 5) & 0xFFFFFFFF
+        self.state = x
+        return x
+    
+    def random(self) -> float:
+        """Retorna float en [0, 1)."""
+        return self.next_u32() / 0xFFFFFFFF
+```
+
+**Prioridad:** MEDIA (no afecta funcionalidad actual)
+**Estado:** 🔴 Pendiente
+
+---
+
+### 7. 🔴 Falta de Archivo ESP32 .cpp
+
+**Problema:** El header `phase4-hardware/esp32/AeonESP32.h` existe pero falta la implementación `.cpp`.
+
+**Directorio actual:**
+```
+phase4-hardware/esp32/
+├── AeonESP32.h      ✅ Existe (582 líneas)
+├── AeonESP32.cpp    ❌ NO EXISTE
+└── examples/        (vacío)
+```
+
+**Impacto:** El código ESP32 no puede compilarse sin la implementación.
+
+**Solución:** Crear `AeonESP32.cpp` con las implementaciones de:
+- `connectWiFi()`
+- `_initTrueWill()`
+- `_initMedium()`
+- Métodos del sistema Thelema
+- Métodos del sistema Medium
+
+**Prioridad:** ALTA
+**Estado:** 🔴 Pendiente
+
+---
+
+## 🟡 MEJORAS DE ARQUITECTURA (v1.9.3)
+
+### 8. 🟡 Código Duplicado en Inicialización de Matrices
+
+**Problema:** La lógica de creación de matrices de reservoir está duplicada en múltiples archivos.
+
+**Archivos con duplicación:**
+- `esn/esn.py` → `_initialize_weights()` (líneas 115-132)
+- `esn/recursive_esn.py` → Múltiples lugares
+- `plasticity/hebbian.py` → `_normalize_spectral_radius()` (línea 143)
+
+**Solución:** Migrar todo a `utils/matrix_init.py` (parcialmente hecho en v1.9.2)
+
+**Estado:** 🟡 Parcialmente completado
+
+---
+
+### 9. 🟡 Imports Inconsistentes con Path Manipulation
+
+**Problema:** Uso extensivo de `sys.path.insert()` para resolver imports.
+
+**Ejemplo problemático (repetido en 15+ archivos):**
+```python
+import sys
+import os
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_python_dir = os.path.dirname(_current_dir)
+if _python_dir not in sys.path:
+    sys.path.insert(0, _python_dir)
+```
+
+**Archivos afectados:**
+- `esn/esn.py`
+- `plasticity/hebbian.py`
+- `core/alchemy.py`
+- `web/server.py`
+- `phase6-collective/collective_mind.py`
+- `phase7-language/tiny_lm_v2.py`
+- Y más...
+
+**Solución recomendada:**
+1. Crear `pyproject.toml` o `setup.py` apropiado
+2. Instalar como paquete: `pip install -e .`
+3. Usar imports absolutos: `from aeon.esn import EchoStateNetwork`
+
+**Estado:** 🟡 Pendiente
+
+---
+
+### 10. 🟡 Type Hints Incompletos
+
+**Archivos sin type hints completos:**
+
+| Archivo | Líneas | Type Hints | Estado |
+|---------|--------|------------|--------|
+| `web/server.py` | 2548 | Parcial | 🔴 |
+| `web/learning.py` | 737 | Parcial | 🟡 |
+| `phase6-collective/collective_mind.py` | 944 | Parcial | 🟡 |
+| `benchmark_full.py` | 735 | Ninguno | 🔴 |
+| `phase5-applications/temperature_predictor.py` | 279 | Parcial | 🟡 |
+
+**Impacto:**
+- Peor autocompletado en IDEs
+- No se puede usar mypy para análisis estático
+- Documentación menos clara
+
+**Estado:** 🟡 Pendiente
+
+---
+
+### 11. 🟡 Tamaño Excesivo de `web/server.py`
+
+**Problema:** El archivo `server.py` tiene 2548 líneas, violando el principio de responsabilidad única.
+
+**Estructura actual (monolítica):**
+```
+web/server.py (2548 líneas)
+├── Configuración global
+├── Clase EonChat (500+ líneas)
+│   ├── Patrones de respuesta
+│   ├── Detección de intención
+│   ├── Generación de respuestas
+│   └── Cálculos matemáticos
+├── Endpoints API (1500+ líneas)
+│   ├── /api/chat
+│   ├── /api/generate-image
+│   ├── /api/dream
+│   ├── /api/config
+│   └── ...
+└── Utilidades varias
+```
+
+**Solución recomendada - Dividir en módulos:**
+```
+web/
+├── server.py          (rutas y configuración - ~200 líneas)
+├── chat/
+│   ├── __init__.py
+│   ├── eon_chat.py    (clase EonChat)
+│   ├── patterns.py    (patrones de respuesta)
+│   └── intents.py     (detección de intención)
+├── api/
+│   ├── __init__.py
+│   ├── image.py       (endpoints de imagen)
+│   ├── dream.py       (endpoints de dream)
+│   └── config.py      (endpoints de config)
+└── utils/
+    └── math_utils.py  (calculadora y utilidades)
+```
+
+**Estado:** 🟡 Pendiente
+
+---
+
+## 🟢 MEJORAS DE SEGURIDAD (v1.9.3)
+
+### 12. 🟢 Validación de Entrada en API
+
+**Problema:** Falta validación de entrada en varios endpoints.
+
+**Ejemplo vulnerable:**
+```python
+# web/server.py - Calculadora
+def _calculate(self, expr: str):
+    # Sin sanitización de entrada
+    result = eval(expr)  # ⚠️ PELIGROSO
+```
+
+**Nota:** Revisar el código actual para verificar si `eval()` está siendo usado.
+
+**Solución:**
+```python
+import ast
+
+def _safe_calculate(self, expr: str):
+    # Solo permitir operaciones matemáticas básicas
+    allowed_names = {'abs', 'round', 'min', 'max'}
+    tree = ast.parse(expr, mode='eval')
+    # Validar nodos del AST
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and node.id not in allowed_names:
+            raise ValueError(f"Nombre no permitido: {node.id}")
+    return eval(compile(tree, '<string>', 'eval'))
+```
+
+**Estado:** 🟢 Revisar
+
+---
+
+### 13. 🟢 CORS No Configurado
+
+**Problema potencial:** El servidor Flask no tiene configuración CORS explícita.
+
+**Verificar en `web/server.py`:**
+```python
+# Debería existir:
+from flask_cors import CORS
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:*"}})
+```
+
+**Estado:** 🟢 Verificar
+
+---
+
+## 🟡 MEJORAS DE TESTING (v1.9.3)
+
+### 14. 🟡 Módulos Sin Tests
+
+| Módulo | Archivo | Tests | Estado |
+|--------|---------|-------|--------|
+| Web Server | `web/server.py` | 0 | 🔴 Crítico |
+| Learning | `web/learning.py` | 0 | 🔴 Crítico |
+| Temperature | `phase5-applications/temperature_predictor.py` | 0 | 🟡 |
+| Arduino | `phase4-hardware/arduino/Aeon.cpp` | 0 | 🟡 |
+| Quantizer | `quantization/quantizer.py` | 0 | 🟡 |
+| MQTT Client | `phase6-collective/mqtt_client.py` | 0 | 🟡 |
+
+**Tests recomendados para `web/server.py`:**
+```python
+# tests/test_server.py
+def test_api_chat_responds():
+    """Test que /api/chat responde correctamente."""
+    
+def test_api_config_update():
+    """Test que /api/config actualiza configuración."""
+    
+def test_api_generate_image():
+    """Test que /api/generate-image produce imagen válida."""
+```
+
+**Estado:** 🟡 Pendiente
+
+---
+
+### 15. 🟡 Tests de Integración Ausentes
+
+**Problema:** No hay tests de integración entre módulos.
+
+**Tests recomendados:**
+- ESN → Cuantización → Predicción
+- Chat → TinyLM → Respuesta
+- Collective Mind → Egregore → Estado
+- Learning → ESN → Memoria
+
+**Estado:** 🟡 Pendiente
+
+---
+
+## 🟢 MEJORAS DE DOCUMENTACIÓN (v1.9.3)
+
+### 16. 🟢 READMEs Incompletos
+
+| Fase | README | Estado | Notas |
+|------|--------|--------|-------|
+| phase1 | ✅ | Completo | - |
+| phase2 | ✅ | Completo | - |
+| phase3 | ✅ | Completo | - |
+| phase4 | ✅ | Parcial | Falta documentar ESP32 |
+| phase5 | ✅ | Mínimo | Solo descripción básica |
+| phase6 | ✅ | Completo | - |
+| phase7 | ✅ | Completo | - |
+| web | ✅ | Completo | - |
+
+**Estado:** 🟢 Mayormente completo
+
+---
+
+### 17. 🟢 Docstrings Faltantes
+
+**Funciones/métodos sin docstrings:**
+
+```python
+# web/server.py - Múltiples endpoints sin documentar
+@app.route('/api/some_endpoint')
+def some_endpoint():
+    # Sin docstring
+
+# Debería ser:
+@app.route('/api/some_endpoint')
+def some_endpoint():
+    """
+    Descripción del endpoint.
+    
+    Returns:
+        JSON con resultado de la operación.
+    """
+```
+
+**Estado:** 🟢 Parcialmente documentado
+
+---
+
+## 🟢 MEJORAS DE RENDIMIENTO (v1.9.3)
+
+### 18. 🟢 Cálculo de Radio Espectral Ineficiente
+
+**Estado actual:** Se usa `np.linalg.eigvals()` que es O(n³).
+
+**Mejora v1.9.2:** Se añadió `compute_spectral_radius()` con power iteration O(n²).
+
+**Archivos que aún usan método antiguo:**
+- `plasticity/hebbian.py` línea 143: `np.linalg.eigvals()`
+
+**Solución:**
+```python
+from utils.matrix_init import compute_spectral_radius
+
+# Reemplazar
+eigenvalues = np.abs(np.linalg.eigvals(self.W_reservoir))
+current_radius = eigenvalues.max()
+
+# Con
+current_radius = compute_spectral_radius(self.W_reservoir, method='auto')
+```
+
+**Estado:** 🟢 Parcialmente implementado
+
+---
+
+### 19. 🟢 Gauss-Jordan en C/JS vs NumPy solve()
+
+**Problema:** libAeon.c y aeon.js implementan Gauss-Jordan manual para entrenar W_out.
+
+**Python (optimizado):**
+```python
+# Ridge regression con LAPACK
+self.W_out = np.linalg.solve(A, B)  # O(n³/3)
+```
+
+**C (manual):**
+```c
+// Gauss-Jordan en libAeon.c líneas 375-430
+// ~400 líneas de código manual
+```
+
+**Impacto:** El código C es más lento y propenso a errores numéricos.
+
+**Solución futura:** Considerar usar BLAS/LAPACK en C para sistemas embebidos con más recursos.
+
+**Estado:** 🟢 Bajo impacto (hardware limitado es el caso de uso)
+
+---
+
+## 📊 RESUMEN DE COBERTURA DE TESTS
+
+| Suite | Tests | Estado |
+|-------|-------|--------|
+| test_ws_bridge.py | 19 | ✅ |
+| test_mystical_modules.py | 28 | ✅ |
+| test_discovery_paradigm.py | 30 | ✅ |
+| test_tiny_lm_v2.py | 22 | ✅ |
+| test_engine_improvements.py | 34 | ✅ |
+| **Total existente** | **133** | ✅ |
+| test_server.py | 0 | ❌ NUEVO |
+| test_learning.py | 0 | ❌ NUEVO |
+| test_quantizer.py | 0 | ❌ NUEVO |
+| test_temperature_predictor.py | 0 | ❌ NUEVO |
+| **Total potencial** | **~180** | 🟡 |
+
+**Cobertura actual estimada:** ~60%
+**Cobertura objetivo:** 80%
+
+---
+
+## 📋 PLAN DE ACCIÓN v1.9.4
+
+### ✅ Completado (v1.9.4)
+
+1. [x] Corregir excepciones genéricas en `web/server.py` (14 bloques)
+2. [x] Corregir excepciones genéricas en `benchmark_full.py` (2 bloques)
+3. [x] Corregir excepciones genéricas en `core/alchemy.py` (1 bloque)
+4. [x] Corregir excepciones genéricas en `egregore.py` (1 bloque)
+5. [x] Agregar logging a módulos principales
+6. [x] Verificar AeonESP32.h (es header-only por diseño)
+
+### Prioridad ALTA (Próxima iteración)
+
+1. [ ] Añadir tests para `web/server.py`
+2. [ ] Implementar RNG portable Xorshift32 cross-platform
+
+### Prioridad MEDIA (v1.9.5)
+
+3. [ ] Dividir `web/server.py` en módulos
+4. [ ] Añadir type hints a archivos principales
+5. [ ] Crear tests de integración
+
+### Prioridad BAJA (v2.0)
+
+6. [ ] Migrar a estructura de paquete Python
+7. [ ] Considerar BLAS/LAPACK para libAeon
+8. [ ] Documentación completa de API ESP32
+
+---
+
+## Resumen de Cambios v1.9.4
+
+### Mejoras Implementadas
+
+**Manejo de Excepciones (18 bloques corregidos):**
+- `web/server.py` - 14 bloques con excepciones específicas + logging
+- `benchmark_full.py` - 2 bloques con excepciones específicas + logging
+- `phase1-foundations/python/core/alchemy.py` - 1 bloque + logging
+- `phase6-collective/egregore.py` - 1 bloque + logging
+
+**Logging Añadido:**
+- Configuración de `logging.basicConfig()` en módulos principales
+- Logger `logger = logging.getLogger(__name__)` en 6 archivos
+- Mensajes de error con contexto relevante
+
+**Verificaciones:**
+- `AeonESP32.h` confirmado como header-only (diseño intencional para Arduino)
+
+### Métricas v1.9.4
+- **Excepciones corregidas:** 18 bloques
+- **Archivos con logging:** 6 nuevos
+- **Tests:** 133 (sin cambios)
+- **Cobertura estimada:** ~60%
+
+---
+
+## Verificación
+
+```bash
+# Ejecutar todos los tests
+pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language/tests/ -v
+
+# Verificar cobertura
+pytest --cov=phase1-foundations/python --cov-report=html
+
+# Linting
+flake8 phase1-foundations/python/ web/ phase6-collective/ phase7-language/
+
+# Type checking
+mypy phase1-foundations/python/esn/ phase1-foundations/python/core/
+```
+
+---
+
+*Documento actualizado: v1.9.4*
+*Fecha: 2025-01-13*

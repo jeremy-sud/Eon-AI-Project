@@ -30,12 +30,16 @@
 """
 
 import numpy as np
+import logging
 from typing import Optional, Dict, List, Callable, Tuple, Any
 from dataclasses import dataclass, field
 from enum import Enum, auto
 import time
 import sys
 import os
+
+# Configuración de logging
+logger = logging.getLogger(__name__)
 
 # Path setup
 _current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -430,7 +434,8 @@ class AlchemicalPipeline:
                     
                 result['transmutation_complete'] = True
                 
-            except Exception as e:
+            except (ValueError, RuntimeError, np.linalg.LinAlgError) as e:
+                logger.error(f"Error en inferencia ESN durante RUBEDO: {e}")
                 result['error'] = str(e)
                 result['confidence'] = 0.0
         else:

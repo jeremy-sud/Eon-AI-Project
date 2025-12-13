@@ -36,7 +36,8 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
+import numpy.typing as npt
 
 # Path setup
 _current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -120,9 +121,9 @@ def print_table(headers: List[str], rows: List[List[Any]], widths: List[int] = N
 class BenchmarkSuite:
     """Suite completa de benchmarks para Eón."""
     
-    def __init__(self, quick_mode: bool = False):
-        self.quick_mode = quick_mode
-        self.results = {
+    def __init__(self, quick_mode: bool = False) -> None:
+        self.quick_mode: bool = quick_mode
+        self.results: Dict[str, Any] = {
             'timestamp': datetime.now().isoformat(),
             'version': '2.0.0',
             'quick_mode': quick_mode,
@@ -131,15 +132,15 @@ class BenchmarkSuite:
         
         # Parámetros ajustados para modo rápido
         if quick_mode:
-            self.data_size = 1000
-            self.reservoir_sizes = [25, 50, 100]
-            self.warmup_steps = 100
+            self.data_size: int = 1000
+            self.reservoir_sizes: List[int] = [25, 50, 100]
+            self.warmup_steps: int = 100
         else:
             self.data_size = 3000
             self.reservoir_sizes = [10, 25, 50, 75, 100, 150, 200]
             self.warmup_steps = 300
     
-    def run_all(self) -> Dict:
+    def run_all(self) -> Dict[str, Any]:
         """Ejecuta todos los benchmarks disponibles."""
         print("""
 ╔═══════════════════════════════════════════════════════════════════════╗
@@ -170,7 +171,7 @@ class BenchmarkSuite:
         
         return self.results
     
-    def benchmark_esn_sizes(self):
+    def benchmark_esn_sizes(self) -> List[Dict[str, Any]]:
         """Benchmark de diferentes tamaños de reservoir."""
         print_header("BENCHMARK 1: Tamaño del Reservoir vs Rendimiento")
         
@@ -232,7 +233,7 @@ class BenchmarkSuite:
         self.results['benchmarks']['esn_sizes'] = results
         return results
     
-    def benchmark_quantization(self):
+    def benchmark_quantization(self) -> List[Dict[str, Any]]:
         """Benchmark de diferentes niveles de cuantización."""
         print_header("BENCHMARK 2: Cuantización vs Rendimiento")
         
@@ -305,7 +306,7 @@ class BenchmarkSuite:
         self.results['benchmarks']['quantization'] = results
         return results
     
-    def benchmark_plasticity(self):
+    def benchmark_plasticity(self) -> List[Dict[str, Any]]:
         """Benchmark de tipos de plasticidad."""
         print_header("BENCHMARK 3: Plasticidad y Adaptación Continua")
         
@@ -379,7 +380,7 @@ class BenchmarkSuite:
         self.results['benchmarks']['plasticity'] = results
         return results
     
-    def benchmark_tinylm(self):
+    def benchmark_tinylm(self) -> List[Dict[str, Any]]:
         """Benchmark del modelo de lenguaje TinyLMv2."""
         print_header("BENCHMARK 4: TinyLMv2 - Modelo de Lenguaje")
         
@@ -438,7 +439,7 @@ class BenchmarkSuite:
         self.results['benchmarks']['tinylm'] = results
         return results
     
-    def benchmark_learning_system(self):
+    def benchmark_learning_system(self) -> Dict[str, Any]:
         """Benchmark del sistema de aprendizaje continuo."""
         print_header("BENCHMARK 5: Sistema de Aprendizaje Continuo")
         
@@ -513,7 +514,7 @@ class BenchmarkSuite:
         self.results['benchmarks']['learning_system'] = results
         return results
     
-    def benchmark_image_generation(self):
+    def benchmark_image_generation(self) -> Dict[str, Any]:
         """Benchmark de generación de imágenes."""
         print_header("BENCHMARK 6: Generación de Imágenes Neurales")
         
@@ -566,7 +567,7 @@ class BenchmarkSuite:
         self.results['benchmarks']['image_generation'] = results
         return results
     
-    def benchmark_chat_system(self):
+    def benchmark_chat_system(self) -> Dict[str, Any]:
         """Benchmark del sistema de chat."""
         print_header("BENCHMARK 7: Sistema de Chat")
         
@@ -631,7 +632,7 @@ class BenchmarkSuite:
         self.results['benchmarks']['chat_system'] = results
         return results
     
-    def print_summary(self):
+    def print_summary(self) -> None:
         """Imprime resumen final del benchmark."""
         print("\n" + "=" * 70)
         print(" RESUMEN EJECUTIVO - PROYECTO EÓN")
@@ -715,14 +716,14 @@ class BenchmarkSuite:
 └─────────────────────────────────────────────────────────────────────┘
         """)
     
-    def export_results(self, filepath: str):
+    def export_results(self, filepath: str) -> None:
         """Exporta resultados a JSON."""
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(self.results, f, indent=2, ensure_ascii=False, default=str)
         print(f"\n  Resultados exportados a: {filepath}")
 
 
-def main():
+def main() -> Dict[str, Any]:
     parser = argparse.ArgumentParser(description='Benchmark integral de Proyecto Eón')
     parser.add_argument('--quick', action='store_true', help='Modo rápido (menos muestras)')
     parser.add_argument('--export', type=str, help='Exportar resultados a archivo JSON')

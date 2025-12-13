@@ -1,4 +1,4 @@
-# Áreas de Mejora - Proyecto Eón v1.9.4
+# Áreas de Mejora - Proyecto Eón v1.9.6
 
 ## Estado: ✅ MEJORAS CRÍTICAS IMPLEMENTADAS
 
@@ -260,7 +260,7 @@ class BaseMysticalModule(ABC):
 | `core/universal_miner.py` | ~75% | ✅ Nuevo (v1.9.0) |
 | `core/archaic_protocol.py` | ~80% | ✅ Nuevo (v1.9.0) |
 | `phase7-language/tiny_lm_v2.py` | ~70% | ✅ 22 tests (v1.9.1) |
-| `web/server.py` | 0% | ❌ Sin tests |
+| `web/server.py` | 0% → 19 tests | ✅ NUEVO (v1.9.6) |
 | `phase5-applications/*.py` | 0% | ❌ Sin tests |
 
 **Objetivo:** 80% cobertura global
@@ -328,9 +328,11 @@ pdoc --output-dir docs/api phase6-collective/collective_mind.py phase6-collectiv
 | test_ws_bridge.py | 19 | ✅ |
 | test_mystical_modules.py | 28 | ✅ |
 | test_discovery_paradigm.py | 30 | ✅ |
-| test_tiny_lm_v2.py | 22 | ✅ NEW v1.9.1 |
-| test_engine_improvements.py | 34 | ✅ NEW v1.9.2 |
-| **Total** | **133** | **✅ 100%** |
+| test_tiny_lm_v2.py | 22 | ✅ v1.9.1 |
+| test_engine_improvements.py | 34 | ✅ v1.9.2 |
+| test_portable_rng.py | 26 | ✅ v1.9.5 |
+| test_server.py | 19 | ✅ v1.9.6 NEW |
+| **Total** | **178** | **✅ 100%** |
 
 ---
 
@@ -426,8 +428,47 @@ pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language
 
 ---
 
-*Documento actualizado: v1.9.3*
-*Fecha: 2025-12-13*
+*Documento actualizado: v1.9.6*
+*Fecha: 2025-01-14*
+
+---
+
+## Resumen de Cambios v1.9.6
+
+### Tests para web/server.py
+**Nuevo archivo:** `web/tests/test_server.py` (19 tests)
+
+**Cobertura:**
+- `TestServerImports` - Verificación de imports (2 tests)
+- `TestEonChatClass` - Clase EonChat (2 tests)
+- `TestAPIEndpoints` - Endpoints principales (7 tests)
+- `TestMathOperations` - Operaciones matemáticas (2 tests)
+- `TestAlchemyAPI` - API de Alquimia (3 tests)
+- `TestErrorHandling` - Manejo de errores (3 tests)
+
+### Type Hints Completos en benchmark_full.py
+**Archivo actualizado:** `benchmark_full.py`
+
+**Cambios:**
+- `BenchmarkSuite.__init__()` → Type hints para atributos
+- `run_all()` → `Dict[str, Any]`
+- Todos los métodos `benchmark_*()` → Return types específicos
+- `print_summary()` → `None`
+- `export_results()` → `None`
+- `main()` → `Dict[str, Any]`
+
+### Unificación de Código
+**Archivo actualizado:** `plasticity/hebbian.py`
+
+**Cambio:**
+- `_normalize_spectral_radius()` ahora usa `compute_spectral_radius()` de `utils.matrix_init`
+- Elimina duplicación de código entre módulos
+
+### Métricas v1.9.6
+- **Tests totales:** 178 (+45 desde v1.9.5)
+- **Cobertura web/server.py:** 0% → 19 tests
+- **Archivos con type hints completos:** +1 (benchmark_full.py)
+- **Funciones unificadas:** 1 (spectral_radius)
 
 ---
 
@@ -650,7 +691,7 @@ if _python_dir not in sys.path:
 | `web/server.py` | 2548 | Parcial | 🔴 |
 | `web/learning.py` | 737 | Parcial | 🟡 |
 | `phase6-collective/collective_mind.py` | 944 | Parcial | 🟡 |
-| `benchmark_full.py` | 735 | Ninguno | 🔴 |
+| `benchmark_full.py` | 735 | Completo | ✅ v1.9.6 |
 | `phase5-applications/temperature_predictor.py` | 279 | Parcial | 🟡 |
 
 **Impacto:**

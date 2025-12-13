@@ -17,6 +17,7 @@ if _python_dir not in sys.path:
     sys.path.insert(0, _python_dir)
 
 from esn.esn import EchoStateNetwork, generate_mackey_glass
+from utils.matrix_init import compute_spectral_radius
 
 
 class HebbianESN(EchoStateNetwork):
@@ -144,8 +145,9 @@ class HebbianESN(EchoStateNetwork):
         
     def _normalize_spectral_radius(self):
         """Renormaliza el reservoir para mantener estabilidad."""
-        eigenvalues = np.abs(np.linalg.eigvals(self.W_reservoir))
-        current_radius = eigenvalues.max()
+        # Usar compute_spectral_radius de utils/matrix_init.py
+        # method='auto' usa power iteration para matrices grandes (más eficiente)
+        current_radius = compute_spectral_radius(self.W_reservoir, method='auto')
         
         if current_radius > self.spectral_radius * 1.1:  # 10% tolerancia
             self.W_reservoir *= self.spectral_radius / current_radius

@@ -2,7 +2,7 @@
 # Proyecto Eón - Dependencias Python
 # ===========================================
 # Filosofía: Solo lo esencial, minimalismo TinyML
-# Versión: 1.9.5
+# Versión: 1.9.6
 # ===========================================
 
 # =====================

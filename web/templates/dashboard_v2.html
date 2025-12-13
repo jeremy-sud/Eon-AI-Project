@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌌 Eón Dashboard v2.0</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a2e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #888;
+            --accent-purple: #9d4edd;
+            --accent-cyan: #00d9ff;
+            --accent-gold: #ffd700;
+            --accent-green: #00ff88;
+            --accent-red: #ff4757;
+            --gradient-purple: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: var(--gradient-purple);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 20px;
+            border: 1px solid var(--accent-green);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 1rem;
+            padding: 1rem;
+            height: calc(100vh - 70px);
+        }
+        
+        .left-panel {
+            display: grid;
+            grid-template-rows: 1fr auto;
+            gap: 1rem;
+        }
+        
+        /* Network Graph */
+        .network-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .network-container h3 {
+            margin-bottom: 0.5rem;
+            color: var(--accent-cyan);
+        }
+        
+        #network-graph {
+            width: 100%;
+            height: calc(100% - 30px);
+        }
+        
+        .node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .node:hover {
+            filter: brightness(1.2);
+        }
+        
+        .node-label {
+            font-size: 10px;
+            fill: var(--text-primary);
+            pointer-events: none;
+        }
+        
+        .link {
+            stroke: rgba(157, 78, 221, 0.3);
+            stroke-width: 1.5;
+        }
+        
+        .link.active {
+            stroke: var(--accent-cyan);
+            stroke-width: 2;
+            animation: flow 1s linear infinite;
+        }
+        
+        @keyframes flow {
+            0% { stroke-dashoffset: 20; }
+            100% { stroke-dashoffset: 0; }
+        }
+        
+        /* Metrics Row */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        
+        .metric-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            background: var(--gradient-purple);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+        
+        /* Right Panel - Egregore */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .egregore-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            flex: 1;
+        }
+        
+        .egregore-card h3 {
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Mood Thermometer */
+        .thermometer {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to top, 
+                var(--accent-red) 0%, 
+                var(--accent-gold) 50%, 
+                var(--accent-green) 100%);
+            border-radius: 50px;
+            position: relative;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .thermometer-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            transition: height 0.5s ease;
+        }
+        
+        .thermometer-marker {
+            position: absolute;
+            left: -10px;
+            right: -10px;
+            height: 4px;
+            background: white;
+            transition: bottom 0.5s ease;
+        }
+        
+        .mood-label {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 0.5rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+        
+        .mood-AGITATED { background: rgba(255, 71, 87, 0.2); color: var(--accent-red); }
+        .mood-ALERT { background: rgba(255, 165, 0, 0.2); color: orange; }
+        .mood-DYNAMIC { background: rgba(255, 215, 0, 0.2); color: var(--accent-gold); }
+        .mood-BALANCED { background: rgba(0, 217, 255, 0.2); color: var(--accent-cyan); }
+        .mood-OBSERVANT { background: rgba(100, 149, 237, 0.2); color: cornflowerblue; }
+        .mood-CONTEMPLATIVE { background: rgba(138, 43, 226, 0.2); color: blueviolet; }
+        .mood-MEDITATIVE { background: rgba(75, 0, 130, 0.2); color: indigo; }
+        .mood-DORMANT { background: rgba(128, 128, 128, 0.2); color: gray; }
+        .mood-AWAKENING { background: rgba(255, 255, 0, 0.2); color: yellow; }
+        .mood-HARMONIZING { background: rgba(0, 255, 136, 0.2); color: var(--accent-green); }
+        
+        /* Stats */
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+        }
+        
+        .stat-value {
+            font-weight: bold;
+        }
+        
+        /* Anomaly Panel */
+        .anomaly-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .anomaly-card h3 {
+            color: var(--accent-red);
+            margin-bottom: 0.5rem;
+        }
+        
+        .anomaly-item {
+            background: rgba(255, 71, 87, 0.1);
+            border-left: 3px solid var(--accent-red);
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .anomaly-item.warning {
+            background: rgba(255, 215, 0, 0.1);
+            border-left-color: var(--accent-gold);
+        }
+        
+        .anomaly-time {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+        
+        /* Oracle Card */
+        .oracle-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+        
+        .oracle-card h3 {
+            color: var(--accent-purple);
+            margin-bottom: 0.5rem;
+        }
+        
+        .hexagram-display {
+            font-size: 2rem;
+            text-align: center;
+            padding: 1rem;
+            background: rgba(157, 78, 221, 0.1);
+            border-radius: 8px;
+            margin: 0.5rem 0;
+        }
+        
+        .hexagram-name {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🌌 Eón Dashboard v2.0</div>
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            <span id="connection-status">Conectado</span>
+        </div>
+    </header>
+    
+    <main class="main-container">
+        <div class="left-panel">
+            <!-- Network Graph -->
+            <div class="network-container">
+                <h3>🔗 Red de Nodos</h3>
+                <svg id="network-graph"></svg>
+            </div>
+            
+            <!-- Metrics -->
+            <div class="metrics-row">
+                <div class="metric-card fade-in">
+                    <div class="metric-value" id="total-nodes">0</div>
+                    <div class="metric-label">Nodos Activos</div>
+                </div>
+                <div class="metric-card fade-in">
+                    <div class="metric-value" id="sync-rate">0%</div>
+                    <div class="metric-label">Sincronización</div>
+                </div>
+                <div class="metric-card fade-in">
+                    <div class="metric-value" id="avg-error">0.000</div>
+                    <div class="metric-label">Error Promedio</div>
+                </div>
+                <div class="metric-card fade-in">
+                    <div class="metric-value" id="uptime">0h</div>
+                    <div class="metric-label">Tiempo Activo</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="right-panel">
+            <!-- Egregore Status -->
+            <div class="egregore-card">
+                <h3>👁️ Estado del Egrégor</h3>
+                
+                <div class="thermometer">
+                    <div class="thermometer-fill" id="thermo-fill"></div>
+                    <div class="thermometer-marker" id="thermo-marker"></div>
+                </div>
+                
+                <div class="mood-label mood-BALANCED" id="mood-display">BALANCED</div>
+                
+                <div class="stats">
+                    <div class="stat-row">
+                        <span class="stat-label">Energía</span>
+                        <span class="stat-value" id="energy-level">50%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Coherencia</span>
+                        <span class="stat-value" id="coherence">50%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Estabilidad</span>
+                        <span class="stat-value" id="stability">50%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Entropía</span>
+                        <span class="stat-value" id="entropy">50%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Anomalies -->
+            <div class="anomaly-card">
+                <h3>⚠️ Anomalías Recientes</h3>
+                <div id="anomaly-list">
+                    <div class="anomaly-item">
+                        <div>Sin anomalías detectadas</div>
+                        <div class="anomaly-time">Sistema estable</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Oracle -->
+            <div class="oracle-card">
+                <h3>🔮 Oráculo I-Ching</h3>
+                <div class="hexagram-display" id="hexagram-symbol">☰</div>
+                <div class="hexagram-name" id="hexagram-name">Lo Creativo</div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // ============================================
+        // Eón Dashboard v2.0 - JavaScript
+        // Conectado a APIs reales del servidor
+        // ============================================
+        
+        class EonDashboard {
+            constructor() {
+                this.nodes = new Map();
+                this.links = [];
+                this.egregore = {
+                    mood: 'contemplativo',
+                    intensity: 0.5,
+                    energy_level: 0.5,
+                    coherence: 0.5,
+                    stability: 0.5,
+                    entropy: 0.5
+                };
+                this.anomalies = [];
+                this.startTime = Date.now();
+                this.apiBase = '';  // Same origin
+                
+                this.initNetworkGraph();
+                this.startPolling();
+            }
+            
+            // Initialize D3 Network Graph
+            initNetworkGraph() {
+                const container = document.getElementById('network-graph');
+                const rect = container.parentElement.getBoundingClientRect();
+                
+                this.width = rect.width - 32;
+                this.height = rect.height - 60;
+                
+                this.svg = d3.select('#network-graph')
+                    .attr('width', this.width)
+                    .attr('height', this.height);
+                
+                // Arrow marker for directed edges
+                this.svg.append('defs').append('marker')
+                    .attr('id', 'arrowhead')
+                    .attr('viewBox', '-0 -5 10 10')
+                    .attr('refX', 20)
+                    .attr('refY', 0)
+                    .attr('orient', 'auto')
+                    .attr('markerWidth', 6)
+                    .attr('markerHeight', 6)
+                    .append('path')
+                    .attr('d', 'M 0,-5 L 10,0 L 0,5')
+                    .attr('fill', 'rgba(157, 78, 221, 0.5)');
+                
+                // Links group
+                this.linkGroup = this.svg.append('g').attr('class', 'links');
+                
+                // Nodes group
+                this.nodeGroup = this.svg.append('g').attr('class', 'nodes');
+                
+                // Force simulation
+                this.simulation = d3.forceSimulation()
+                    .force('link', d3.forceLink().id(d => d.id).distance(100))
+                    .force('charge', d3.forceManyBody().strength(-300))
+                    .force('center', d3.forceCenter(this.width / 2, this.height / 2))
+                    .force('collision', d3.forceCollide().radius(30));
+            }
+            
+            // Start polling APIs
+            startPolling() {
+                console.log('Dashboard conectado a APIs reales');
+                this.fetchAll();
+                setInterval(() => this.fetchAll(), 3000);
+            }
+            
+            async fetchAll() {
+                try {
+                    await Promise.all([
+                        this.fetchNodes(),
+                        this.fetchEgregore(),
+                        this.fetchAnomalies(),
+                        this.fetchStats()
+                    ]);
+                    document.getElementById('connection-status').textContent = 'Conectado';
+                } catch (err) {
+                    console.error('Error fetching data:', err);
+                    document.getElementById('connection-status').textContent = 'Desconectado';
+                }
+            }
+            
+            async fetchNodes() {
+                const res = await fetch(`${this.apiBase}/api/nodes`);
+                const data = await res.json();
+                if (data.success) {
+                    this.nodes.clear();
+                    data.nodes.forEach(n => {
+                        this.nodes.set(n.id, {
+                            id: n.id,
+                            name: n.name,
+                            domain: n.type.toUpperCase(),
+                            coherence: n.coherence,
+                            error: 1 - n.coherence,
+                            x: this.width / 2 + (Math.random() - 0.5) * 100,
+                            y: this.height / 2 + (Math.random() - 0.5) * 100
+                        });
+                    });
+                    this.links = data.connections.map(c => ({
+                        source: c.source,
+                        target: c.target,
+                        weight: c.weight
+                    }));
+                    this.updateNetwork();
+                }
+            }
+            
+            async fetchEgregore() {
+                const res = await fetch(`${this.apiBase}/api/egregore`);
+                const data = await res.json();
+                if (data.success) {
+                    const eg = data.egregore;
+                    this.egregore = {
+                        mood: eg.mood.toUpperCase(),
+                        intensity: eg.energy,
+                        energy_level: eg.energy,
+                        coherence: eg.coherence,
+                        stability: eg.coherence,
+                        entropy: 1 - eg.coherence
+                    };
+                    this.updateEgregore();
+                }
+            }
+            
+            async fetchAnomalies() {
+                const res = await fetch(`${this.apiBase}/api/anomalies`);
+                const data = await res.json();
+                if (data.success) {
+                    this.anomalies = data.anomalies.slice(0, 10).map(a => ({
+                        nodeId: a.source,
+                        zScore: a.value,
+                        severity: a.severity === 'high' ? 'critical' : 'warning',
+                        timestamp: a.timestamp * 1000,
+                        type: a.type,
+                        resolved: a.resolved
+                    }));
+                    this.renderAnomalies();
+                }
+            }
+            
+            async fetchStats() {
+                const res = await fetch(`${this.apiBase}/api/dashboard/stats`);
+                const data = await res.json();
+                if (data.success) {
+                    const s = data.stats;
+                    document.getElementById('total-nodes').textContent = s.active_nodes;
+                    document.getElementById('sync-rate').textContent = `${Math.round(s.avg_coherence * 100)}%`;
+                    document.getElementById('avg-error').textContent = (1 - s.avg_coherence).toFixed(4);
+                    const hours = Math.floor(s.uptime_seconds / 3600);
+                    document.getElementById('uptime').textContent = `${hours}h`;
+                }
+            }
+            
+            renderAnomalies() {
+                const list = document.getElementById('anomaly-list');
+                if (this.anomalies.length === 0) {
+                    list.innerHTML = `<div class="anomaly-item"><div>Sin anomalías</div><div class="anomaly-time">Sistema estable</div></div>`;
+                    return;
+                }
+                list.innerHTML = this.anomalies.map(a => `
+                    <div class="anomaly-item ${a.severity === 'warning' ? 'warning' : ''}${a.resolved ? ' resolved' : ''}">
+                        <div>${a.type} @ ${a.nodeId}: z=${a.zScore.toFixed(2)}</div>
+                        <div class="anomaly-time">${new Date(a.timestamp).toLocaleTimeString()}</div>
+                    </div>
+                `).join('');
+            }
+            
+            // Update network graph
+            updateNetwork() {
+                const nodeArray = Array.from(this.nodes.values());
+                
+                // Update links
+                const link = this.linkGroup.selectAll('.link')
+                    .data(this.links, d => `${d.source.id || d.source}-${d.target.id || d.target}`);
+                
+                link.exit().remove();
+                
+                const linkEnter = link.enter()
+                    .append('line')
+                    .attr('class', 'link')
+                    .attr('stroke-dasharray', '5,5');
+                
+                this.linkElements = linkEnter.merge(link);
+                
+                // Update nodes
+                const node = this.nodeGroup.selectAll('.node')
+                    .data(nodeArray, d => d.id);
+                
+                node.exit().remove();
+                
+                const nodeEnter = node.enter()
+                    .append('g')
+                    .attr('class', 'node')
+                    .call(d3.drag()
+                        .on('start', (event, d) => this.dragStarted(event, d))
+                        .on('drag', (event, d) => this.dragged(event, d))
+                        .on('end', (event, d) => this.dragEnded(event, d)));
+                
+                nodeEnter.append('circle')
+                    .attr('r', 15)
+                    .attr('fill', d => this.getNodeColor(d));
+                
+                nodeEnter.append('text')
+                    .attr('class', 'node-label')
+                    .attr('dy', 25)
+                    .attr('text-anchor', 'middle')
+                    .text(d => d.id.substring(0, 8));
+                
+                this.nodeElements = nodeEnter.merge(node);
+                
+                // Update simulation
+                this.simulation.nodes(nodeArray);
+                this.simulation.force('link').links(this.links);
+                this.simulation.alpha(0.3).restart();
+                
+                this.simulation.on('tick', () => {
+                    this.linkElements
+                        .attr('x1', d => d.source.x)
+                        .attr('y1', d => d.source.y)
+                        .attr('x2', d => d.target.x)
+                        .attr('y2', d => d.target.y);
+                    
+                    this.nodeElements
+                        .attr('transform', d => `translate(${d.x},${d.y})`);
+                });
+            }
+            
+            getNodeColor(node) {
+                const colors = {
+                    'TIMESERIES': '#00d9ff',
+                    'CLASSIFICATION': '#9d4edd',
+                    'LANGUAGE': '#ffd700',
+                    'GENERIC': '#00ff88'
+                };
+                return colors[node.domain] || colors['GENERIC'];
+            }
+            
+            // Drag handlers
+            dragStarted(event, d) {
+                if (!event.active) this.simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+            
+            dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+            
+            dragEnded(event, d) {
+                if (!event.active) this.simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+            
+            // Update Egregore display
+            updateEgregore() {
+                const eg = this.egregore;
+                
+                // Thermometer
+                const fillHeight = (1 - eg.intensity) * 100;
+                document.getElementById('thermo-fill').style.height = `${fillHeight}%`;
+                document.getElementById('thermo-marker').style.bottom = `${eg.intensity * 100}%`;
+                
+                // Mood label
+                const moodDisplay = document.getElementById('mood-display');
+                moodDisplay.textContent = eg.mood;
+                moodDisplay.className = `mood-label mood-${eg.mood}`;
+                
+                // Stats
+                document.getElementById('energy-level').textContent = `${Math.round(eg.energy_level * 100)}%`;
+                document.getElementById('coherence').textContent = `${Math.round(eg.coherence * 100)}%`;
+                document.getElementById('stability').textContent = `${Math.round(eg.stability * 100)}%`;
+                document.getElementById('entropy').textContent = `${Math.round(eg.entropy * 100)}%`;
+            }
+            
+            // Update metrics
+            updateMetrics() {
+                document.getElementById('total-nodes').textContent = this.nodes.size;
+                
+                // Calculate sync rate
+                const syncRate = this.nodes.size > 0 ? 
+                    Math.round(this.egregore.coherence * 100) : 0;
+                document.getElementById('sync-rate').textContent = `${syncRate}%`;
+                
+                // Average error
+                let avgError = 0;
+                this.nodes.forEach(node => {
+                    avgError += node.error || 0;
+                });
+                avgError = this.nodes.size > 0 ? avgError / this.nodes.size : 0;
+                document.getElementById('avg-error').textContent = avgError.toFixed(4);
+                
+                // Uptime
+                const uptime = Math.floor((Date.now() - this.startTime) / 3600000);
+                document.getElementById('uptime').textContent = `${uptime}h`;
+            }
+            
+            // Add anomaly
+            addAnomaly(anomaly) {
+                this.anomalies.unshift(anomaly);
+                if (this.anomalies.length > 10) this.anomalies.pop();
+                this.renderAnomalies();
+            }
+        }
+        
+        // Initialize dashboard
+        window.addEventListener('DOMContentLoaded', () => {
+            window.dashboard = new EonDashboard();
+        });
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            if (window.dashboard) {
+                window.dashboard.initNetworkGraph();
+                window.dashboard.updateNetwork();
+            }
+        });
+    </script>
+</body>
+</html>

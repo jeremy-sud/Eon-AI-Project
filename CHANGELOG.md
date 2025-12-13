@@ -2,6 +2,52 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [2.0.0] - 2025-12-13
+
+### 🌌 Dashboard v2.0 y Chat Multi-Nodo
+
+#### 🖥️ Dashboard v2.0 (`web/templates/dashboard_v2.html`)
+- **Visualización de Red D3.js**: Grafo interactivo de nodos ESN
+- **Estado del Egrégor**: Termómetro de humor con estados BALANCED, ALERT, CONTEMPLATIVE, etc.
+- **Timeline de Anomalías**: Visualización de eventos detectados con severidad
+- **Métricas en Tiempo Real**: Nodos activos, sincronización, error promedio, uptime
+- **APIs REST Integradas**:
+  - `GET /api/nodes`: Lista de nodos activos y conexiones
+  - `GET /api/egregore`: Estado actual del Egrégor (mood, coherence, energy)
+  - `GET /api/anomalies`: Eventos de anomalía recientes
+  - `GET /api/dashboard/stats`: Estadísticas agregadas
+  - `POST /api/dashboard/reset`: Resetear estado del dashboard
+  - `POST /api/anomalies/<id>/resolve`: Marcar anomalía como resuelta
+
+#### 💬 Chat Multi-Nodo Colaborativo (`core/collaborative_chat.py`)
+- **Sistema Distribuido**: Múltiples nodos ESN especializados colaboran
+- **Nodos Especializados**:
+  - `NodeRole.INTENT`: Detecta intención (greeting, question, command, farewell, technical, creative, emotional)
+  - `NodeRole.RESPONSE`: Genera vector de respuesta base
+  - `NodeRole.COHERENCE`: Evalúa coherencia con contexto
+  - `NodeRole.SENTIMENT`: Análisis de sentimiento (opcional)
+  - `NodeRole.CONTEXT`: Gestión de contexto conversacional (opcional)
+- **Clases Principales**:
+  - `ChatNode`: Nodo ESN individual con rol específico
+  - `CollaborativeChat`: Orquestador de nodos
+  - `ChatMessage`: Mensaje con metadata (intent, sentiment, context_hash)
+  - `CollaborativeResponse`: Respuesta con contribuciones de todos los nodos
+- **Factory Function**: `create_collaborative_chat(include_sentiment=True, include_context=True)`
+- **44 tests nuevos** en `tests/test_collaborative_chat.py`
+
+#### ⚡ Mejoras de Rendimiento
+- **Variable de entorno `EON_DISABLE_TINYLM=1`**: Omite inicialización de TinyLMv2 para arranque rápido
+- **Polling optimizado**: Dashboard actualiza cada 3s en lugar de simulación local
+
+#### 📊 Métricas v2.0
+| Métrica | v1.9.7 | v2.0.0 |
+|---------|--------|--------|
+| Tests totales | 230 | **262** |
+| Módulos nuevos | 2 | **4** |
+| Endpoints API | ~20 | **~28** |
+
+---
+
 ## [1.9.7] - 2025-01-14
 
 ### Suite de Tests Completa - Cobertura Total

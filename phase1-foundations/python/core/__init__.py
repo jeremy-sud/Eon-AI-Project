@@ -31,6 +31,37 @@ from .alchemy import (
     KalmanFilter
 )
 
+# Detector de Anomalías (v2.0)
+from .anomaly_detector import (
+    AnomalyDetector,
+    StreamingAnomalyDetector,
+    AnomalyEvent,
+    AnomalySeverity,
+    DetectorStats,
+    create_synthetic_anomalies
+)
+
+# Oráculo I-Ching Neural (v2.0)
+from .iching_oracle import (
+    IChingOracle,
+    OracleReading,
+    OracleStats,
+    ConsultationType,
+    create_oracle
+)
+
+# Chat Multi-Nodo Colaborativo (v2.0)
+from .collaborative_chat import (
+    CollaborativeChat,
+    ChatNode,
+    NodeRole,
+    Intent,
+    ChatMessage,
+    NodeContribution,
+    CollaborativeResponse,
+    create_collaborative_chat
+)
+
 __all__ = [
     # Core
     'AeonBirth',
@@ -56,4 +87,29 @@ __all__ = [
     'AlchemicalPhase',
     'TransmutationState',
     'KalmanFilter',
+    
+    # Anomaly Detection
+    'AnomalyDetector',
+    'StreamingAnomalyDetector',
+    'AnomalyEvent',
+    'AnomalySeverity',
+    'DetectorStats',
+    'create_synthetic_anomalies',
+    
+    # I-Ching Oracle
+    'IChingOracle',
+    'OracleReading',
+    'OracleStats',
+    'ConsultationType',
+    'create_oracle',
+    
+    # Collaborative Chat
+    'CollaborativeChat',
+    'ChatNode',
+    'NodeRole',
+    'Intent',
+    'ChatMessage',
+    'NodeContribution',
+    'CollaborativeResponse',
+    'create_collaborative_chat',
 ]

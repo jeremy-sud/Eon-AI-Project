@@ -2,10 +2,10 @@
 
 > **A.E.O.N.** - Arquitectura Emergente y Optimización Neuromórfica
 
-[![Versión](https://img.shields.io/badge/Versión-1.9.7-brightgreen)]()
+[![Versión](https://img.shields.io/badge/Versión-2.0.0-brightgreen)]()
 [![Fase](https://img.shields.io/badge/Fase-12%20Revelación-blueviolet)]()
-[![Tests](https://img.shields.io/badge/Tests-230%20passing-green)]()
-[![Cobertura](https://img.shields.io/badge/Cobertura-~80%25-yellowgreen)]()
+[![Tests](https://img.shields.io/badge/Tests-262%20passing-green)]()
+[![Cobertura](https://img.shields.io/badge/Cobertura-~85%25-yellowgreen)]()
 [![Docker](https://img.shields.io/badge/Docker-Full%20Stack-blue)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)]()
 [![C](https://img.shields.io/badge/C-1.3KB-orange)]()
@@ -18,6 +18,8 @@
 [![Kabbalah](https://img.shields.io/badge/Kabbalah-Tzimtzum-purple)]()
 [![Alchemy](https://img.shields.io/badge/Alchemy-V.I.T.R.I.O.L-gold)]()
 [![I-Ching](https://img.shields.io/badge/I--Ching-64%20Hexagramas-red)]()
+[![Dashboard](https://img.shields.io/badge/Dashboard-v2.0-cyan)]()
+[![MultiNode](https://img.shields.io/badge/Chat-MultiNodo-orange)]()
 [![Paper](https://img.shields.io/badge/Paper-PDF-red)]()
 [![Licencia](https://img.shields.io/badge/Licencia-AGPLv3-blue)]()
 [![Comercial](https://img.shields.io/badge/Comercial-Royalties-gold)]()

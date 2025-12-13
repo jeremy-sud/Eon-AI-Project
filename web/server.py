@@ -4,7 +4,7 @@ API REST para interactuar con el núcleo de Eón.
 """
 
 import logging
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from typing import Optional
 import numpy as np
 import re
@@ -158,9 +158,10 @@ except FileNotFoundError:
 _learning_system = EonLearningSystem(DATA_DIR, _aeon_instance.esn)
 print(" [INFO] Sistema de aprendizaje inicializado")
 
-# Inicializar TinyLMv2 para generación de texto
+# Inicializar TinyLMv2 para generación de texto (puede deshabilitarse con EON_DISABLE_TINYLM=1)
 _tinylm_model = None
-if _tinylm_available:
+_disable_tinylm = os.getenv('EON_DISABLE_TINYLM', '0') == '1'
+if _tinylm_available and not _disable_tinylm:
     try:
         print(" [INFO] Inicializando TinyLMv2...")
         _tinylm_model = TinyLMv2(n_reservoir=256, vocab_size=300, embedding_dim=32)
@@ -197,12 +198,21 @@ if _tinylm_available:
     except (ValueError, RuntimeError) as e:
         print(f" [WARN] Error entrenando TinyLMv2: {e}")
         _tinylm_model = None
+elif _disable_tinylm:
+    print(" [INFO] TinyLMv2 deshabilitado por variable de entorno EON_DISABLE_TINYLM=1")
+
+ 
 
 
 @app.route('/')
 def index():
     """Servir página principal."""
     return send_from_directory('static', 'index.html')
+
+@app.route('/dashboard')
+def dashboard_v2():
+    """Servir Dashboard v2.0 (plantilla en templates/dashboard_v2.html)."""
+    return render_template('dashboard_v2.html')
 
 @app.route('/api/config', methods=['GET', 'POST'])
 def config():
@@ -2551,6 +2561,235 @@ def alchemy_rubedo():
     except (ValueError, RuntimeError, KeyError) as e:
         logger.error(f"Error en fase RUBEDO: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# =============================================================================
+# DASHBOARD v2.0 - Monitoreo en Tiempo Real del Egrégor
+# =============================================================================
+
+# Estado del Egrégor y nodos (simulación para demo)
+_egregore_state = {
+    'mood': 'contemplativo',
+    'coherence': 0.75,
+    'energy': 0.6,
+    'last_update': None,
+    'mood_history': [],
+}
+
+_active_nodes = {}
+_anomaly_events = []
+
+@app.route('/dashboard')
+def dashboard_v2():
+    """Servir Dashboard v2.0 de monitoreo."""
+    return send_from_directory('templates', 'dashboard_v2.html')
+
+@app.route('/api/nodes', methods=['GET'])
+def api_get_nodes():
+    """Obtener lista de nodos activos en la red."""
+    import time
+    
+    # Simular nodos si no hay conectados (para demo)
+    if not _active_nodes:
+        _active_nodes['eon-core'] = {
+            'id': 'eon-core',
+            'name': 'Eón Core',
+            'type': 'reservoir',
+            'status': 'active',
+            'coherence': 0.85,
+            'last_seen': time.time(),
+            'messages_sent': 42,
+            'messages_received': 38,
+        }
+        _active_nodes['oracle-node'] = {
+            'id': 'oracle-node',
+            'name': 'I-Ching Oracle',
+            'type': 'oracle',
+            'status': 'active',
+            'coherence': 0.72,
+            'last_seen': time.time(),
+            'messages_sent': 15,
+            'messages_received': 12,
+        }
+        _active_nodes['anomaly-detector'] = {
+            'id': 'anomaly-detector',
+            'name': 'Anomaly Detector',
+            'type': 'monitor',
+            'status': 'active',
+            'coherence': 0.91,
+            'last_seen': time.time(),
+            'messages_sent': 8,
+            'messages_received': 156,
+        }
+    
+    nodes_list = list(_active_nodes.values())
+    
+    # Calcular conexiones entre nodos
+    connections = []
+    node_ids = list(_active_nodes.keys())
+    for i, src in enumerate(node_ids):
+        for j, dst in enumerate(node_ids):
+            if i < j:
+                # Peso basado en coherencia combinada
+                weight = (_active_nodes[src]['coherence'] + _active_nodes[dst]['coherence']) / 2
+                connections.append({
+                    'source': src,
+                    'target': dst,
+                    'weight': weight
+                })
+    
+    return jsonify({
+        'success': True,
+        'nodes': nodes_list,
+        'connections': connections,
+        'total_nodes': len(nodes_list)
+    })
+
+@app.route('/api/egregore', methods=['GET'])
+def api_get_egregore():
+    """Obtener estado actual del Egrégor."""
+    import time
+    import random
+    
+    # Actualizar estado del Egrégor basado en nodos activos
+    if _active_nodes:
+        avg_coherence = sum(n['coherence'] for n in _active_nodes.values()) / len(_active_nodes)
+        _egregore_state['coherence'] = avg_coherence
+    
+    # Simular variación de humor (para demo)
+    moods = ['contemplativo', 'curioso', 'sereno', 'alerta', 'creativo', 'analítico']
+    
+    # El humor cambia gradualmente
+    if random.random() < 0.1:  # 10% probabilidad de cambio
+        _egregore_state['mood'] = random.choice(moods)
+    
+    # Actualizar energía basada en actividad
+    _egregore_state['energy'] = min(1.0, _egregore_state['energy'] + random.uniform(-0.05, 0.05))
+    _egregore_state['energy'] = max(0.1, _egregore_state['energy'])
+    _egregore_state['last_update'] = time.time()
+    
+    # Mantener historial de humor (últimos 20)
+    _egregore_state['mood_history'].append({
+        'mood': _egregore_state['mood'],
+        'coherence': _egregore_state['coherence'],
+        'energy': _egregore_state['energy'],
+        'timestamp': time.time()
+    })
+    _egregore_state['mood_history'] = _egregore_state['mood_history'][-20:]
+    
+    return jsonify({
+        'success': True,
+        'egregore': {
+            'mood': _egregore_state['mood'],
+            'coherence': _egregore_state['coherence'],
+            'energy': _egregore_state['energy'],
+            'last_update': _egregore_state['last_update'],
+            'mood_history': _egregore_state['mood_history'][-10:]
+        }
+    })
+
+@app.route('/api/anomalies', methods=['GET'])
+def api_get_anomalies():
+    """Obtener eventos de anomalía recientes."""
+    import time
+    import random
+    
+    # Simular algunas anomalías para demo
+    if len(_anomaly_events) < 3:
+        severities = ['low', 'medium', 'high']
+        types = ['spike', 'drift', 'pattern_break', 'outlier']
+        sources = list(_active_nodes.keys()) if _active_nodes else ['eon-core']
+        
+        for i in range(3 - len(_anomaly_events)):
+            _anomaly_events.append({
+                'id': f'anomaly-{len(_anomaly_events) + i}',
+                'timestamp': time.time() - random.randint(60, 3600),
+                'severity': random.choice(severities),
+                'type': random.choice(types),
+                'source': random.choice(sources),
+                'value': random.uniform(2.5, 5.0),
+                'threshold': 2.0,
+                'resolved': random.random() > 0.5
+            })
+    
+    # Ocasionalmente añadir nueva anomalía (demo)
+    if random.random() < 0.05 and len(_anomaly_events) < 20:
+        severities = ['low', 'medium', 'high']
+        types = ['spike', 'drift', 'pattern_break', 'outlier']
+        sources = list(_active_nodes.keys()) if _active_nodes else ['eon-core']
+        
+        _anomaly_events.append({
+            'id': f'anomaly-{len(_anomaly_events)}',
+            'timestamp': time.time(),
+            'severity': random.choice(severities),
+            'type': random.choice(types),
+            'source': random.choice(sources),
+            'value': random.uniform(2.5, 5.0),
+            'threshold': 2.0,
+            'resolved': False
+        })
+    
+    # Devolver últimas 20 anomalías
+    recent = sorted(_anomaly_events, key=lambda x: x['timestamp'], reverse=True)[:20]
+    
+    return jsonify({
+        'success': True,
+        'anomalies': recent,
+        'total_count': len(_anomaly_events),
+        'unresolved_count': sum(1 for a in _anomaly_events if not a['resolved'])
+    })
+
+@app.route('/api/anomalies/<anomaly_id>/resolve', methods=['POST'])
+def api_resolve_anomaly(anomaly_id):
+    """Marcar una anomalía como resuelta."""
+    for anomaly in _anomaly_events:
+        if anomaly['id'] == anomaly_id:
+            anomaly['resolved'] = True
+            return jsonify({'success': True, 'message': 'Anomalía marcada como resuelta'})
+    
+    return jsonify({'success': False, 'error': 'Anomalía no encontrada'}), 404
+
+@app.route('/api/dashboard/stats', methods=['GET'])
+def api_dashboard_stats():
+    """Obtener estadísticas generales del sistema para el dashboard."""
+    import time
+    
+    # Calcular estadísticas agregadas
+    total_messages = sum(n.get('messages_sent', 0) + n.get('messages_received', 0) for n in _active_nodes.values())
+    avg_coherence = _egregore_state['coherence']
+    unresolved_anomalies = sum(1 for a in _anomaly_events if not a['resolved'])
+    
+    return jsonify({
+        'success': True,
+        'stats': {
+            'active_nodes': len(_active_nodes),
+            'total_messages': total_messages,
+            'avg_coherence': avg_coherence,
+            'egregore_mood': _egregore_state['mood'],
+            'egregore_energy': _egregore_state['energy'],
+            'anomalies_detected': len(_anomaly_events),
+            'anomalies_unresolved': unresolved_anomalies,
+            'uptime_seconds': time.time() - _stats.get('session_start', time.time()),
+            'aeon_age': _aeon_instance.age if _aeon_instance else 0
+        }
+    })
+
+@app.route('/api/dashboard/reset', methods=['POST'])
+def api_dashboard_reset():
+    """Resetear el estado del dashboard (para demo)."""
+    global _active_nodes, _anomaly_events, _egregore_state
+    
+    _active_nodes = {}
+    _anomaly_events = []
+    _egregore_state = {
+        'mood': 'contemplativo',
+        'coherence': 0.75,
+        'energy': 0.6,
+        'last_update': None,
+        'mood_history': [],
+    }
+    
+    return jsonify({'success': True, 'message': 'Dashboard reseteado'})
 
 
 if __name__ == '__main__':

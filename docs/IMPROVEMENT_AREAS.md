@@ -535,71 +535,60 @@ except (TypeError, ValueError, RuntimeError) as e:
 
 ## 🟡 PROBLEMAS PENDIENTES (v1.9.4)
 
-### 6. 🟡 Inconsistencia RNG Cross-Platform
+### 6. ✅ Inconsistencia RNG Cross-Platform - SOLUCIONADO (v1.9.5)
 
-**Problema:** Los algoritmos RNG difieren entre plataformas, rompiendo la promesa "Same Seed = Same Mind".
+**Problema original:** Los algoritmos RNG diferían entre plataformas, rompiendo la promesa "Same Seed = Same Mind".
 
-| Plataforma | Algoritmo RNG | Constantes |
-|------------|--------------|------------|
-| Python (numpy) | PCG64 / Philox | Internos |
-| JavaScript | LCG | 1103515245, 12345 |
-| C (libAeon) | Xorshift32 | 13, 17, 5 |
-| Arduino | LCG | 1103515245, 12345 |
+**Solución implementada:** Nuevo módulo `utils/portable_rng.py` con Xorshift32 idéntico a C/JS/Arduino.
 
-**Resultado:** Una semilla `42` produce matrices diferentes en Python vs JavaScript.
+| Plataforma | Algoritmo RNG | Estado |
+|------------|--------------|--------|
+| Python (numpy) | PCG64 / Philox | ❌ No portable |
+| **Python (Xorshift32)** | **Xorshift32** | ✅ **NUEVO** |
+| JavaScript | LCG | ⚠️ Diferente |
+| C (libAeon) | Xorshift32 | ✅ Compatible |
+| Arduino | LCG | ⚠️ Diferente |
 
-**Solución propuesta:** Implementar Xorshift32 unificado en todas las plataformas:
+**Archivo creado:** `phase1-foundations/python/utils/portable_rng.py`
 
+**Características:**
+- `Xorshift32` - Generador compatible con C (mismas constantes: 13, 17, 5)
+- `next_u32()` - Enteros de 32 bits
+- `random()` - Floats en [0, 1)
+- `randn(*shape)` - Arrays de distribución normal (Box-Muller)
+- `verify_cross_platform_compatibility()` - Verificación contra C
+
+**Tests añadidos:** 26 tests en `tests/test_portable_rng.py`
+
+**Uso:**
 ```python
-# Python - utils/portable_rng.py
-class Xorshift32:
-    """RNG portátil compatible con C/JS/Arduino."""
-    def __init__(self, seed: int):
-        self.state = seed & 0xFFFFFFFF
-        if self.state == 0:
-            self.state = 1
-    
-    def next_u32(self) -> int:
-        x = self.state
-        x ^= (x << 13) & 0xFFFFFFFF
-        x ^= (x >> 17)
-        x ^= (x << 5) & 0xFFFFFFFF
-        self.state = x
-        return x
-    
-    def random(self) -> float:
-        """Retorna float en [0, 1)."""
-        return self.next_u32() / 0xFFFFFFFF
+from utils.portable_rng import Xorshift32, create_portable_rng
+
+rng = Xorshift32(42)
+val = rng.next_u32()  # Mismo valor que C: 11355432
+arr = rng.randn(100)  # Array normal reproducible
 ```
 
-**Prioridad:** MEDIA (no afecta funcionalidad actual)
-**Estado:** 🔴 Pendiente
+**Estado:** ✅ Completado (v1.9.5)
 
 ---
 
-### 7. 🔴 Falta de Archivo ESP32 .cpp
+### 7. ✅ Verificación AeonESP32 Header-Only
 
-**Problema:** El header `phase4-hardware/esp32/AeonESP32.h` existe pero falta la implementación `.cpp`.
+**Problema reportado:** El header `phase4-hardware/esp32/AeonESP32.h` "faltaba" implementación `.cpp`.
 
-**Directorio actual:**
-```
-phase4-hardware/esp32/
-├── AeonESP32.h      ✅ Existe (582 líneas)
-├── AeonESP32.cpp    ❌ NO EXISTE
-└── examples/        (vacío)
-```
+**Hallazgo:** El archivo es una biblioteca **header-only** por diseño (patrón común en Arduino/ESP32).
 
-**Impacto:** El código ESP32 no puede compilarse sin la implementación.
+**Verificación:**
+- Todas las funciones están implementadas inline en el header
+- `connectWiFi()` - Inline ✅
+- `readUniverseBackground()` - Inline ✅
+- `_initTrueWill()` - Inline ✅
+- `_initMedium()` - Inline ✅
+- Sistema Thelema completo - Inline ✅
 
-**Solución:** Crear `AeonESP32.cpp` con las implementaciones de:
-- `connectWiFi()`
-- `_initTrueWill()`
-- `_initMedium()`
-- Métodos del sistema Thelema
-- Métodos del sistema Medium
-
-**Prioridad:** ALTA
-**Estado:** 🔴 Pendiente
+**Prioridad:** N/A (no es un problema)
+**Estado:** ✅ Verificado (v1.9.4)
 
 ---
 
@@ -957,6 +946,31 @@ self.W_out = np.linalg.solve(A, B)  # O(n³/3)
 
 ---
 
+## Resumen de Cambios v1.9.5
+
+### Mejoras Implementadas
+
+**RNG Portátil Cross-Platform:**
+- `utils/portable_rng.py` - Nuevo módulo Xorshift32
+- Compatible con C (libAeon), constantes: 13, 17, 5
+- Verificación: `verify_cross_platform_compatibility()`
+- 26 tests añadidos
+
+**Características del RNG portátil:**
+- `Xorshift32` - Clase principal
+- `next_u32()` - Enteros u32
+- `random()` - Floats [0,1)
+- `randn(*shape)` - Arrays normales (Box-Muller)
+- `shuffle()` - Fisher-Yates
+- `generate_birth_hash_portable()` - Hash reproducible
+
+### Métricas v1.9.5
+- **Tests totales:** 159 (+26)
+- **Nuevo módulo:** `utils/portable_rng.py` (285 líneas)
+- **Cobertura estimada:** ~62%
+
+---
+
 ## Resumen de Cambios v1.9.4
 
 ### Mejoras Implementadas
@@ -1001,5 +1015,5 @@ mypy phase1-foundations/python/esn/ phase1-foundations/python/core/
 
 ---
 
-*Documento actualizado: v1.9.4*
-*Fecha: 2025-01-13*
+*Documento actualizado: v1.9.5*
+*Fecha: 2025-12-13*

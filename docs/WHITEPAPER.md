@@ -1,6 +1,6 @@
 # Eón: Inteligencia Emergente con Recursos Mínimos
 
-**Whitepaper Técnico v1.7.2**
+**Whitepaper Técnico v1.9.7**
 
 > _"La inteligencia no se crea, se descubre."_
 

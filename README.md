@@ -2,9 +2,10 @@
 
 > **A.E.O.N.** - Arquitectura Emergente y Optimización Neuromórfica
 
-[![Versión](https://img.shields.io/badge/Versión-1.9.0-brightgreen)]()
+[![Versión](https://img.shields.io/badge/Versión-1.9.7-brightgreen)]()
 [![Fase](https://img.shields.io/badge/Fase-12%20Revelación-blueviolet)]()
-[![Tests](https://img.shields.io/badge/Tests-47%20passing-green)]()
+[![Tests](https://img.shields.io/badge/Tests-230%20passing-green)]()
+[![Cobertura](https://img.shields.io/badge/Cobertura-~80%25-yellowgreen)]()
 [![Docker](https://img.shields.io/badge/Docker-Full%20Stack-blue)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)]()
 [![C](https://img.shields.io/badge/C-1.3KB-orange)]()

@@ -83,8 +83,8 @@ def _load_stats():
                 import json
                 saved = json.load(f)
                 _stats.update(saved)
-    except (IOError, json.JSONDecodeError, KeyError):
-        pass  # Archivo corrupto o no existente - usar defaults
+    except (IOError, json.JSONDecodeError, KeyError) as e:
+        logger.warning(f"No se pudo cargar estadísticas: {e}. Usando valores por defecto.")
     _stats['session_start'] = __import__('time').time()
 
 def _save_stats():
@@ -93,8 +93,8 @@ def _save_stats():
         with open(STATS_FILE, 'w') as f:
             import json
             json.dump(_stats, f, indent=2)
-    except (IOError, OSError):
-        pass  # No se puede escribir - silencioso
+    except (IOError, OSError) as e:
+        logger.warning(f"No se pudo guardar estadísticas: {e}")
 
 # Historial de conversaciones
 _chat_history = []
@@ -119,8 +119,8 @@ def _save_chat_history():
             import json
             # Guardar solo últimos 100 mensajes
             json.dump(_chat_history[-100:], f, indent=2)
-    except (IOError, OSError):
-        pass  # No se puede escribir - silencioso
+    except (IOError, OSError) as e:
+        logger.warning(f"No se pudo guardar historial de chat: {e}")
 
 def _add_to_history(role: str, content: str):
     """Añadir mensaje al historial."""
@@ -2579,10 +2579,7 @@ _egregore_state = {
 _active_nodes = {}
 _anomaly_events = []
 
-@app.route('/dashboard')
-def dashboard_v2():
-    """Servir Dashboard v2.0 de monitoreo."""
-    return send_from_directory('templates', 'dashboard_v2.html')
+# Nota: La ruta /dashboard ya está definida arriba con render_template
 
 @app.route('/api/nodes', methods=['GET'])
 def api_get_nodes():
@@ -2803,4 +2800,6 @@ if __name__ == '__main__':
     # Crear directorio de datos
     os.makedirs(DATA_DIR, exist_ok=True)
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Debug mode controlado por variable de entorno (desactivado en producción)
+    debug_mode = os.getenv('FLASK_DEBUG', '0').lower() in ('1', 'true', 'yes')
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)

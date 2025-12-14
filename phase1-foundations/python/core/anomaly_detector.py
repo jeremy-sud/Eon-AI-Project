@@ -39,6 +39,21 @@ if _python_dir not in sys.path:
 
 from esn.esn import EchoStateNetwork
 
+# Importar constantes globales
+try:
+    from utils.constants import (
+        EPSILON, ANOMALY_THRESHOLD_SIGMA, 
+        WARNING_THRESHOLD_SIGMA, CRITICAL_THRESHOLD_SIGMA,
+        DEFAULT_BUFFER_SIZE, DEFAULT_ANOMALY_COOLDOWN
+    )
+except ImportError:
+    EPSILON = 1e-10
+    ANOMALY_THRESHOLD_SIGMA = 3.0
+    WARNING_THRESHOLD_SIGMA = 2.0
+    CRITICAL_THRESHOLD_SIGMA = 5.0
+    DEFAULT_BUFFER_SIZE = 1000
+    DEFAULT_ANOMALY_COOLDOWN = 5.0
+
 logger = logging.getLogger(__name__)
 
 

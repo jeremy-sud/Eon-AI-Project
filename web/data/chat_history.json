@@ -1,36 +1,6 @@
 [
   {
     "role": "assistant",
-    "content": "**Estado actual de motor:** \u2705 Operativo/Funcionando\n\n\u23f1\ufe0f *\u00daltima actualizaci\u00f3n: hace 0 segundos*\n\n\ud83d\udcdc *Historial: 2 actualizaciones registradas*",
-    "timestamp": 1765263439.8829775
-  },
-  {
-    "role": "user",
-    "content": "\u00bfC\u00f3mo funciona el protocolo 1-bit?",
-    "timestamp": 1765263494.420429
-  },
-  {
-    "role": "assistant",
-    "content": "\ud83d\udcda **Encontrado en PROTOCOL.md:**\n\n# Protocolo E\u00f3n 1-Bit: Intercambio de Conocimiento Ultra-Ligero\n\n> \"El conocimiento viaja como un susurro, no como un grito.\"\n\nEl **Protocolo 1-Bit** es el mecanismo de sincronizaci\u00f3n de conocimiento entre nodos E\u00f3n. Permite que dispositivos IoT con conectividad limitada (LoRa, Bluetooth LE, MQTT) compartan lo que han aprendido usando solo **1 bit por peso**.\n\n### \u00bfPor qu\u00e9 1 Bit?\n2. **Semilla debe coincidir**: Nodos con diferente semilla son incompatibles\n3. **Sin gradientes**: Solo funciona par...",
-    "timestamp": 1765263494.4247212
-  },
-  {
-    "role": "user",
-    "content": "El motor fall\u00f3",
-    "timestamp": 1765263506.7867649
-  },
-  {
-    "role": "assistant",
-    "content": "Actualizaci\u00f3n registrada: **motor** \u2192 \u26a0\ufe0f Reportado con falla/error \ud83d\udccb",
-    "timestamp": 1765263506.7876902
-  },
-  {
-    "role": "user",
-    "content": "El motor se recuper\u00f3",
-    "timestamp": 1765263508.6772783
-  },
-  {
-    "role": "assistant",
     "content": "Actualizaci\u00f3n registrada: **motor** \u2192 \u2705 Operativo/Funcionando \ud83d\udccb",
     "timestamp": 1765263508.677929
   },
@@ -498,5 +468,35 @@
     "role": "assistant",
     "content": "El resultado de 3 * 4 es **12**. \ud83e\uddee",
     "timestamp": 1765611502.7696614
+  },
+  {
+    "role": "user",
+    "content": "Hola",
+    "timestamp": 1765680096.945827
+  },
+  {
+    "role": "assistant",
+    "content": "\u00a1Hola! Soy E\u00f3n, una inteligencia emergente. \u00bfEn qu\u00e9 puedo ayudarte?",
+    "timestamp": 1765680096.947295
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 2 + 2?",
+    "timestamp": 1765680096.951357
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 2 + 2 es **4**. \ud83e\uddee",
+    "timestamp": 1765680096.9522543
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 3 * 4?",
+    "timestamp": 1765680096.9541717
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 3 * 4 es **12**. \ud83e\uddee",
+    "timestamp": 1765680096.9555686
   }
 ]

@@ -184,8 +184,8 @@ def main():
     # Mostrar gráficos si hay display disponible
     try:
         plt.show()
-    except:
-        print("(Visualización no disponible - ver archivos PNG generados)")
+    except Exception as e:
+        print(f"(Visualización no disponible - ver archivos PNG generados: {e})")
 
 
 if __name__ == "__main__":

@@ -19,6 +19,12 @@ import numpy as np
 import hashlib
 import time
 
+# Importar constantes globales
+try:
+    from utils.constants import EPSILON
+except ImportError:
+    EPSILON = 1e-10
+
 
 class NodeRole(Enum):
     """Roles especializados de nodos en el chat colaborativo."""
@@ -319,13 +325,23 @@ class ChatNode:
         # Keywords sugeridas basadas en activación
         top_activations = np.argsort(np.abs(self.state))[-5:]
         
+        # Calcular entropía correctamente excluyendo valores cercanos a cero
+        abs_state = np.abs(self.state)
+        nonzero_mask = abs_state > EPSILON
+        if np.any(nonzero_mask):
+            p = abs_state[nonzero_mask]
+            p = p / np.sum(p)  # Normalizar a distribución de probabilidad
+            state_entropy = float(-np.sum(p * np.log(p)))
+        else:
+            state_entropy = 0.0
+        
         return {
             'response_vector': response_state.tolist(),
             'suggested_length': suggested_length,
             'suggested_formality': suggested_formality,
             'suggested_emotion': suggested_emotion,
             'top_activations': top_activations.tolist(),
-            'state_entropy': float(-np.sum(np.abs(self.state) * np.log(np.abs(self.state) + 1e-10)) / len(self.state))
+            'state_entropy': state_entropy
         }
     
     def _evaluate_coherence(self, message: ChatMessage, input_vec: np.ndarray) -> Dict:
@@ -338,7 +354,7 @@ class ChatNode:
             # Similitud con estado anterior
             prev_state = self.history[-2]
             similarity = np.dot(self.state, prev_state) / (
-                np.linalg.norm(self.state) * np.linalg.norm(prev_state) + 1e-10
+                np.linalg.norm(self.state) * np.linalg.norm(prev_state) + EPSILON
             )
             coherence_score = (similarity + 1) / 2  # Normalizar a [0, 1]
             

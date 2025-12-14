@@ -7,6 +7,7 @@ Todos los cambios notables del Proyecto Eón.
 ### 🌌 Dashboard v2.0 y Chat Multi-Nodo
 
 #### 🖥️ Dashboard v2.0 (`web/templates/dashboard_v2.html`)
+
 - **Visualización de Red D3.js**: Grafo interactivo de nodos ESN
 - **Estado del Egrégor**: Termómetro de humor con estados BALANCED, ALERT, CONTEMPLATIVE, etc.
 - **Timeline de Anomalías**: Visualización de eventos detectados con severidad
@@ -20,6 +21,7 @@ Todos los cambios notables del Proyecto Eón.
   - `POST /api/anomalies/<id>/resolve`: Marcar anomalía como resuelta
 
 #### 💬 Chat Multi-Nodo Colaborativo (`core/collaborative_chat.py`)
+
 - **Sistema Distribuido**: Múltiples nodos ESN especializados colaboran
 - **Nodos Especializados**:
   - `NodeRole.INTENT`: Detecta intención (greeting, question, command, farewell, technical, creative, emotional)
@@ -36,10 +38,12 @@ Todos los cambios notables del Proyecto Eón.
 - **44 tests nuevos** en `tests/test_collaborative_chat.py`
 
 #### ⚡ Mejoras de Rendimiento
+
 - **Variable de entorno `EON_DISABLE_TINYLM=1`**: Omite inicialización de TinyLMv2 para arranque rápido
 - **Polling optimizado**: Dashboard actualiza cada 3s en lugar de simulación local
 
 #### 📊 Métricas v2.0
+
 | Métrica | v1.9.7 | v2.0.0 |
 |---------|--------|--------|
 | Tests totales | 230 | **262** |
@@ -53,6 +57,7 @@ Todos los cambios notables del Proyecto Eón.
 ### Suite de Tests Completa - Cobertura Total
 
 #### 🧪 Tests de Integración (12 tests)
+
 - `phase1-foundations/python/tests/test_integration.py`: Tests cross-módulo
   - **Pipeline ESN → Quantization**: Flujo completo de predicción
   - **ESN + Plasticity + Quantization**: Integración multi-módulo
@@ -61,18 +66,21 @@ Todos los cambios notables del Proyecto Eón.
   - **State preservation**: Preservación de estado tras cuantización
 
 #### 📊 Tests de Learning System (20 tests)
+
 - `web/tests/test_learning.py`: Suite completa
   - **OnlineLearner**: Actualización, decaimiento, persistencia, concurrencia
   - **LongTermMemory**: Almacenamiento, recuperación, limpieza, clustering
   - **EonLearningSystem**: Conversaciones, retroalimentación, métricas
 
 #### 🔢 Tests de Quantizer (20 tests)
+
 - `phase1-foundations/python/tests/test_quantizer.py`: Suite completa
   - **QuantizedESN**: Predicción 8-bit, 4-bit, 1-bit
   - **Memory footprint**: Validación de reducción de memoria
   - **Edge cases**: Entradas vacías, valores extremos, NaN
 
 #### 📈 Métricas Finales
+
 | Métrica | Antes | Después |
 |---------|-------|---------|
 | Tests totales | 178 | **230** |
@@ -86,6 +94,7 @@ Todos los cambios notables del Proyecto Eón.
 ### Calidad de Código y Tests de Servidor Web
 
 #### 🧪 Tests del Servidor Web (19 tests)
+
 - `web/tests/test_server.py`: Suite completa para Flask API
   - **Importaciones**: Validación de módulos críticos
   - **EonChat**: Construcción, formato de mensajes, historial
@@ -93,16 +102,19 @@ Todos los cambios notables del Proyecto Eón.
   - **Casos Edge**: JSON inválido, errores internos, inputs vacíos
 
 #### 📝 Type Hints Completos
+
 - `benchmark_full.py`: Todas las funciones con anotaciones de tipo
   - `from typing import Dict, List, Any, Optional`
   - Return types para todos los métodos de BenchmarkSuite
 
 #### 🔧 Código Unificado
+
 - `plasticity/hebbian.py`: Refactorizado
   - Usa `compute_spectral_radius()` de `utils.matrix_init`
   - Eliminada duplicación de código
 
 #### 📊 Métricas
+
 | Métrica | Antes | Después |
 |---------|-------|---------|
 | Tests totales | 133 | 178 |
@@ -116,6 +128,7 @@ Todos los cambios notables del Proyecto Eón.
 ### RNG Portable - Xorshift32
 
 #### 🎲 Xorshift32 Implementation
+
 - **Portable**: Mismo resultado en todas las plataformas
 - **Fast**: Solo 3 XOR + 3 shifts por número
 - **Deterministic**: Reproducible con misma semilla

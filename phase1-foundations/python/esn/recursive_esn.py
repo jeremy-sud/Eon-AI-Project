@@ -367,15 +367,11 @@ class RecursiveEchoStateNetwork:
         states = states[washout:]
         outputs_train = outputs[washout:]
         
-        # Regresión Ridge
+        # Regresión Ridge usando np.linalg.solve (más estable que inv)
         reg = 1e-6
-        S = states
-        Y = outputs_train
-        
-        self.W_out = np.dot(
-            np.linalg.inv(np.dot(S.T, S) + reg * np.eye(self.n_total_state)),
-            np.dot(S.T, Y)
-        )
+        A = states.T @ states + reg * np.eye(self.n_total_state)
+        B = states.T @ outputs_train
+        self.W_out = np.linalg.solve(A, B)
         
         return self
     

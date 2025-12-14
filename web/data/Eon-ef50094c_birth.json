@@ -2,5 +2,10 @@
   "name": "Eon-ef50094c",
   "created_at": 1765249275.8586612,
   "samples_learned": 0,
-  "n_reservoir": 100
+  "n_reservoir": 100,
+  "initialization_mode": "classic",
+  "sacred_seed": 1765249275,
+  "birth_hash": "397edf2cf58afb187156d7c4ade27330",
+  "state_checksum": "f978d0f7307f1193891e2dcaad3a1efdf43161c2d38735adeb60619c352aeefc",
+  "format_version": "2.0"
 }

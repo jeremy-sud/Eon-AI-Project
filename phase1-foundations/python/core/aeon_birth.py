@@ -2,11 +2,14 @@
 import os
 import json
 import time
-import pickle
+import hashlib
+import logging
 import numpy as np
 from datetime import datetime
 from typing import Optional
 from esn.esn import EchoStateNetwork
+
+logger = logging.getLogger(__name__)
 
 # Importar el sistema de Seed Mining (paradigma de descubrimiento)
 try:
@@ -185,12 +188,38 @@ class AeonBirth:
         return self.esn.predict(input_data).flatten()
 
     def save(self):
+        """Guarda el estado de Eón usando formato seguro (JSON + NPZ)."""
         if not os.path.exists(self.data_dir):
             os.makedirs(self.data_dir)
             
         safe_name = "".join(x for x in self.name if x.isalnum() or x in "-_")
         path = os.path.join(self.data_dir, f"{safe_name}_birth.json")
-        state_path = os.path.join(self.data_dir, f"{safe_name}_state.pkl")
+        state_path = os.path.join(self.data_dir, f"{safe_name}_state.npz")
+        
+        # Guardar matrices del ESN de forma segura (NPZ en lugar de pickle)
+        esn_data = {
+            'W_in': self.esn.W_in,
+            'W_reservoir': self.esn.W_reservoir,
+            'state': self.esn.state,
+            'n_inputs': np.array([self.esn.n_inputs]),
+            'n_reservoir': np.array([self.esn.n_reservoir]),
+            'n_outputs': np.array([self.esn.n_outputs]),
+            'spectral_radius': np.array([self.esn.spectral_radius]),
+            'sparsity': np.array([self.esn.sparsity]),
+            'noise': np.array([self.esn.noise]),
+            'leak_rate': np.array([getattr(self.esn, 'leak_rate', 1.0)]),  # Compatibilidad con ESN antiguos
+            'birth_time': np.array([self.esn.birth_time]),
+        }
+        
+        # W_out puede ser None si no está entrenado
+        if self.esn.W_out is not None:
+            esn_data['W_out'] = self.esn.W_out
+        
+        np.savez_compressed(state_path, **esn_data)
+        
+        # Calcular checksum para validación
+        with open(state_path, 'rb') as f:
+            checksum = hashlib.sha256(f.read()).hexdigest()
         
         # Guardar metadata JSON
         meta = {
@@ -199,7 +228,10 @@ class AeonBirth:
             'samples_learned': self.samples_learned,
             'n_reservoir': self.esn.n_reservoir,
             'initialization_mode': self._initialization_mode,
-            'sacred_seed': self._sacred_seed
+            'sacred_seed': self._sacred_seed,
+            'birth_hash': self.esn.birth_hash,
+            'state_checksum': checksum,
+            'format_version': '2.0'  # Versión del formato de guardado
         }
         
         # Añadir info de excavación si existe
@@ -213,23 +245,25 @@ class AeonBirth:
         
         with open(path, 'w') as f:
             json.dump(meta, f, indent=2)
-            
-        # Guardar objeto ESN completo (pickle por simplicidad en prototipo)
-        with open(state_path, 'wb') as f:
-            pickle.dump(self.esn, f)
+        
+        logger.debug(f"Eón guardado: {safe_name} (checksum: {checksum[:16]}...)")
 
     @classmethod
     def load(cls, name, data_dir):
+        """Carga una instancia de Eón usando formato seguro (JSON + NPZ)."""
         safe_name = "".join(x for x in name if x.isalnum() or x in "-_")
         path = os.path.join(data_dir, f"{safe_name}_birth.json")
-        state_path = os.path.join(data_dir, f"{safe_name}_state.pkl")
         
-        if not os.path.exists(path) or not os.path.exists(state_path):
+        # Soportar tanto formato nuevo (.npz) como legacy (.pkl)
+        state_path_npz = os.path.join(data_dir, f"{safe_name}_state.npz")
+        state_path_pkl = os.path.join(data_dir, f"{safe_name}_state.pkl")
+        
+        if not os.path.exists(path):
             raise FileNotFoundError(f"Instance {name} not found")
-            
+        
         with open(path, 'r') as f:
             meta = json.load(f)
-            
+        
         # Crear instancia vacía
         instance = cls.__new__(cls)
         instance.name = meta['name']
@@ -238,9 +272,53 @@ class AeonBirth:
         instance.data_dir = data_dir
         instance._initialization_mode = meta.get('initialization_mode', 'classic')
         instance._sacred_seed = meta.get('sacred_seed', int(meta['created_at']))
-        instance.excavation_result = None  # No restauramos el resultado completo
+        instance.excavation_result = None
         
-        with open(state_path, 'rb') as f:
-            instance.esn = pickle.load(f)
+        # Cargar formato nuevo (NPZ seguro)
+        if os.path.exists(state_path_npz):
+            # Validar checksum si está disponible
+            if 'state_checksum' in meta:
+                with open(state_path_npz, 'rb') as f:
+                    actual_checksum = hashlib.sha256(f.read()).hexdigest()
+                if actual_checksum != meta['state_checksum']:
+                    raise ValueError(f"Checksum mismatch for {name}. File may be corrupted.")
             
+            # Cargar matrices
+            data = np.load(state_path_npz)
+            
+            # Reconstruir ESN
+            instance.esn = EchoStateNetwork(
+                n_inputs=int(data['n_inputs'][0]),
+                n_reservoir=int(data['n_reservoir'][0]),
+                n_outputs=int(data['n_outputs'][0]),
+                spectral_radius=float(data['spectral_radius'][0]),
+                sparsity=float(data['sparsity'][0]),
+                noise=float(data['noise'][0]),
+                leak_rate=float(data['leak_rate'][0]),
+                random_state=instance._sacred_seed
+            )
+            
+            # Restaurar matrices (sobrescribir las generadas)
+            instance.esn.W_in = data['W_in']
+            instance.esn.W_reservoir = data['W_reservoir']
+            instance.esn.state = data['state']
+            instance.esn.birth_time = int(data['birth_time'][0])
+            
+            if 'W_out' in data:
+                instance.esn.W_out = data['W_out']
+            
+            logger.debug(f"Eón cargado (formato NPZ): {safe_name}")
+        
+        # Fallback: formato legacy (pickle) - con advertencia
+        elif os.path.exists(state_path_pkl):
+            logger.warning(f"Cargando {name} desde formato legacy (pickle). Considere re-guardar.")
+            import pickle
+            with open(state_path_pkl, 'rb') as f:
+                instance.esn = pickle.load(f)
+            # Re-guardar en formato nuevo automáticamente
+            instance.save()
+            logger.info(f"Migrado {name} a formato seguro NPZ")
+        else:
+            raise FileNotFoundError(f"State file for {name} not found")
+        
         return instance

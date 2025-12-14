@@ -1,10 +1,77 @@
-# Áreas de Mejora - Proyecto Eón v1.9.7
+# Áreas de Mejora - Proyecto Eón v2.0.0
 
-## Estado: ✅ COMPLETADO - TODOS LOS TESTS IMPLEMENTADOS
+## Estado: ✅ COMPLETADO - 262 TESTS PASSING
 
 Este documento lista las áreas de mejora identificadas y su estado actual.
 
-**Última auditoría completa:** 2025-01-13
+**Última auditoría completa:** 2025-12-13
+
+---
+
+## 📊 Resumen de Tests v2.0.0
+
+| Módulo | Tests | Estado |
+|--------|-------|--------|
+| ESN Core | 45 | ✅ |
+| Plasticity | 28 | ✅ |
+| Quantization | 20 | ✅ |
+| Discovery Paradigm | 31 | ✅ |
+| Mystical Modules | 25 | ✅ |
+| Integration | 12 | ✅ |
+| Learning System | 20 | ✅ |
+| Server Web | 19 | ✅ |
+| Portable RNG | 18 | ✅ |
+| **Anomaly Detector** | **36** | ✅ **NUEVO v2.0** |
+| **I-Ching Oracle** | **33** | ✅ **NUEVO v2.0** |
+| **Collaborative Chat** | **44** | ✅ **NUEVO v2.0** |
+| **Total** | **262** | ✅ |
+
+---
+
+## ✅ Mejoras Completadas v2.0.0 (2025-12-13)
+
+### 🌌 Dashboard v2.0 (`web/templates/dashboard_v2.html`)
+- Visualización de red D3.js con nodos ESN interactivos
+- Termómetro de humor del Egrégor (BALANCED, ALERT, CONTEMPLATIVE, etc.)
+- Timeline de anomalías con severidad (LOW, MEDIUM, HIGH, CRITICAL)
+- Métricas en tiempo real: nodos activos, sincronización, error promedio
+- **APIs REST integradas:**
+  - `GET /api/nodes` - Lista de nodos y conexiones
+  - `GET /api/egregore` - Estado del Egrégor
+  - `GET /api/anomalies` - Eventos de anomalía
+  - `GET /api/dashboard/stats` - Estadísticas agregadas
+  - `POST /api/dashboard/reset` - Resetear estado
+
+### 💬 Chat Multi-Nodo (`core/collaborative_chat.py`)
+- **5 roles especializados:**
+  - `INTENT`: Detecta intención (greeting, question, command, technical, creative, emotional)
+  - `RESPONSE`: Genera vector de respuesta base
+  - `COHERENCE`: Evalúa coherencia con contexto
+  - `SENTIMENT`: Análisis de sentimiento (opcional)
+  - `CONTEXT`: Gestión de contexto conversacional (opcional)
+- Sistema de consenso con callbacks
+- Factory: `create_collaborative_chat(include_sentiment=True, include_context=True)`
+- **44 tests** cubriendo todos los escenarios
+
+### 🔍 Detector de Anomalías (`core/anomaly_detector.py`)
+- `AnomalyDetector`: Detección basada en error de predicción ESN
+- `StreamingAnomalyDetector`: Calibración online automática
+- Severidades: `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`
+- Callbacks para eventos de anomalía
+- Factory: `create_synthetic_anomalies()` para testing
+- **36 tests** con cobertura completa
+
+### 🔮 Oráculo I-Ching Neural (`core/iching_oracle.py`)
+- 64 hexagramas con significados en español
+- Método yarrow stalk para casting tradicional
+- Embedding de preguntas vía reservorio ESN
+- Adivinación de secuencias temporales
+- Factory: `create_oracle(seed=42)`
+- **33 tests** cubriendo consultas y predicciones
+
+### ⚡ Mejoras de Rendimiento
+- Variable `EON_DISABLE_TINYLM=1` para arranque rápido
+- Dashboard con polling optimizado cada 3s
 
 ---
 

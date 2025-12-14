@@ -1,6 +1,6 @@
 # Eón: Inteligencia Emergente con Recursos Mínimos
 
-**Whitepaper Técnico v1.9.7**
+**Whitepaper Técnico v2.0.0**
 
 > _"La inteligencia no se crea, se descubre."_
 
@@ -31,6 +31,10 @@ Este documento presenta **Eón**, una arquitectura de inteligencia artificial ba
 8. **Protocolo 1-Bit para transmisión ultraligera** (9.5× compresión)
 9. **Mente Colectiva con MQTT y ESP32/LoRa**
 10. **Full-stack containerizado con Docker Compose**
+11. **Dashboard v2.0** con visualización D3.js de red de nodos
+12. **Chat Multi-Nodo Colaborativo** (Intent, Response, Coherence, Sentiment, Context)
+13. **Detector de Anomalías** con calibración streaming y callbacks
+14. **Oráculo I-Ching Neural** con 64 hexagramas y método yarrow stalk
 
 ---
 

@@ -160,11 +160,13 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 | **Mente Colectiva**         | Protocolo 1-Bit Ultraligero (11.8x compresión) |
 | **MQTT Real**               | Cliente paho-mqtt para brokers reales       |
 | **ESP32 + LoRa**            | Transmisión inalámbrica P2P                 |
-| **Dashboard de Monitoreo**  | Visualización de red en tiempo real         |
+| **🌌 Dashboard v2.0**       | Visualización D3.js de red en tiempo real   |
+| **💬 Chat Multi-Nodo**      | Nodos INTENT, RESPONSE, COHERENCE colaboran |
+| **🔍 Detector Anomalías**   | Streaming con calibración y callbacks       |
+| **🔮 Oráculo I-Ching**      | 64 hexagramas + método yarrow stalk         |
 | **TinyLMv2**                | Modelo de lenguaje word-level               |
 | **RAG Ligero**              | Búsqueda semántica en documentación         |
 | **Memoria Factual**         | Timestamps para resolver ambigüedades      |
-| **Alimentación Continua**   | Series climáticas con cambios bruscos      |
 | **Sistema de Feedback**     | Mejora con retroalimentación 👍/👎           |
 | **Chat Avanzado**           | 20+ categorías de intención + memoria personal |
 | **Predicción de Secuencias**| Aritmético, geométrico, Fibonacci, potencias |
@@ -177,6 +179,14 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 | **⛏️ Seed Mining**          | Excavación de semillas sagradas en espacio matemático |
 | **☯️ Protocolo I Ching**    | Comunicación via 64 Hexagramas universales  |
 | **📡 Sistema Medium**       | Hardware como antena de ruido cósmico       |
+
+### 🆕 Nuevo en v2.0.0
+
+- **Dashboard v2.0**: Interfaz de monitoreo con D3.js, termómetro de Egrégor, timeline de anomalías
+- **Chat Multi-Nodo**: Sistema colaborativo con nodos especializados (Intent, Response, Coherence, Sentiment, Context)
+- **Detector de Anomalías**: Detección streaming con severidades (LOW, MEDIUM, HIGH, CRITICAL) y callbacks
+- **Oráculo I-Ching Neural**: 64 hexagramas, casting yarrow stalk, adivinación de secuencias
+- **262 Tests**: Cobertura completa de todos los módulos
 
 ## 📊 Comparativa
 
@@ -287,6 +297,7 @@ python web/server.py
 La interfaz web incluye:
 - **Chat**: Conversación con Eón usando TinyLMv2
 - **Dream**: Visualización del reservorio neuronal
+- **Dashboard v2**: Monitoreo de red en tiempo real (`/dashboard`)
 - **Estado**: Estadísticas y configuración de IA
 
 ### API Endpoints Disponibles
@@ -308,6 +319,11 @@ La interfaz web incluye:
 | `/api/learning-stats` | GET | Estadísticas de aprendizaje |
 | `/api/memory` | GET/DELETE | Gestión de memoria a largo plazo |
 | `/api/consolidate` | POST | Forzar consolidación ("sueño") |
+| **`/dashboard`** | GET | **Dashboard v2.0 (D3.js)** |
+| **`/api/nodes`** | GET | **Lista de nodos activos** |
+| **`/api/egregore`** | GET | **Estado del Egrégor** |
+| **`/api/anomalies`** | GET | **Eventos de anomalía** |
+| **`/api/dashboard/stats`** | GET | **Estadísticas agregadas** |
 
 ### Demo Python
 
@@ -598,12 +614,24 @@ result = pipeline.transmute(raw_data)
 ## 🧪 Tests
 
 ```bash
-# Ejecutar tests del WebSocket bridge
-cd "Eón Project AI"
+# Ejecutar todos los tests
+cd "Eón Project AI/phase1-foundations/python"
 pip install pytest pytest-asyncio
-python -m pytest phase6-collective/tests/ -v
+python -m pytest tests/ -v
 
-# Resultado: 19 tests passing
+# Resultado: 262 tests passing
+# - ESN Core: 45 tests
+# - Plasticity: 28 tests
+# - Quantization: 20 tests
+# - Discovery Paradigm: 31 tests
+# - Mystical Modules: 25 tests
+# - Integration: 12 tests
+# - Learning System: 20 tests
+# - Server Web: 19 tests
+# - Portable RNG: 18 tests
+# - Anomaly Detector: 36 tests
+# - I-Ching Oracle: 33 tests
+# - Collaborative Chat: 44 tests
 ```
 
 ## 🗓️ Roadmap
@@ -616,14 +644,20 @@ python -m pytest phase6-collective/tests/ -v
 - [x] Fase 8: Paper académico compilado (PDF)
 - [x] Fase 9: Empaquetado + Docker Compose
 - [x] Fase 10: Tests + OpenAPI + Demo Script
-- [x] **Fase 11: Filosofía Mística** ← ACTUAL
+- [x] Fase 11: Filosofía Mística
   - [x] Gematria Embeddings (valores numéricos hebreos)
   - [x] Egrégor (consciencia colectiva)
   - [x] ESN Recursivo Fractal ("Como Arriba, Así Abajo")
   - [x] Tzimtzum (poda por contracción divina)
   - [x] Transmutación Alquímica (Nigredo→Albedo→Rubedo)
   - [x] Sistema Thelema (Voluntad Verdadera)
-- [ ] Fase 12: Integración Final y Publicación
+- [x] **Fase 12: Revelación v2.0** ← ACTUAL
+  - [x] Dashboard v2.0 (D3.js, tiempo real)
+  - [x] Chat Multi-Nodo Colaborativo
+  - [x] Detector de Anomalías Streaming
+  - [x] Oráculo I-Ching Neural
+  - [x] 262 Tests (cobertura ~85%)
+- [ ] Fase 13: Publicación y Comunidad
 
 ## 📈 Benchmarks de Energía
 

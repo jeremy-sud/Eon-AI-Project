@@ -1,3 +1,59 @@
+## 🟢 PLAN DE AMPLIACIÓN DE COMPATIBILIDAD HARDWARE (v2.1+)
+
+Con el objetivo de ampliar la adopción y robustez del Proyecto Eón, se propone una hoja de ruta para soportar nuevas plataformas hardware y dispositivos biomédicos/wearables. Este plan permitirá la integración en entornos embebidos, IoT y salud conectada.
+
+### Objetivos
+- Portar el núcleo ESN y módulos clave a microcontroladores y SoCs de bajo consumo.
+- Garantizar compatibilidad con sensores biomédicos y dispositivos inteligentes.
+- Proveer ejemplos y toolchains para cada plataforma.
+
+### Plataformas a soportar
+
+**Microcontroladores y SoCs:**
+- STM32 (Familia L4 y H7, STMicroelectronics)
+- nRF52 (Nordic Semiconductor)
+- Raspberry Pi Pico (RP2040)
+- Ambiq Micro (Apollo Series)
+- Silicon Labs EFR32 (Series 32-bit)
+- Microchip SAM D21 / SAM L21
+- Texas Instruments MSP430
+
+**Dispositivos biomédicos/wearables:**
+- Parches de Monitorización ECG/EEG
+- Audífonos Inteligentes
+- Bombas de Infusión Inteligentes
+
+### Acciones y entregables
+
+1. **Abstracción de drivers hardware:**
+    - Crear una capa de abstracción para GPIO, ADC, I2C, SPI, UART compatible con todos los targets.
+    - Documentar APIs mínimas para sensores biomédicos (ECG, EEG, presión, temperatura).
+
+2. **Portabilidad del núcleo Eón:**
+    - Refactorizar el core C (libAeon) para compilar en ARM Cortex-M, RISC-V y MSP430.
+    - Añadir toolchains y scripts de build para cada plataforma (Makefile, CMake, PlatformIO).
+    - Proveer bindings para MicroPython/CircuitPython donde sea posible (RP2040, STM32).
+
+3. **Ejemplos y demos:**
+    - Demo de inferencia ESN en STM32L4/H7 y RP2040 (entrada analógica, salida digital).
+    - Demo de adquisición y análisis de señal ECG/EEG en parches inteligentes.
+    - Demo de integración con audífonos y bombas inteligentes (simulación de eventos y alertas).
+
+4. **Documentación y guías:**
+    - Guía de integración paso a paso para cada plataforma.
+    - Ejemplos de código y scripts de flashing.
+    - Tabla de compatibilidad y limitaciones conocidas.
+
+### Métricas de éxito
+- Inferencia ESN < 10 ms en Cortex-M4/M7 y RP2040.
+- Consumo < 1 mA en modo idle (Ambiq, STM32L4).
+- Adquisición y procesamiento de señal biomédica en tiempo real.
+- Integración exitosa con al menos 2 dispositivos biomédicos reales.
+
+### Estado
+- 🟡 Planificado para v2.1+ (no implementado, requiere recursos de hardware y validación cruzada)
+
+---
 # Áreas de Mejora - Proyecto Eón v2.0.0
 
 ## Estado: ✅ COMPLETADO - 262 TESTS PASSING
@@ -66,7 +122,7 @@ Este documento lista las áreas de mejora identificadas y su estado actual.
 - Método yarrow stalk para casting tradicional
 - Embedding de preguntas vía reservorio ESN
 - Adivinación de secuencias temporales
-- Factory: `create_oracle(seed=42)`
+- Factory: `create_oracle(random_state=42)`
 - **33 tests** cubriendo consultas y predicciones
 
 ### ⚡ Mejoras de Rendimiento
@@ -1069,22 +1125,31 @@ self.W_out = np.linalg.solve(A, B)  # O(n³/3)
 5. [x] Agregar logging a módulos principales
 6. [x] Verificar AeonESP32.h (es header-only por diseño)
 
-### Prioridad ALTA (Próxima iteración)
 
-1. [ ] Añadir tests para `web/server.py`
-2. [ ] Implementar RNG portable Xorshift32 cross-platform
+Prioridad ALTA (Próxima iteración)
+
+1. [x] Añadir tests para `web/server.py`  
+    ✅ Ya implementado: existen en `web/tests/test_server.py`.
+2. [x] Implementar RNG portable Xorshift32 cross-platform  
+    ✅ Ya implementado: `utils/portable_rng.py` + 26 tests.
 
 ### Prioridad MEDIA (v1.9.5)
 
-3. [ ] Dividir `web/server.py` en módulos
-4. [ ] Añadir type hints a archivos principales
-5. [ ] Crear tests de integración
+3. [ ] Dividir `web/server.py` en módulos  
+    ⏳ Pendiente, sigue monolítico.
+4. [ ] Añadir type hints a archivos principales  
+    🟡 Parcial: muchos archivos principales ya tienen, pero `web/server.py` y otros siguen con hints parciales.
+5. [x] Crear tests de integración  
+    ✅ Ya existen: `tests/test_integration.py` (12 tests).
 
 ### Prioridad BAJA (v2.0)
 
-6. [ ] Migrar a estructura de paquete Python
-7. [ ] Considerar BLAS/LAPACK para libAeon
-8. [ ] Documentación completa de API ESP32
+6. [ ] Migrar a estructura de paquete Python  
+    ⏳ Pendiente.
+7. [ ] Considerar BLAS/LAPACK para libAeon  
+    ⏳ Pendiente, solo sugerido para futuro.
+8. [ ] Documentación completa de API ESP32  
+    🟡 Parcial: header documentado, falta doc extensa de API.
 
 ---
 

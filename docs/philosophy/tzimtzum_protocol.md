@@ -45,7 +45,7 @@ El Tzimtzum ofrece una solución elegante: **poda deliberada** de las conexiones
 
 ### Fases del Ciclo
 
-| Fase | Estado | Description |
+| Fase | Estado | Descripción |
 |------|--------|-------------|
 | **PLENITUD** 🌕 | Normal | Red operando con todas sus conexiones activas |
 | **DARK NIGHT** 🌑 | Poda | Proceso activo de eliminación del 50% más débil |
@@ -56,7 +56,7 @@ El Tzimtzum ofrece una solución elegante: **poda deliberada** de las conexiones
 
 ## Implementación
 
-### Components Principales
+### Componentes Principales
 
 #### 1. TzimtzumESN (`tzimtzum.py`)
 
@@ -140,7 +140,7 @@ importance = 0.6 * |peso| + 0.4 * contribución_hebbiana
 
 ---
 
-## Philosophy Computacional
+## Filosofía Computacional
 
 ### "La Vasija Llena"
 
@@ -290,7 +290,7 @@ class TzimtzumEgregore:
 
 ---
 
-## Results Experimentales
+## Resultados Experimentales
 
 ### Benchmark: Predicción de Series Temporales
 
@@ -299,7 +299,7 @@ class TzimtzumEgregore:
 | MSE | 0.0042 | 0.0039 | -7.1% |
 | Parámetros | 10,000 | 4,500 | -55% |
 | Tiempo | 12.3ms | 5.8ms | -53% |
-| Memory | 80KB | 36KB | -55% |
+| Memoria | 80KB | 36KB | -55% |
 
 ### Observaciones
 

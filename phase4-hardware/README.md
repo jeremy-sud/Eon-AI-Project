@@ -1,11 +1,11 @@
 # Eón Phase 4: Hardware
 ## Implementaciones para Edge Computing y IoT
 
-Esta fase contiene las implementaciones del Eón Project para hardware embebido, incluyendo Arduino, ESP32 y módulos de comunicación LoRa.
+Esta fase contiene las implementaciones del Proyecto Eón para hardware embebido, incluyendo Arduino, ESP32 y módulos de comunicación LoRa.
 
 ---
 
-## 📁 Structure
+## 📁 Estructura
 
 ```
 phase4-hardware/
@@ -47,7 +47,7 @@ phase4-hardware/
 
 **Propósito:** Demo completo del Protocolo 1-Bit sobre LoRa para sincronización de neuronas entre nodos.
 
-**Features:**
+**Características:**
 - Transmisión bidireccional TX/RX
 - Compresión 9.5x (21 bytes vs 175 bytes JSON)
 - Display OLED para visualización
@@ -112,7 +112,7 @@ phase4-hardware/
 **Métricas:**
 - Consumo por transmisión (mJ)
 - Tiempo de aire LoRa
-- Comparison 1-Bit vs JSON
+- Comparativa 1-Bit vs JSON
 - Estimación de vida de batería
 
 **Consumos típicos medidos:**
@@ -124,7 +124,7 @@ phase4-hardware/
 | CPU Activo | 50 mA | 185 mW |
 | LoRa TX @20dBm | 120 mA | 444 mW |
 
-**Comparison Protocolo 1-Bit vs JSON:**
+**Comparativa Protocolo 1-Bit vs JSON:**
 | Métrica | 1-Bit | JSON | Mejora |
 |---------|-------|------|--------|
 | Tamaño | 21 bytes | 175 bytes | 8.3x |
@@ -232,7 +232,7 @@ Instalar desde Arduino Library Manager:
    - Altura de dispositivos
    - Obstáculos
 
-4. **Results esperados:**
+4. **Resultados esperados:**
    | RSSI (dBm) | Rango típico |
    |------------|--------------|
    | > -80 | < 100m |

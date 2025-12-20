@@ -1,15 +1,15 @@
-# Fase 2: Núcleo Ultra-Lightweight (C)
+# Fase 2: Núcleo Ultraligero (C)
 
 Esta fase es la implementación "real" del motor Eón, diseñada para microcontroladores y sistemas embebidos.
 
-## Features
+## Características
 
 - **C Puro**: Sin dependencias externas.
-- **Memory Estática**: No usa `malloc` dinámico en el núcleo.
+- **Memoria Estática**: No usa `malloc` dinámico en el núcleo.
 - **Punto Fijo**: Soporte opcional para Q8.8 (sin FPU).
 - **Portable**: Compila en GCC, Clang, AVR-GCC, ARM-GCC.
 
-## Structure
+## Estructura
 
 - `libAeon/src`: Código fuente.
 - `libAeon/include`: Headers públicos.

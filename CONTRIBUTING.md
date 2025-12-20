@@ -1,77 +1,77 @@
-# Contributing to the Eón Project
+# Contribuir a Proyecto Eón
 
-Thank you for your interest in contributing! This document explains how to do so.
+¡Gracias por tu interés en contribuir! Este documento explica cómo hacerlo.
 
-## 🎯 Project Philosophy
+## 🎯 Filosofía del Proyecto
 
-> _"Intelligence is not created, it is discovered."_
+> _"La inteligencia no se crea, se descubre."_
 
-Eón seeks to demonstrate that intelligence can emerge from minimal resources. When contributing, maintain these principles:
+Eón busca demostrar que la inteligencia puede emerger de recursos mínimos. Al contribuir, mantén estos principios:
 
-1. **Efficiency over features**: Less code, less memory, more impact
-2. **Simplicity**: If you can't explain it simply, it's too complex
-3. **Reproducibility**: Everything must be verifiable
+1. **Eficiencia sobre features**: Menos código, menos memoria, más impacto
+2. **Simplicidad**: Si no puedes explicarlo simplemente, es demasiado complejo
+3. **Reproducibilidad**: Todo debe ser verificable
 
-## 🔧 How to Contribute
+## 🔧 Cómo Contribuir
 
-### 1. Report Bugs
+### 1. Reportar Bugs
 
-Open an issue with:
+Abre un issue con:
 
-- Clear description of the problem
-- Steps to reproduce
-- Expected vs actual behavior
-- Environment (OS, Python/GCC version)
+- Descripción clara del problema
+- Pasos para reproducir
+- Comportamiento esperado vs actual
+- Entorno (OS, versión Python/GCC)
 
-### 2. Propose Features
+### 2. Proponer Features
 
-Before implementing:
+Antes de implementar:
 
-1. Open an issue to discuss
-2. Wait for maintainer feedback
-3. Consider memory/performance impact
+1. Abre un issue para discutir
+2. Espera feedback del mantenedor
+3. Considera el impacto en memoria/rendimiento
 
 ### 3. Pull Requests
 
 ```bash
-# Fork and clone
-git clone https://github.com/your-username/eon-project.git
+# Fork y clone
+git clone https://github.com/tu-usuario/eon-project.git
 
-# Create branch
-git checkout -b feature/your-feature
+# Crear rama
+git checkout -b feature/tu-feature
 
-# Make changes and commit
-git commit -m "feat: concise description"
+# Hacer cambios y commit
+git commit -m "feat: descripción concisa"
 
-# Push and create PR
-git push origin feature/your-feature
+# Push y crear PR
+git push origin feature/tu-feature
 ```
 
-## 📐 Code Standards
+## 📐 Estándares de Código
 
 ### Python
 
 - PEP 8
-- Docstrings in public functions
-- Type hints when possible
-- Only NumPy as dependency
+- Docstrings en funciones públicas
+- Type hints cuando sea posible
+- Solo NumPy como dependencia
 
 ### C
 
-- C99 standard
-- Doxygen comments
-- Variables with `aeon_` prefix
-- No warnings with `-Wall -Wextra`
+- C99 estándar
+- Comentarios Doxygen
+- Variables con prefijo `aeon_`
+- Sin warnings con `-Wall -Wextra`
 
 ### JavaScript
 
 - ES6+
-- JSDoc for documentation
-- No external dependencies
+- JSDoc para documentación
+- Sin dependencias externas
 
 ## 🧪 Tests
 
-Before sending PR:
+Antes de enviar PR:
 
 ```bash
 # Python
@@ -87,28 +87,28 @@ make clean && make run
 
 ## 📊 Benchmarks
 
-If your change affects performance:
+Si tu cambio afecta rendimiento:
 
-1. Run `benchmark.py` before and after
-2. Include results in the PR
-3. Justify any degradation
+1. Ejecuta `benchmark.py` antes y después
+2. Incluye resultados en el PR
+3. Justifica cualquier degradación
 
 ## 📝 Commits
 
-We use [Conventional Commits](https://www.conventionalcommits.org/):
+Usamos [Conventional Commits](https://www.conventionalcommits.org/):
 
-- `feat:` New functionality
-- `fix:` Bug fix
-- `docs:` Documentation
-- `perf:` Performance improvement
-- `refactor:` Refactoring without functional change
+- `feat:` Nueva funcionalidad
+- `fix:` Corrección de bug
+- `docs:` Documentación
+- `perf:` Mejora de rendimiento
+- `refactor:` Refactorización sin cambio funcional
 
-## 📜 License
+## 📜 Licencia
 
-By contributing, you agree that your code will be licensed under MIT.
+Al contribuir, aceptas que tu código será licenciado bajo MIT.
 
 ---
 
-**Eón Project** - [Sistemas Ursol](https://github.com/SistemasUrsol)
+**Proyecto Eón** - [Sistemas Ursol](https://github.com/SistemasUrsol)
 
-Developed by [Jeremy Arias Solano](https://github.com/jeremy-sud)
+Desarrollado por [Jeremy Arias Solano](https://github.com/jeremy-sud)

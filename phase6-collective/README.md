@@ -1,14 +1,14 @@
-# Fase 6: Collective Mind
+# Fase 6: Mente Colectiva
 
 El objetivo de esta fase es permitir que múltiples nodos Eón aprendan juntos sin compartir sus datos privados. Utiliza un esquema federado descentralizado donde solo se intercambian los pesos aprendidos ($W_{out}$).
 
-## Features Principales
+## Características Principales
 
 - **Intercambio de Pesos 1-Bit**:
 
   - Protocolo ultraligero para microcontroladores (ESP32).
   - Comprime los pesos de punto flotante a **1 bit por peso** (signo).
-  - Tasa de compression: **~11.8x** (200 bytes → 17 bytes).
+  - Tasa de compresión: **~11.8x** (200 bytes → 17 bytes).
   - Ver [Especificación del Protocolo](docs/protocol_spec.md).
 
 - **Cliente MQTT Real** (NUEVO v1.7.0):
@@ -20,20 +20,20 @@ El objetivo de esta fase es permitir que múltiples nodos Eón aprendan juntos s
 - **Dashboard de Monitoreo** (NUEVO v1.7.0):
   - Visualización de topología de red
   - Estado de nodos en tiempo real
-  - Métricas de compression y latencia
+  - Métricas de compresión y latencia
   - Log de sincronización
 
 - **ESP32 + LoRa** (NUEVO v1.7.0):
-  - P2P wireless transmission sin WiFi
+  - Transmisión inalámbrica P2P sin WiFi
   - Ideal para IoT rural y redes mesh
   - Compatible con TTGO LoRa32, Heltec
 
 - **Sincronización por "Momento Cero"**:
   - Todos los nodos comparten la misma semilla de nacimiento
-  - Reservoirs mathematicalmente idénticos
+  - Reservoirs matemáticamente idénticos
   - Permite sumar/promediar $W_{out}$ directamente
 
-## Structure
+## Estructura
 
 ```
 phase6-collective/
@@ -81,10 +81,10 @@ python3 -m http.server 8080
 # Abrir http://localhost:8080/dashboard.html
 ```
 
-Features del dashboard:
+Características del dashboard:
 - 🌐 Visualización de red con canvas animado
 - 📡 Lista de nodos con estado (online/syncing/offline)
-- 📊 Métricas: compression 91.5%, precisión 100%, latencia ~15ms
+- 📊 Métricas: compresión 91.5%, precisión 100%, latencia ~15ms
 - 📜 Log de sincronización en tiempo real
 
 ## Formato del Paquete Binario
@@ -101,5 +101,5 @@ Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
 Ejemplo para 50 neuronas:
 - Header: 14 bytes
 - Payload: 7 bytes (50 bits empaquetados)
-- **Total: 21 bytes** vs 200 bytes (float32) = **9.5x compression**
+- **Total: 21 bytes** vs 200 bytes (float32) = **9.5x compresión**
 

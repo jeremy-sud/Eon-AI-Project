@@ -1,4 +1,4 @@
-# 🌌 Roadmap de Ideas - Eón Project v2.0+
+# 🌌 Roadmap de Ideas - Proyecto Eón v2.0+
 
 > Ideas de mejora basadas en la infraestructura existente del proyecto.
 > 
@@ -12,8 +12,8 @@
 |---|------|------------|---------|-----------|--------|
 | 13 | Detección de Anomalías | ⭐ | 🔥🔥🔥 | **ALTA** | 🔄 Pendiente |
 | 9 | Dashboard Mejorado | ⭐⭐ | 🔥🔥🔥 | **ALTA** | 🔄 Pendiente |
-| 2 | I-Ching Oracle | ⭐⭐⭐ | 🔥🔥🔥 | **ALTA** | 🔄 Pendiente |
-| 6 | Multi-Node Chat | ⭐⭐⭐ | 🔥🔥🔥 | **ALTA** | 🔄 Pendiente |
+| 2 | Oráculo I-Ching | ⭐⭐⭐ | 🔥🔥🔥 | **ALTA** | 🔄 Pendiente |
+| 6 | Chat Multi-Nodo | ⭐⭐⭐ | 🔥🔥🔥 | **ALTA** | 🔄 Pendiente |
 | 7 | Cuantización Adaptativa | ⭐⭐ | 🔥🔥 | MEDIA | 🔄 Pendiente |
 | 11 | Ciclos Circadianos | ⭐⭐ | 🔥🔥 | MEDIA | 🔄 Pendiente |
 | 14 | Streaming ESN | ⭐⭐ | 🔥🔥 | MEDIA | 🔄 Pendiente |
@@ -75,7 +75,7 @@ class MetaSeedLearner:
 
 ---
 
-## 🔮 Idea #2: I-Ching Oracle Neural (Predicción de Hexagramas)
+## 🔮 Idea #2: Oráculo I-Ching Neural (Predicción de Hexagramas)
 
 ### Basado en
 - `core/archaic_protocol.py` - Hexagram, Trigram, HEXAGRAMS
@@ -83,7 +83,7 @@ class MetaSeedLearner:
 - `phase7-language/tiny_lm_v2.py` - TinyLMv2
 
 ### Concepto
-Usar el ESN para predecir secuencias de hexagramas del I-Ching. Los 64 estados = 6 bits, perfecto para representación binaria. Crear un "Oráculo Neural" que combina mathematical y tradición milenaria.
+Usar el ESN para predecir secuencias de hexagramas del I-Ching. Los 64 estados = 6 bits, perfecto para representación binaria. Crear un "Oráculo Neural" que combina matemática y tradición milenaria.
 
 ### Implementación Propuesta
 
@@ -227,7 +227,7 @@ class QuantumSyncProtocol:
 
 ---
 
-## 🎨 Idea #5: Generative Art con Feedback de Egrégor
+## 🎨 Idea #5: Arte Generativo con Feedback de Egrégor
 
 ### Basado en
 - `egregore.py` - EgregorState, EgregorMood
@@ -282,7 +282,7 @@ class EgregorArtist:
 
 ---
 
-## 💬 Idea #6: Multi-Node Chat (Conversación Distribuida)
+## 💬 Idea #6: Chat Multi-Nodo (Conversación Distribuida)
 
 ### Basado en
 - `phase7-language/tiny_lm_v2.py` - TinyLMv2
@@ -342,7 +342,7 @@ class CollaborativeChatOrchestrator:
 
 ---
 
-## 🔢 Idea #7: Cuantización Adaptativa por Context
+## 🔢 Idea #7: Cuantización Adaptativa por Contexto
 
 ### Basado en
 - `quantization/quantizer.py` - QuantizedESN
@@ -386,7 +386,7 @@ class AdaptiveQuantizer:
 - `tests/test_adaptive_quantizer.py` (nuevo)
 
 ### Métricas de Éxito
-- Reducción of memory: >50% vs 8-bit uniforme
+- Reducción de memoria: >50% vs 8-bit uniforme
 - Retención de precisión: >95% vs original
 
 ---
@@ -616,7 +616,7 @@ class CircadianLearning:
 - `src/gematria.py` - GematriaEmbeddingLayer
 
 ### Concepto
-Agregar un mecanismo de atención ultra-ligero compatible con TinyML. Solo 1 cabeza, dimensión 32 - ~2KB extra of memory.
+Agregar un mecanismo de atención ultra-ligero compatible con TinyML. Solo 1 cabeza, dimensión 32 - ~2KB extra de memoria.
 
 ### Implementación Propuesta
 
@@ -655,7 +655,7 @@ class TinyAttention:
 
 ### Métricas de Éxito
 - Mejora en perplexity: >10%
-- Overhead of memory: <3KB
+- Overhead de memoria: <3KB
 - Latencia: <5ms adicionales
 
 ---
@@ -782,7 +782,7 @@ class StreamingESN:
 - `phase4-hardware/esp32/` (versión C)
 
 ### Métricas de Éxito
-- Memory: Constante O(1) independiente de longitud del stream
+- Memoria: Constante O(1) independiente de longitud del stream
 - Latencia: <1ms por punto
 - Precisión: >90% de ESN con memoria completa
 
@@ -850,8 +850,8 @@ class SeedArchaeologist:
 1. ✅ Crear este documento
 2. 🔄 #13 Detección de Anomalías
 3. 🔄 #9 Dashboard Mejorado
-4. 🔄 #2 I-Ching Oracle
-5. 🔄 #6 Multi-Node Chat
+4. 🔄 #2 Oráculo I-Ching
+5. 🔄 #6 Chat Multi-Nodo
 
 ### Fase 2: Prioridad Media (v2.1)
 6. #7 Cuantización Adaptativa

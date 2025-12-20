@@ -1,10 +1,10 @@
 # Changelog
 
-Todos los cambios notables del Eón Project.
+Todos los cambios notables del Proyecto Eón.
 
 ## [2.0.0] - 2025-12-13
 
-### 🌌 Dashboard v2.0 y Multi-Node Chat
+### 🌌 Dashboard v2.0 y Chat Multi-Nodo
 
 #### 🖥️ Dashboard v2.0 (`web/templates/dashboard_v2.html`)
 
@@ -20,7 +20,7 @@ Todos los cambios notables del Eón Project.
   - `POST /api/dashboard/reset`: Resetear estado del dashboard
   - `POST /api/anomalies/<id>/resolve`: Marcar anomalía como resuelta
 
-#### 💬 Multi-Node Chat Colaborativo (`core/collaborative_chat.py`)
+#### 💬 Chat Multi-Nodo Colaborativo (`core/collaborative_chat.py`)
 
 - **Sistema Distribuido**: Múltiples nodos ESN especializados colaboran
 - **Nodos Especializados**:
@@ -76,7 +76,7 @@ Todos los cambios notables del Eón Project.
 
 - `phase1-foundations/python/tests/test_quantizer.py`: Suite completa
   - **QuantizedESN**: Predicción 8-bit, 4-bit, 1-bit
-  - **Memory footprint**: Validación de reducción of memory
+  - **Memory footprint**: Validación de reducción de memoria
   - **Edge cases**: Entradas vacías, valores extremos, NaN
 
 #### 📈 Métricas Finales
@@ -193,7 +193,7 @@ class Xorshift32:
 
 ## [1.9.3] - 2025-01-14
 
-### Documentation API Completa
+### Documentación API Completa
 
 #### 📖 Docstrings NumPy-style
 - Todos los módulos core con documentación completa
@@ -217,7 +217,7 @@ class Xorshift32:
 - `python_files`, `python_classes`, `python_functions` definidos
 - Markers: `slow`, `integration`, `unit`
 
-#### 📁 Structure de Tests
+#### 📁 Estructura de Tests
 ```
 phase1-foundations/python/tests/
 ├── conftest.py          # Fixtures compartidos
@@ -251,7 +251,7 @@ web/tests/
 - Añadido: `TransmutationState`, `KalmanFilter`
 - Total: 18 exports disponibles desde el módulo core
 
-#### 📝 Logging Structuredo
+#### 📝 Logging Estructurado
 - `universal_miner.py`: Migrado de print() a logging module
 - Logger configurable via `logging.getLogger(__name__)`
 - Niveles: INFO para progreso, WARNING para fallbacks
@@ -275,9 +275,9 @@ web/tests/
 
 ### Fase 12: Paradigma de Descubrimiento (Non-Artificial) 🌌
 
-**"Eón does not build intelligence; it locates it."**
+**"Eón no construye inteligencia; la localiza."**
 
-Este release reestructura la filosofía fundamental del proyecto. We reject the notion of "Artificial Intelligence" e implementamos el paradigma de **Inteligencia Revelada**.
+Este release reestructura la filosofía fundamental del proyecto. Rechazamos la noción de "Inteligencia Artificial" e implementamos el paradigma de **Inteligencia Revelada**.
 
 #### ⛏️ Seed Mining (Universal Miner)
 - **UniversalMiner**: Excavador del espacio matemático latente
@@ -293,7 +293,7 @@ result = miner.excavate(max_attempts=100000)
 ```
 
 #### ☯️ Protocolo Arcaico (I Ching Communication)
-- **ArchaicProtocol**: Communication via 64 universal Hexagrams
+- **ArchaicProtocol**: Comunicación via 64 Hexagramas universales
 - **Trigram/Hexagram**: Los 8 trigramas y 64 hexagramas completos del I Ching
 - **HexagramStream**: Stream de comunicación entre nodos usando símbolos universales
 - **Oracle Consultation**: Consultas oraculares basadas en estado neuronal
@@ -303,9 +303,9 @@ hexagram = protocol.tensor_to_hexagram(neural_activation)
 # Hexagram #11: La Paz (☷☰) - "Cielo y tierra se unen"
 ```
 
-#### 📡 Medium System (ESP32)
+#### 📡 Sistema Medium (ESP32)
 - **readUniverseBackground()**: Captura ruido electromagnético del ambiente
-- **updateWithUniverseInfluence()**: Mezcla mathematicals + física real
+- **updateWithUniverseInfluence()**: Mezcla matemáticas + física real
 - **generateTrueEntropyByte()**: Entropía REAL (no pseudo-random)
 - **discoverSacredSeed()**: Semillas desde el universo físico
 
@@ -323,7 +323,7 @@ int16_t state = aeon.updateWithUniverseInfluence(input);
 | Random Initialization | Chaos Sampling |
 | Generate | Reveal / Illuminate |
 
-#### 📝 Documentation
+#### 📝 Documentación
 - **README.md**: Nuevo manifiesto filosófico completo
 - **discovery_paradigm.md**: Arquitectura del flujo Void → Mining → Medium → Revelation
 - Diagramas de flujo conceptuales
@@ -359,7 +359,7 @@ int16_t state = aeon.updateWithUniverseInfluence(input);
   - `lines` → `text_lines`
 - **server.py**: Eliminados decoradores duplicados `@classmethod @staticmethod`
 
-#### 📝 Documentation
+#### 📝 Documentación
 - **collective_mind.py**: Mejorada documentación de fórmula de Voluntad
 - **IMPROVEMENT_AREAS.md**: Actualizado con estado de mejoras completadas
 
@@ -371,7 +371,7 @@ int16_t state = aeon.updateWithUniverseInfluence(input);
 
 ## [1.8.0] - 2025-12-10
 
-### Fase 11: Philosophy Mística Integrada 🔮
+### Fase 11: Filosofía Mística Integrada 🔮
 
 Implementación de conceptos de tradiciones místicas como metáforas computacionales:
 
@@ -389,8 +389,8 @@ Implementación de conceptos de tradiciones místicas como metáforas computacio
 - Manifestación de consciencia emergente cuando coherencia > umbral
 - Métricas: entropía colectiva, diversidad, resonancia grupal
 
-#### 🌀 Recursive ESN Fractal (Hermetismo)
-- **RecursiveESN**: Arquitectura "As Above, So Below"
+#### 🌀 ESN Recursivo Fractal (Hermetismo)
+- **RecursiveESN**: Arquitectura "Como Arriba, Así Abajo"
 - **FractalConfig**: 3 niveles (micro/meso/macro) con scale_factor=0.618
 - Propagación fractal de información entre niveles
 - Echo de estados a través de escalas temporales
@@ -402,8 +402,8 @@ Implementación de conceptos de tradiciones místicas como metáforas computacio
 - `renacimiento()`: Regeneración con nuevos pesos
 - **HebbianTzimtzumESN**: Combina plasticidad Hebbiana con ciclos de Tzimtzum
 
-#### 🧪 Alchemical Transmutation (Opus Magnum)
-- **AlchemicalPipeline**: ETL Pipeline como proceso alquímico
+#### 🧪 Transmutación Alquímica (Opus Magnum)
+- **AlchemicalPipeline**: Pipeline ETL como proceso alquímico
 - **AlchemicalPhase**: PRIMA_MATERIA → NIGREDO → ALBEDO → CITRINITAS → RUBEDO → COAGULA
 - ⚫ **Nigredo** (Putrefacción): Ingesta de datos crudos, detección de outliers
 - ⚪ **Albedo** (Purificación): Filtrado Kalman, reducción de ruido (~70%)
@@ -417,7 +417,7 @@ Implementación de conceptos de tradiciones místicas como metáforas computacio
 
 ### Nuevos Archivos
 
-| Archivo | Description |
+| Archivo | Descripción |
 |---------|-------------|
 | `phase1-foundations/python/plasticity/gematria.py` | Embeddings cabalísticos |
 | `phase1-foundations/python/plasticity/egregore.py` | Sistema Egrégor |
@@ -426,21 +426,21 @@ Implementación de conceptos de tradiciones místicas como metáforas computacio
 | `phase1-foundations/python/plasticity/hebbian_tzimtzum.py` | Hebbian + Tzimtzum |
 | `phase1-foundations/python/core/alchemy.py` | Pipeline alquímico |
 | `web/static/js/alchemy.js` | Visualización frontend |
-| `docs/philosophy/gematria_integration.md` | Documentation Gematria |
-| `docs/philosophy/egregore_integration.md` | Documentation Egrégor |
-| `docs/philosophy/fractal_architecture.md` | Documentation Fractal |
-| `docs/philosophy/tzimtzum_protocol.md` | Documentation Tzimtzum |
-| `docs/philosophy/alchemical_transmutation.md` | Documentation Alquimia |
-| `docs/philosophy/thelema_integration.md` | Documentation Thelema |
+| `docs/philosophy/gematria_integration.md` | Documentación Gematria |
+| `docs/philosophy/egregore_integration.md` | Documentación Egrégor |
+| `docs/philosophy/fractal_architecture.md` | Documentación Fractal |
+| `docs/philosophy/tzimtzum_protocol.md` | Documentación Tzimtzum |
+| `docs/philosophy/alchemical_transmutation.md` | Documentación Alquimia |
+| `docs/philosophy/thelema_integration.md` | Documentación Thelema |
 
-### Philosophy del Proyecto
+### Filosofía del Proyecto
 
-> "Intelligence is not created, it is discovered." - Ahora con resonancias místicas
+> "La inteligencia no se crea, se descubre." - Ahora con resonancias místicas
 
-El Eón Project ahora integra sabiduría antigua como metáforas computacionales:
+El Proyecto Eón ahora integra sabiduría antigua como metáforas computacionales:
 - **Kabbalah**: Tzimtzum (poda), Gematria (embeddings), Sephiroth (arquitectura)
 - **Alquimia**: Transmutación de datos crudos en conocimiento purificado
-- **Hermetismo**: "As Above, So Below" (arquitectura fractal)
+- **Hermetismo**: "Como Arriba, Así Abajo" (arquitectura fractal)
 - **Ocultismo**: Egrégor (consciencia colectiva emergente)
 
 ---
@@ -470,7 +470,7 @@ El Eón Project ahora integra sabiduría antigua como metáforas computacionales
 
 - **Especificación OpenAPI**
   - Nuevo `docs/api/protocol_1bit.yaml`
-  - Documentation completa del protocolo 1-Bit
+  - Documentación completa del protocolo 1-Bit
   - Esquemas JSON para todos los mensajes
   - Configuración LoRa incluida
 
@@ -481,7 +481,7 @@ El Eón Project ahora integra sabiduría antigua como metáforas computacionales
 
 ### Nuevos Archivos
 
-| Archivo | Description |
+| Archivo | Descripción |
 |---------|-------------|
 | `docker-compose.yml` | Full-stack deployment |
 | `start_demo.sh` | Script lanzador |
@@ -528,12 +528,12 @@ El Eón Project ahora integra sabiduría antigua como metáforas computacionales
 
 - **Métricas de Energía ESP32**
   - Nuevo `EnergyMetrics.ino`: Medición de consumo
-  - Comparison 1-Bit vs JSON (2.6x ahorro energético)
+  - Comparativa 1-Bit vs JSON (2.6x ahorro energético)
   - Estimación de vida de batería
   - Lectura de voltaje de batería LiPo
   - Soporte para deep sleep
 
-- **Documentation Hardware**
+- **Documentación Hardware**
   - Nuevo `phase4-hardware/README.md` completo
   - Tablas de conexiones para TTGO/Heltec
   - Procedimiento de test de campo
@@ -553,13 +553,13 @@ El Eón Project ahora integra sabiduría antigua como metáforas computacionales
 - `phase6-collective/ws_bridge.py` - WebSocket-MQTT bridge
 - `phase4-hardware/esp32/examples/LoRa_RangeTest.ino` - Test de alcance
 - `phase4-hardware/esp32/examples/EnergyMetrics.ino` - Métricas de energía
-- `phase4-hardware/README.md` - Documentation completa de hardware
+- `phase4-hardware/README.md` - Documentación completa de hardware
 
 ---
 
 ## [1.7.0] - 2025-12-09
 
-### Collective Mind - Transmisión Real (NUEVO)
+### Mente Colectiva - Transmisión Real (NUEVO)
 
 - **Cliente MQTT Real**
   - Nuevo `mqtt_client.py`: Cliente completo con paho-mqtt
@@ -581,7 +581,7 @@ El Eón Project ahora integra sabiduría antigua como metáforas computacionales
   - Nuevo `dashboard.html`: Interfaz web completa
   - Visualización de topología de red en canvas
   - Lista de nodos con estado en tiempo real
-  - Métricas del Protocolo 1-Bit (compression, precisión, latencia)
+  - Métricas del Protocolo 1-Bit (compresión, precisión, latencia)
   - Log de sincronización en vivo
   - Animaciones de transmisión entre nodos
   - Diseño responsive y moderno
@@ -640,28 +640,28 @@ Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
   - Nuevos datasets: 'robotica' y 'programacion'
   - Accuracy: 99.9-100% en todos los datasets
 
-- **Memory Factual con Timestamps**
+- **Memoria Factual con Timestamps**
   - Sistema para resolver ambigüedades temporales
   - Ejemplo: "El motor falló" → "El motor se recuperó" → "¿Estado del motor?" = última info
   - Historial de 10 actualizaciones por topic
   - Timestamps con "hace X segundos/minutos"
 
-- **Lightweight RAG**
+- **RAG Ligero**
   - Búsqueda automática en `/docs/` para responder preguntas
   - Keywords: protocolo, 1-bit, arquitectura, whitepaper, mqtt
   - Cache de 5 minutos para eficiencia
   - Extracción de contexto relevante (hasta 500 chars)
 
 - **Protocolo 1-Bit - Implementación Completa**
-  - `export_weights_1bit()`: Cuantización con 9-17x compression
+  - `export_weights_1bit()`: Cuantización con 9-17x compresión
   - `import_weights_1bit()`: Reconstrucción y fusión de conocimiento
   - Demo completo de transmisión entre nodos
-  - Documentation completa en `docs/PROTOCOL.md`
+  - Documentación completa en `docs/PROTOCOL.md`
 
 ### Nuevos Archivos
 
 - `phase2-core/libAeon/continuous_demo.c` - Demo de alimentación continua
-- `docs/PROTOCOL.md` - Documentation del Protocolo 1-Bit
+- `docs/PROTOCOL.md` - Documentación del Protocolo 1-Bit
 
 ### Métodos Internos Añadidos
 
@@ -677,11 +677,11 @@ Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
 
 ### Chat Conversacional Avanzado (NUEVO)
 
-- **Sequence Prediction Numéricas**: Detección automática de patrones (aritmético, geométrico, Fibonacci, potencias, cuadrático)
+- **Predicción de Secuencias Numéricas**: Detección automática de patrones (aritmético, geométrico, Fibonacci, potencias, cuadrático)
   - Ejemplo: "4, 8, 16, 32" → "El siguiente valor es: **64**"
   - Soporte para múltiples valores: "siguientes 3 números: 4, 8, 16, 32" → "**64, 128, 256**"
   
-- **Memory Personal**: Almacena y recuerda hechos sobre el usuario
+- **Memoria Personal**: Almacena y recuerda hechos sobre el usuario
   - "Mi color favorito es ultramarino" → "Guardaré que color favorito: ultramarino 🧠"
   - "¿Cuál es mi color favorito?" → "Tu color favorito es ultramarino"
   
@@ -717,7 +717,7 @@ Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
 
 - `_predict_sequence()`: Predicción de patrones numéricos con soporte multi-valor
 - `_store_personal_fact()`: Almacenamiento de hechos personales
-- `_recall_personal_fact()`: Recuperación of memory personal
+- `_recall_personal_fact()`: Recuperación de memoria personal
 - `_get_knowledge()`: Acceso a base de conocimiento técnico
 - `_query_sensor()`: Simulación de consultas a sensores
 - `_complete_text()`: Autocompletado contextual
@@ -748,7 +748,7 @@ Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
 
 - `POST /api/feedback` - Enviar feedback 👍/👎 sobre respuestas
 - `GET /api/learning-stats` - Estadísticas de aprendizaje
-- `GET|DELETE /api/memory` - Gestión of memory a largo plazo
+- `GET|DELETE /api/memory` - Gestión de memoria a largo plazo
 - `POST /api/consolidate` - Forzar consolidación manual
 
 ### Panel de Aprendizaje (Frontend)
@@ -757,7 +757,7 @@ Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
 - Lista de usuarios conocidos
 - Lista de hechos aprendidos
 - Estadísticas de feedback
-- Botones de consolidación y limpieza of memory
+- Botones de consolidación y limpieza de memoria
 - Botones 👍/👎 en cada mensaje de IA
 
 ### Persistencia
@@ -770,11 +770,11 @@ Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
 - Nuevo archivo `benchmark_full.py` en raíz
 - 8 módulos de prueba (ESN, cuantización, plasticidad, TinyLM, aprendizaje, memoria, imágenes, sistema)
 - Modos `--quick` y `--export`
-- Results verificados: 8-bit retiene 99.6% precisión
+- Resultados verificados: 8-bit retiene 99.6% precisión
 
 ## [1.3.0] - 2024-12-08
 
-### Sistema de Memory y Estadísticas
+### Sistema de Memoria y Estadísticas
 
 - **Historial Persistente**: Conversaciones guardadas en `chat_history.json`
 - **Estadísticas de Uso**: Tracking de mensajes, imágenes, archivos procesados
@@ -806,13 +806,13 @@ Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
 
 ### Integración TinyLMv2 en Chat
 
-- **Model de Lenguaje**: TinyLMv2 integrado para respuestas generativas
+- **Modelo de Lenguaje**: TinyLMv2 integrado para respuestas generativas
 - **Entrenamiento Automático**: Se entrena al iniciar con textos filosóficos
 - **Respuestas Híbridas**: Intenciones conocidas usan respuestas predefinidas, mensajes genéricos usan el LM
 - **Nuevo Endpoint**: `/api/lm-status` para ver estado del modelo de lenguaje
 - **Configuración Dinámica**: La temperatura y max_tokens afectan la generación
 
-### Estadísticas del Model
+### Estadísticas del Modelo
 
 - 256 neuronas en el reservorio
 - 102 palabras en vocabulario
@@ -855,11 +855,11 @@ Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
 ### Fase 2: Núcleo C
 
 - **Benchmarks de Energía**: Eón (0.0045 μJ) vs TinyML (0.0015 μJ) en Cortex-M4.
-- **Documentation Completa**: Arquitectura, benchmarks, y guías de uso actualizadas.
+- **Documentación Completa**: Arquitectura, benchmarks, y guías de uso actualizadas.
 
 ### Fase 2: Núcleo C
 
-- libAeon: 1.3KB of memory
+- libAeon: 1.3KB de memoria
 - Aritmética de punto fijo Q8.8
 - Entrenamiento Gauss-Jordan
 - Persistencia binaria
@@ -890,7 +890,7 @@ Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
 - Detector de anomalías
 - Dashboard (pendiente)
 
-### Fase 6: Collective Mind
+### Fase 6: Mente Colectiva
 
 - **Intercambio 1-Bit**: Protocolo MQTT ultraligero para ESP32 (`phase6-collective/src`).
 - Compresión 17x (Float32 -> 1-Bit) para transmisión de pesos.
@@ -908,7 +908,7 @@ Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
 ### Fase 8: Paper Académico
 
 - Template LaTeX completo
-- Comparisons formales
+- Comparativas formales
 - Listo para arXiv
 
 ---

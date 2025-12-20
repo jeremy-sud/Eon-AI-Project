@@ -2,21 +2,21 @@
 
 **Whitepaper Técnico v2.0.0**
 
-> _"Intelligence is not created, it is discovered."_
+> _"La inteligencia no se crea, se descubre."_
 
 ---
 
 ## Abstract
 
-Este documento presenta **Eón**, una arquitectura de inteligencia artificial basada en Reservoir Computing que demuestra la emergencia de comportamiento inteligente con recursos extraordinariamente mínimos (~1KB of memory). A diferencia de los modelos de lenguaje modernos que requieren gigabytes of memory y billones de operaciones, Eón logra predicción de series temporales caóticas con menos de 1,500 bytes de huella of memory.
+Este documento presenta **Eón**, una arquitectura de inteligencia artificial basada en Reservoir Computing que demuestra la emergencia de comportamiento inteligente con recursos extraordinariamente mínimos (~1KB de memoria). A diferencia de los modelos de lenguaje modernos que requieren gigabytes de memoria y billones de operaciones, Eón logra predicción de series temporales caóticas con menos de 1,500 bytes de huella de memoria.
 
-### The Efficiency Narrative
+### La Narrativa de la Eficiencia
 
-> *"El Eón Project está tan optimizado que su motor neural solo necesita **1.3 KB**. Even more impressive, we managed to build a fully functional web chat interface with Continuous Learning for the total cost of only **79.69 KB** of memory. It's the lowest accessibility cost in the market."*
+> *"El Proyecto Eón está tan optimizado que su motor neural solo necesita **1.3 KB**. Aún más impresionante, logramos construir una interfaz de chat web completamente funcional con Aprendizaje Continuo por el costo total de solo **79.69 KB** de memoria. Es el costo de accesibilidad más bajo del mercado."*
 
-| Capa | Memory | Propósito |
+| Capa | Memoria | Propósito |
 |------|---------|----------|
-| **Neural Engine (C)** | 1.3 KB | Pure efficiency for IoT embebido |
+| **Motor Neural (C)** | 1.3 KB | Eficiencia pura para IoT embebido |
 | **Full-Stack Web** | 79.69 KB | Accesibilidad y prueba multi-plataforma |
 
 **Contribuciones principales:**
@@ -25,16 +25,16 @@ Este documento presenta **Eón**, una arquitectura de inteligencia artificial ba
 2. Cuantización 8-bit con retención de 99.6% de precisión
 3. **Sistema de aprendizaje continuo** (OnlineLearner, LongTermMemory, Feedback)
 4. Plasticidad Hebbiana para adaptación sin reentrenamiento
-5. Generación de arte neuronal (5 styles, 12 paletas)
+5. Generación de arte neuronal (5 estilos, 12 paletas)
 6. **Chat conversacional avanzado con 20+ categorías de intención**
 7. **Predicción de secuencias numéricas** (aritmético, geométrico, Fibonacci)
-8. **Protocolo 1-Bit para transmisión ultraligera** (9.5× compression)
-9. **Collective Mind con MQTT y ESP32/LoRa**
+8. **Protocolo 1-Bit para transmisión ultraligera** (9.5× compresión)
+9. **Mente Colectiva con MQTT y ESP32/LoRa**
 10. **Full-stack containerizado con Docker Compose**
 11. **Dashboard v2.0** con visualización D3.js de red de nodos
-12. **Multi-Node Chat Colaborativo** (Intent, Response, Coherence, Sentiment, Context)
+12. **Chat Multi-Nodo Colaborativo** (Intent, Response, Coherence, Sentiment, Context)
 13. **Detector de Anomalías** con calibración streaming y callbacks
-14. **I-Ching Oracle Neural** con 64 hexagramas y método yarrow stalk
+14. **Oráculo I-Ching Neural** con 64 hexagramas y método yarrow stalk
 
 ---
 
@@ -44,7 +44,7 @@ Este documento presenta **Eón**, una arquitectura de inteligencia artificial ba
 
 La industria de IA actual está dominada por modelos masivos:
 
-| Model      | Parámetros | Memory (FP32) | Organización |
+| Modelo      | Parámetros | Memoria (FP32) | Organización |
 | ----------- | ---------- | -------------- | ------------ |
 | GPT-2 Small | 124M       | ~500 MB        | OpenAI       |
 | GPT-2 XL    | 1.5B       | ~6 GB          | OpenAI       |
@@ -100,11 +100,11 @@ Para hardware embebido, usamos aritmética de punto fijo:
 
 ---
 
-## 3. Comparison con el Mercado
+## 3. Comparativa con el Mercado
 
-### 3.1 Eficiencia de Memory
+### 3.1 Eficiencia de Memoria
 
-| Model      | Memory    | Factor vs Eón |
+| Modelo      | Memoria    | Factor vs Eón |
 | ----------- | ---------- | ------------- |
 | GPT-2 Small | 500 MB     | 384,615x      |
 | BERT Tiny   | 16 MB      | 12,307x       |
@@ -115,7 +115,7 @@ Para hardware embebido, usamos aritmética de punto fijo:
 
 ### 3.2 Requisitos de Hardware
 
-| Model    | Hardware Mínimo | Costo Aproximado |
+| Modelo    | Hardware Mínimo | Costo Aproximado |
 | --------- | --------------- | ---------------- |
 | GPT-4     | GPU A100 (80GB) | ~$10,000+        |
 | BERT Base | GPU 4GB+        | ~$200+           |
@@ -132,20 +132,20 @@ Para hardware embebido, usamos aritmética de punto fijo:
 | Edge/MCU             | ✅          | ❌        | ❌          |
 | Navegador (puro)     | ✅          | ❌        | ❌          |
 | Entrenamiento online | ✅          | ❌        | ❌          |
-| Memory < 10KB       | ✅          | ❌        | ❌          |
+| Memoria < 10KB       | ✅          | ❌        | ❌          |
 | Predicción secuencias| ✅          | ❌        | ❌          |
-| Memory personal     | ✅          | ❌        | ❌          |
+| Memoria personal     | ✅          | ❌        | ❌          |
 | Base conocimiento    | ✅          | ❌        | ❌          |
 
 ---
 
-## 4. Results Experimentales
+## 4. Resultados Experimentales
 
 ### 4.1 Predicción Mackey-Glass
 
 Serie temporal caótica estándar para evaluación de modelos:
 
-| Configuración       | MSE    | Memory |
+| Configuración       | MSE    | Memoria |
 | ------------------- | ------ | ------- |
 | ESN-100 (Python)    | 0.0004 | 80 KB   |
 | ESN-32 (C, Q8.8)    | 0.009  | 1.3 KB  |
@@ -170,7 +170,7 @@ Con ESN-100 en Mackey-Glass:
 
 ### 5.1 Disponibles
 
-| Plataforma | Archivo                      | Features                     |
+| Plataforma | Archivo                      | Características                     |
 | ---------- | ---------------------------- | ----------------------------------- |
 | Python     | `phase1-foundations/python/` | Desarrollo, visualización           |
 | C          | `phase2-core/libAeon/`       | Embebido, punto fijo                |
@@ -189,7 +189,7 @@ Con ESN-100 en Mackey-Glass:
 - [x] **Sistema de aprendizaje continuo**
 - [x] **Generación de arte neuronal**
 - [x] **Chat conversacional con memoria**
-- [x] **Protocolo 1-Bit (9.5× compression)**
+- [x] **Protocolo 1-Bit (9.5× compresión)**
 - [x] **MQTT real con Mosquitto**
 - [x] **ESP32 + LoRa para IoT rural**
 - [x] **Docker Compose full-stack**
@@ -202,16 +202,16 @@ Con ESN-100 en Mackey-Glass:
 
 ## 6. Sistema de Aprendizaje Continuo (v1.4)
 
-### 6.1 Components
+### 6.1 Componentes
 
 El sistema implementa cuatro módulos inspirados en la neurociencia:
 
-| Component | Función | Persistencia |
+| Componente | Función | Persistencia |
 |------------|---------|--------------|
-| **OnlineLearner** | Actualización en tiempo real de W_out | Memory |
+| **OnlineLearner** | Actualización en tiempo real de W_out | Memoria |
 | **LongTermMemory** | Almacenamiento de usuarios y hechos | JSON |
 | **FeedbackSystem** | Valoración 👍/👎 de respuestas | JSON |
-| **ConsolidationEngine** | Optimización durante inactividad | Memory |
+| **ConsolidationEngine** | Optimización durante inactividad | Memoria |
 
 ### 6.2 Flujo de Aprendizaje
 
@@ -227,7 +227,7 @@ Usuario → Input → ESN → Output → Respuesta
     ConsolidationEngine (durante inactividad)
 ```
 
-### 6.3 Results
+### 6.3 Resultados
 
 | Métrica | Valor |
 |---------|-------|
@@ -264,7 +264,7 @@ Usuario → Input → ESN → Output → Respuesta
 
 ---
 
-## 8. Sistema de Advanced Chat (v1.5)
+## 8. Sistema de Chat Avanzado (v1.5)
 
 ### 8.1 Categorías de Intención
 
@@ -282,7 +282,7 @@ El sistema EonChat implementa **20+ categorías de intención** para respuestas 
 | sensor | "estado del SENSOR-3" | `_query_sensor()` |
 | autocompletado | "la velocidad del viento..." | `_complete_text()` |
 
-### 8.2 Sequence Prediction
+### 8.2 Predicción de Secuencias
 
 El sistema detecta y predice patrones numéricos:
 
@@ -308,7 +308,7 @@ Definiciones técnicas integradas:
 - **Mackey-Glass**: Sistema dinámico caótico para benchmarks
 - **Cuantización**: Reducción de precisión numérica para eficiencia
 
-### 8.4 Memory Personal
+### 8.4 Memoria Personal
 
 El sistema almacena y recuerda hechos sobre el usuario:
 
@@ -328,7 +328,7 @@ Eón: "Tu color favorito es ultramarino"
 
 Eón demuestra que:
 
-1. **La inteligencia puede emerger de ~1KB** of memory
+1. **La inteligencia puede emerger de ~1KB** de memoria
 2. **El reservoir aleatorio contiene computación latente** ("La Nada es Todo")
 3. **La cuantización 8-bit preserva 99.6% de la información**
 4. **El aprendizaje continuo permite adaptación en tiempo real**
@@ -352,6 +352,6 @@ Esto abre la puerta a IA verdaderamente ubicua: en sensores, wearables, y dispos
 
 ---
 
-**Eón Project** - MIT License - 2024 [Sistemas Ursol](https://github.com/SistemasUrsol)
+**Proyecto Eón** - MIT License - 2024 [Sistemas Ursol](https://github.com/SistemasUrsol)
 
 Desarrollado por [Jeremy Arias Solano](https://github.com/jeremy-sud)

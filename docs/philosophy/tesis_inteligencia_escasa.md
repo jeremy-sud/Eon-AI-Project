@@ -41,7 +41,7 @@ El Reservoir Computing demuestra que:
 
 No necesitamos "entrenar" la complejidad. Esta **ya existe** en la dinámica natural del sistema. Solo necesitamos aprender a **leerla**.
 
-This is "La Nada es Todo": el reservoir no entrenado contiene toda la computación necesaria.
+Esto es "La Nada es Todo": el reservoir no entrenado contiene toda la computación necesaria.
 
 ---
 
@@ -59,4 +59,4 @@ La reducción extrema de precisión (8-bit → 4-bit → binario) demuestra que:
 
 La inteligencia escasa no es una versión "pobre" o limitada de la inteligencia. Al contrario, es la **forma natural y más eficiente** de inteligencia, aquella que ha sido forjada y seleccionada por miles de millones de años de evolución en entornos de recursos finitos. Aquí, **el tamaño no importa**; lo que prevalece es la capacidad de operar con máxima eficiencia y adaptabilidad.
 
-Esta tesis postula que la verdadera inteligencia emerge de la optimización y la ingeniosidad frente a la restricción, no de la mera acumulación de recursos. El Eón Project busca redescubrir y aplicar estos principios fundamentales, olvidados en la era de la fuerza bruta computacional, para construir sistemas verdaderamente inteligentes y sostenibles.
+Esta tesis postula que la verdadera inteligencia emerge de la optimización y la ingeniosidad frente a la restricción, no de la mera acumulación de recursos. El Proyecto Eón busca redescubrir y aplicar estos principios fundamentales, olvidados en la era de la fuerza bruta computacional, para construir sistemas verdaderamente inteligentes y sostenibles.

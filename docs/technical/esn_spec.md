@@ -46,7 +46,7 @@ El ESN es un tipo de Reservoir Computing que utiliza una red recurrente aleatori
 
 ## Parámetros
 
-| Parámetro         | Tipo  | Por Defecto | Description                   |
+| Parámetro         | Tipo  | Por Defecto | Descripción                   |
 | ----------------- | ----- | ----------- | ----------------------------- |
 | `n_inputs`        | int   | 1           | Dimensión de entrada          |
 | `n_reservoir`     | int   | 100         | Neuronas en el reservoir      |
@@ -134,7 +134,7 @@ esn.adapt_online(X_new_data)
 
 ## Rendimiento Esperado
 
-| Configuración       | MSE (Mackey-Glass) | Memory |
+| Configuración       | MSE (Mackey-Glass) | Memoria |
 | ------------------- | ------------------ | ------- |
 | ESN-100             | ~0.001             | ~80 KB  |
 | ESN-100 (8-bit)     | ~0.001             | ~10 KB  |

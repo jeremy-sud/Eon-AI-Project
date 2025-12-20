@@ -5,7 +5,7 @@
 
 ## Introducción
 
-La **Gematria Algorítmica** representa una innovación radical en procesamiento de lenguaje natural: en lugar de agrupar tokens por similitud semántica (como hacen los embeddings tradicionales), los agrupa por **resonancia mathematical**.
+La **Gematria Algorítmica** representa una innovación radical en procesamiento de lenguaje natural: en lugar de agrupar tokens por similitud semántica (como hacen los embeddings tradicionales), los agrupa por **resonancia matemática**.
 
 ## Concepto Fundamental
 
@@ -22,7 +22,7 @@ Un hasher gemátrico es una función de hash personalizada que asigna tokens a "
 | Aspecto | Embeddings Tradicionales | Gematria |
 |---------|-------------------------|----------|
 | Base | Co-ocurrencia estadística | Propiedades numéricas intrínsecas |
-| "love" ≈ "heart" | Sí (semántica) | Solo si resuenan mathematicalmente |
+| "love" ≈ "heart" | Sí (semántica) | Solo si resuenan matemáticamente |
 | "love" ≈ "438" | No | Potencialmente (mismo bucket) |
 | Determinismo | Depende de corpus | Completamente determinista |
 
@@ -87,7 +87,7 @@ output = model.generate("Do what thou wilt", max_tokens=20)
 
 El sistema usa reducción numérica tradicional (numerología) para asignar propiedades adicionales:
 
-| Dígito | Sephirah | Meaning | Forma |
+| Dígito | Sephirah | Significado | Forma |
 |--------|----------|-------------|-------|
 | 1 | Kether | Unidad | Punto |
 | 2 | Chokmah | Dualidad | Línea |
@@ -132,11 +132,11 @@ for props in analysis:
 
 Tokens que normalmente no estarían relacionados pueden agruparse si comparten propiedades numéricas. Esto puede revelar patrones ocultos en el texto.
 
-### 3. Model de Lenguaje Esotérico
+### 3. Modelo de Lenguaje Esotérico
 
 Un LM entrenado con Gematria aprende patrones basados en resonancia numérica, no solo estadística. Puede generar texto que "suena" diferente a nivel matemático.
 
-## Comparación de Results
+## Comparación de Resultados
 
 ### Ejemplo: Análisis de "Love is the law, love under will"
 
@@ -159,7 +159,7 @@ Nota cómo "love" y "the" comparten el mismo dígito sagrado (6 = Armonía), mie
 
 ## Conclusión
 
-La Gematria Algorítmica ofrece una perspectiva única sobre el procesamiento de lenguaje: en lugar de aprender de la estadística del corpus, deriva significado de propiedades mathematicals intrínsecas de los tokens. Esto puede revelar patrones que los métodos tradicionales pasan por alto.
+La Gematria Algorítmica ofrece una perspectiva única sobre el procesamiento de lenguaje: en lugar de aprender de la estadística del corpus, deriva significado de propiedades matemáticas intrínsecas de los tokens. Esto puede revelar patrones que los métodos tradicionales pasan por alto.
 
 ---
 

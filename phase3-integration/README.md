@@ -27,7 +27,7 @@ const result = aeon.predict([0.5]);
 
 ## Eón Dream (Demo)
 
-Una experiencia de "Generative Art" que visualiza el cerebro de la IA.
+Una experiencia de "Arte Generativo" que visualiza el cerebro de la IA.
 
 1.  Abrir `demos/dream.html` en un navegador.
 2.  Escribir texto para "alimentar" pensamientos al reservoir.

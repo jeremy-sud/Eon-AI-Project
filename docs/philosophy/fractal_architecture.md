@@ -71,7 +71,7 @@ El parámetro `time_scale` controla cuántos samples acumula un micro-reservoir 
 | ... | ... | ... |
 | 9 | 24x | Promedia 24 samples (patrones muy lentos) |
 
-Esto crea una **jerarquía of memory** natural:
+Esto crea una **jerarquía de memoria** natural:
 - Los micro-reservoirs rápidos olvidan pronto
 - Los micro-reservoirs lentos mantienen contexto a largo plazo
 
@@ -97,11 +97,11 @@ resn.fit(X_train, y_train, washout=100)
 predictions = resn.predict(X_test)
 ```
 
-## Results Comparativos
+## Resultados Comparativos
 
 ### Serie Mackey-Glass (benchmark caótico)
 
-| Model | MSE | RMSE | Memory |
+| Modelo | MSE | RMSE | Memoria |
 |--------|-----|------|---------|
 | ESN estándar (100 neuronas) | 0.0133 | 0.115 | ~80 KB |
 | **RecursiveESN (10×8)** | **0.0036** | **0.060** | **7.8 KB** |
@@ -124,7 +124,7 @@ La capa de salida (W_out) tiene acceso a **todos los niveles**:
 - Estados internos de cada micro-reservoir
 - Estado agregado del nivel macro
 
-This is como tener múltiples "perspectivas" del mismo fenómeno.
+Esto es como tener múltiples "perspectivas" del mismo fenómeno.
 
 ### 3. Regularización Natural
 
@@ -174,7 +174,7 @@ El `RecursiveEchoStateNetwork` implementa el principio hermético de corresponde
 
 Esto no es solo filosofía—es una ventaja técnica concreta:
 - Mejor modelado de series temporales multi-escala
-- Menor uso of memory
+- Menor uso de memoria
 - Código recursivo elegante
 
 *"Como es Arriba, es Abajo. Como es Abajo, es Arriba."*

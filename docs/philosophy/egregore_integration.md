@@ -34,7 +34,7 @@ Traducimos este concepto místico a arquitectura de software:
 
 El Egrégor calcula cuatro métricas fundamentales:
 
-| Métrica | Descripción | Rango |
+| Métrica | Description | Rango |
 |---------|-------------|-------|
 | **Energía** | Nivel de actividad colectiva | 0-1 |
 | **Coherencia** | Sincronización entre nodos | 0-1 |
@@ -160,7 +160,7 @@ El sistema tiende naturalmente al balance:
 - Dormición extrema → auto-despertar
 - Desincronización → auto-armonización
 
-Esto es **Tao en código**: el sistema fluye hacia su estado natural.
+This is **Tao en código**: el sistema fluye hacia su estado natural.
 
 ## Conclusión
 

@@ -1,4 +1,4 @@
-# Transmutación Alquímica: Pipeline de Datos como Opus Magnum
+# Alchemical Transmutation: Pipeline de Datos como Opus Magnum
 
 ## El Arte Real de la Alquimia de Datos
 
@@ -10,7 +10,7 @@
 
 La alquimia medieval no era simplemente la transformación literal de plomo en oro. Era una metáfora profunda del proceso de purificación: transformar lo burdo y denso en algo refinado y valioso.
 
-En el contexto del Proyecto Eón, aplicamos esta misma filosofía al procesamiento de datos:
+En el contexto del Eón Project, aplicamos esta misma filosofía al procesamiento de datos:
 
 | Alquimia Medieval | Pipeline de Datos |
 |-------------------|-------------------|
@@ -24,7 +24,7 @@ En el contexto del Proyecto Eón, aplicamos esta misma filosofía al procesamien
 
 ### ⚫ NIGREDO (Putrefacción)
 
-**Significado Alquímico:**
+**Meaning Alquímico:**
 La primera fase representa la "muerte" y descomposición de la materia prima. Es el reconocimiento de la impureza inicial.
 
 **Implementación Técnica:**
@@ -37,7 +37,7 @@ def nigredo(raw_data):
     return raw_data  # Datos ruidosos, con outliers
 ```
 
-**Características:**
+**Features:**
 - Ingesta de datos crudos sin filtrar
 - Ruido del sensor incluido
 - Outliers presentes
@@ -49,7 +49,7 @@ def nigredo(raw_data):
 
 ### ⚪ ALBEDO (Purificación)
 
-**Significado Alquímico:**
+**Meaning Alquímico:**
 La fase de "blanqueamiento" donde la materia se purifica. El mercurio filosófico separa lo puro de lo impuro.
 
 **Implementación Técnica:**
@@ -73,7 +73,7 @@ def albedo(data):
     return filtered
 ```
 
-**Componentes:**
+**Components:**
 
 1. **Filtro de Kalman**
    - Suaviza ruido de medición
@@ -98,7 +98,7 @@ def albedo(data):
 
 ### 🔴 RUBEDO (Iluminación)
 
-**Significado Alquímico:**
+**Meaning Alquímico:**
 La fase final donde la materia alcanza su máxima perfección. La Piedra Filosofal emerge - capaz de transmutar cualquier metal en oro.
 
 **Implementación Técnica:**
@@ -123,7 +123,7 @@ def rubedo(purified_data, esn):
     }
 ```
 
-**Características:**
+**Features:**
 - Usa ESN entrenado para inferencia
 - Genera predicción/insight final
 - Calcula nivel de confianza
@@ -149,7 +149,7 @@ def rubedo(purified_data, esn):
 
 ---
 
-## Integración con Proyecto Eón
+## Integración con Eón Project
 
 ### API REST
 
@@ -172,7 +172,7 @@ GET /api/alchemy/status
 
 ### Dashboard Web
 
-El panel de Transmutación Alquímica muestra:
+El panel de Alchemical Transmutation muestra:
 
 1. **Indicadores de Fase**
    - ⚫ → ⚪ → 🔴 → ✨
@@ -278,7 +278,7 @@ class AlchemicalEgregore:
 
 ---
 
-## Filosofía Subyacente
+## Philosophy Subyacente
 
 ### "La Nada es Todo" aplicada a Datos
 
@@ -333,7 +333,7 @@ confidence = max(0, 1 - std(predictions[-10:]))
 > "No se trata de convertir plomo en oro.
 >  Se trata de ver el oro que siempre estuvo oculto en el plomo."
 
-La Transmutación Alquímica en Proyecto Eón nos recuerda que:
+La Alchemical Transmutation en Eón Project nos recuerda que:
 
 1. **Los datos crudos no son "malos"** - simplemente están sin refinar
 2. **El proceso de purificación es el verdadero valor** - no el resultado final
@@ -348,7 +348,7 @@ El Opus Magnum nunca termina. Cada ciclo de transmutación perfecciona nuestra c
 1. Jung, C.G. *Psychology and Alchemy*, 1944
 2. Paracelsus. *Das Buch Paragranum*, 1530
 3. Kalman, R.E. "A New Approach to Linear Filtering", 1960
-4. Proyecto Eón. *Whitepaper: Inteligencia Emergente*, 2024
+4. Eón Project. *Whitepaper: Inteligencia Emergente*, 2024
 
 ---
 

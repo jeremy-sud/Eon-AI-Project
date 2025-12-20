@@ -11,7 +11,7 @@ Esta fase demuestra la utilidad práctica del Motor Eón en escenarios del mundo
 Sistema de detección de arritmias cardíacas que privacidad total (sin nube).
 
 - **Input**: Intervalos RR (latido a latido).
-- **Modelo**: ESN aprende la variabilidad normal del usuario (RSA).
+- **Model**: ESN aprende la variabilidad normal del usuario (RSA).
 - **Resultado**: Detecta anomalías (PVCs, latidos perdidos) con <2KB RAM.
 - **Estado**: Simulación funcional (`simulate_rr.py` + `bio_monitor.c`).
 

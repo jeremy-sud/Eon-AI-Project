@@ -1,55 +1,55 @@
-# Términos del Acuerdo de Royalties - Licencia Comercial de Eón
+# Royalty Agreement Terms - Eón Commercial License
 
-**Versión:** 1.0  
-**Fecha de Vigencia:** [FECHA]  
-**Titular de los Derechos:** [NOMBRE DEL AUTOR/EMPRESA]
+**Version:** 1.0  
+**Effective Date:** [DATE]  
+**Rights Holder:** [AUTHOR/COMPANY NAME]
 
-Este documento describe los términos y condiciones estándar para la opción de Licenciamiento Comercial de Eón, diseñada para entidades que deseen incorporar la tecnología de Eón en productos o servicios propietarios sin adherirse a las obligaciones de copyleft de la licencia AGPLv3.
-
----
-
-## 1. Definición del Royalty
-
-El licenciatario acuerda pagar al Titular de los Derechos un royalty basado en el uso comercial de la tecnología Eón.
-
-*   **Base de Cálculo:** El royalty se calculará sobre el Precio de Venta al Público (PVP) neto de cada unidad vendida o suscripción facturada que incorpore, total o parcialmente, la tecnología licenciada.
-*   **Tarifa Estándar:** [X.X]% (ej. 0.5%) del PVP por unidad/suscripción.
-*   **Pagos Mínimos:** En caso de que el volumen de ventas no alcance un umbral mínimo, se podrá establecer una tarifa fija anual de [CANTIDAD] como compensación mínima.
-*   **Moneda:** Todos los pagos se realizarán en [MONEDA] (ej. USD, EUR).
-
-## 2. Mecanismo de Auditoría
-
-Para garantizar el cumplimiento de los términos de este acuerdo, el Titular de los Derechos se reserva el derecho de auditar los registros financieros del Licenciatario.
-
-*   **Derecho de Auditoría:** El Titular de los Derechos, o un auditor independiente designado por este, tendrá derecho a inspeccionar los libros y registros del Licenciatario relacionados con las ventas del producto licenciado una vez por año calendario.
-*   **Notificación:** La auditoría se notificará con al menos [XX] días de antelación.
-*   **Costos:** Los costos de la auditoría serán asumidos por el Titular de los Derechos, a menos que se descubra una discrepancia en los pagos superior al [X]% en perjuicio del Titular, en cuyo caso el Licenciatario asumirá los costos de la auditoría y pagará la diferencia con un recargo del [X]%.
-
-## 3. Delimitación del Alcance
-
-Esta licencia comercial y los royalties asociados se aplican específicamente a los siguientes componentes del Proyecto Eón:
-
-*   **Componentes Incluidos:**
-    *   Eón Core (Fase 2)
-    *   TinyLM (Fase 7)
-    *   [Otros componentes específicos, ej. Módulos de Plasticidad]
-*   **Exclusiones:**
-    *   Herramientas de benchmarking (Fase 1)
-    *   Documentación pública y whitepapers.
-*   **Derivados:** Cualquier trabajo derivado o modificación realizada sobre los componentes incluidos que sea distribuida comercialmente también está sujeta a estos términos.
-
-## 4. Condiciones de Reporte Anual
-
-El Licenciatario deberá presentar informes periódicos para detallar el uso y las ventas de la tecnología licenciada.
-
-*   **Frecuencia:** Los informes se presentarán anualmente, a más tardar el [DÍA/MES] de cada año (ej. 31 de enero) cubriendo el año fiscal anterior.
-*   **Contenido del Informe:**
-    *   Número total de unidades vendidas o suscripciones activas.
-    *   Ingresos brutos y netos derivados de dichas ventas.
-    *   Cálculo detallado del royalty a pagar.
-    *   Desglose por región o línea de producto (si aplica).
-*   **Confidencialidad:** Toda la información financiera y de ventas proporcionada en estos informes será tratada como estrictamente confidencial por el Titular de los Derechos.
+This document describes the standard terms and conditions for the Commercial Licensing option for Eón, designed for entities that wish to incorporate Eón technology into proprietary products or services without adhering to the copyleft obligations of the AGPLv3 license.
 
 ---
 
-**Nota:** Este documento es una plantilla de términos y no constituye un contrato legal vinculante por sí mismo hasta que sea firmado como parte de un Acuerdo de Licencia Comercial definitivo entre las partes.
+## 1. Royalty Definition
+
+The licensee agrees to pay the Rights Holder a royalty based on the commercial use of Eón technology.
+
+- **Calculation Basis:** The royalty will be calculated on the net Public Sale Price (PSP) of each unit sold or subscription billed that incorporates, in whole or in part, the licensed technology.
+- **Standard Rate:** [X.X]% (e.g. 0.5%) of the PSP per unit/subscription.
+- **Minimum Payments:** In the event that the sales volume does not reach a minimum threshold, an annual flat rate of [AMOUNT] may be established as minimum compensation.
+- **Currency:** All payments will be made in [CURRENCY] (e.g. USD, EUR).
+
+## 2. Audit Mechanism
+
+To ensure compliance with the terms of this agreement, the Rights Holder reserves the right to audit the Licensee's financial records.
+
+- **Audit Right:** The Rights Holder, or an independent auditor designated by the Rights Holder, shall have the right to inspect the Licensee's books and records related to sales of the licensed product once per calendar year.
+- **Notification:** The audit will be notified with at least [XX] days' notice.
+- **Costs:** The costs of the audit will be borne by the Rights Holder, unless a discrepancy in payments exceeding [X]% is discovered to the detriment of the Rights Holder, in which case the Licensee will bear the costs of the audit and pay the difference with a surcharge of [X]%.
+
+## 3. Scope Delimitation
+
+This commercial license and associated royalties apply specifically to the following components of the Eón Project:
+
+- **Included Components:**
+  - Eón Core (Phase 2)
+  - TinyLM (Phase 7)
+  - [Other specific components, e.g. Plasticity Modules]
+- **Exclusions:**
+  - Benchmarking tools (Phase 1)
+  - Public documentation and whitepapers.
+- **Derivatives:** Any derivative work or modification made to the included components that is commercially distributed is also subject to these terms.
+
+## 4. Annual Reporting Conditions
+
+The Licensee must submit periodic reports detailing the use and sales of the licensed technology.
+
+- **Frequency:** Reports will be submitted annually, no later than [DAY/MONTH] of each year (e.g. January 31) covering the previous fiscal year.
+- **Report Content:**
+  - Total number of units sold or active subscriptions.
+  - Gross and net revenue derived from such sales.
+  - Detailed calculation of the royalty payable.
+  - Breakdown by region or product line (if applicable).
+- **Confidentiality:** All financial and sales information provided in these reports will be treated as strictly confidential by the Rights Holder.
+
+---
+
+**Note:** This document is a template of terms and does not constitute a legally binding contract by itself until it is signed as part of a definitive Commercial License Agreement between the parties.

@@ -1,6 +1,6 @@
 # 🏛️ Architecture: The Eon Principle
 
-> "La inteligencia no se crea, se descubre."
+> "Intelligence is not created, it is discovered."
 
 The Eon Project is built on the philosophy that complex behavior can emerge from simple, chaotic dynamical systems when observed correctly.
 
@@ -165,12 +165,12 @@ EonChat implementa **20+ categorías de intención**:
 
 El sistema detecta automáticamente:
 - **Secuencias numéricas**: 3+ números separados por comas
-- **Operaciones matemáticas**: Patrones como "N+N", "N*N"
+- **Operaciones mathematicals**: Patrones como "N+N", "N*N"
 - **Afirmaciones personales**: "mi X favorito es Y"
 
 ## Image Generation
 
-5 estilos disponibles:
+5 styles disponibles:
 - **fractal**: Patrones fractales matemáticos
 - **flow**: Campos de flujo suaves
 - **particles**: Partículas dispersas
@@ -281,7 +281,7 @@ pytest phase1-foundations/python/tests/ -v
 
 ## 🔮 Mystical Architecture Extensions (v1.8.0)
 
-El Proyecto Eón ahora integra conceptos de tradiciones místicas como metáforas computacionales:
+El Eón Project ahora integra conceptos de tradiciones místicas como metáforas computacionales:
 
 ### Gematria Embeddings (Kabbalah)
 
@@ -326,7 +326,7 @@ El Proyecto Eón ahora integra conceptos de tradiciones místicas como metáfora
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### ESN Recursivo Fractal ("Como Arriba, Así Abajo")
+### Recursive ESN Fractal ("As Above, So Below")
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -387,7 +387,7 @@ El Proyecto Eón ahora integra conceptos de tradiciones místicas como metáfora
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Transmutación Alquímica - Pipeline ETL
+### Alchemical Transmutation - ETL Pipeline
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -427,13 +427,13 @@ El Proyecto Eón ahora integra conceptos de tradiciones místicas como metáfora
 | Frontend | `web/static/js/app.js` | ~600 | Interfaz principal |
 | Alchemy Visualizer | `web/static/js/alchemy.js` | ~500 | Visualización alquímica |
 | ESN Core Python | `phase1-foundations/python/esn/esn.py` | ~300 | Echo State Network |
-| Recursive ESN | `phase1-foundations/python/esn/recursive_esn.py` | ~400 | Arquitectura fractal |
+| Recursive ESN | `phase1-foundations/python/esn/recursive_esn.py` | ~400 | Fractal architecture |
 | ESN Core C | `phase2-core/libAeon/libAeon.c` | ~530 | Motor C ultraligero |
-| TinyLMv2 | `phase7-language/tiny_lm_v2.py` | ~380 | Modelo de lenguaje |
+| TinyLMv2 | `phase7-language/tiny_lm_v2.py` | ~380 | Model de lenguaje |
 | Gematria | `phase1-foundations/python/plasticity/gematria.py` | ~600 | Embeddings cabalísticos |
 | Egregore | `phase1-foundations/python/plasticity/egregore.py` | ~700 | Mente colectiva |
 | Tzimtzum | `phase1-foundations/python/plasticity/tzimtzum.py` | ~800 | Poda dinámica |
-| Alchemy | `phase1-foundations/python/core/alchemy.py` | ~750 | Pipeline ETL místico |
+| Alchemy | `phase1-foundations/python/core/alchemy.py` | ~750 | ETL Pipeline místico |
 | **Anomaly Detector** | `phase1-foundations/python/core/anomaly_detector.py` | ~500 | Detección streaming |
 | **I-Ching Oracle** | `phase1-foundations/python/core/iching_oracle.py` | ~600 | Oráculo neural |
 | **Collaborative Chat** | `phase1-foundations/python/core/collaborative_chat.py` | ~700 | Chat multi-nodo |
@@ -480,7 +480,7 @@ El Proyecto Eón ahora integra conceptos de tradiciones místicas como metáfora
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Chat Multi-Nodo Colaborativo
+### Multi-Node Chat Colaborativo
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -550,7 +550,7 @@ El Proyecto Eón ahora integra conceptos de tradiciones místicas como metáfora
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Oráculo I-Ching Neural
+### I-Ching Oracle Neural
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐

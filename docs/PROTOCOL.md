@@ -25,7 +25,7 @@ En un ESN (Echo State Network), los pesos de salida $W_{out}$ son los únicos qu
 
 *Incluye header de 10 bytes*
 
-## Estructura del Paquete
+## Structure del Paquete
 
 ```
 Offset  Campo      Tipo        Descripción
@@ -137,7 +137,7 @@ for (int i = 0; i < n_weights; i++) {
 
 ### Bluetooth LE
 
-- **Característica**: Custom GATT
+- **Feature**: Custom GATT
 - **MTU**: Negociar 200+ bytes para eficiencia
 
 ## Seguridad
@@ -209,5 +209,5 @@ Ver `phase6-collective/collective_mind.py` para el wrapper Python.
 
 ---
 
-*Proyecto Eón - Sistemas Ursol*
-*"La inteligencia no se crea, se descubre."*
+*Eón Project - Sistemas Ursol*
+*"Intelligence is not created, it is discovered."*

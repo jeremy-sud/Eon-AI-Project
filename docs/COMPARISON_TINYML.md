@@ -1,8 +1,8 @@
-# Comparativa: Eón vs Frameworks TinyML
+# Comparison: Eón vs Frameworks TinyML
 
 **Versión:** 2.0  
 **Fecha:** 2025-12-10  
-**Autor:** Proyecto Eón
+**Autor:** Eón Project
 
 ---
 
@@ -18,17 +18,17 @@ Este documento compara Eón con los principales frameworks de Machine Learning p
 
 ### El Estándar del Mercado (TensorFlow Lite Micro, Edge Impulse)
 
-**Filosofía: "Arquitectura de Fuerza"**
+**Philosophy: "Arquitectura de Fuerza"**
 
 Se basa en Redes Neuronales Profundas (DNN/CNN). Tienes que entrenar millones de pesos. Si quieres que aprenda algo nuevo, tienes que "castigar" a la red (Backpropagation) hasta que obedezca.
 
 - **Costo**: Requiere re-entrenamiento pesado
-- **Limitación**: En un microcontrolador, solo puedes ejecutar (inferencia), casi nunca aprender (entrenamiento) porque es demasiado costoso matemáticamente
+- **Limitación**: En un microcontrolador, solo puedes ejecutar (inferencia), casi nunca aprender (entrenamiento) porque es demasiado costoso mathematicalmente
 - **Resultado**: Es **estático**. Lo que aprendió en la fábrica es lo que sabe para siempre
 
 ### Eón AI (Project Eon)
 
-**Filosofía: "Arquitectura de Flujo"**
+**Philosophy: "Arquitectura de Flujo"**
 
 Usa Reservoir Computing (RC) y Echo State Networks (ESN).
 
@@ -43,23 +43,23 @@ Usa Reservoir Computing (RC) y Echo State Networks (ESN).
 
 ## Frameworks Comparados
 
-| Framework | Desarrollador | Tipo | Licencia |
+| Framework | Desarrollador | Tipo | License |
 |-----------|---------------|------|----------|
 | **Eón** | Sistemas Ursol | ESN/Reservoir Computing | MIT |
 | TensorFlow Lite Micro | Google | CNN/MLP Cuantizados | Apache 2.0 |
 | Edge Impulse | Edge Impulse Inc. | AutoML + Exportación | Freemium |
 | CMSIS-NN | ARM | Kernels Optimizados | Apache 2.0 |
 | microTVM | Apache TVM | Compilador ML | Apache 2.0 |
-| STM32Cube.AI | STMicroelectronics | Conversión Modelos | Propietaria |
+| STM32Cube.AI | STMicroelectronics | Conversión Models | Propietaria |
 | NNoM | Majianjia | Redes Neuronales MCU | Apache 2.0 |
 
 ---
 
-## Comparativa Detallada
+## Comparison Detallada
 
-### 1. Memoria RAM
+### 1. Memory RAM
 
-| Framework | RAM Mínima | Modelo Típico | Notas |
+| Framework | RAM Mínima | Model Típico | Notas |
 |-----------|------------|---------------|-------|
 | **Eón** | **1.3 KB** | 1.3-20 KB | Reservoir compacto |
 | TFLite Micro | 16-64 KB | 50-200 KB | Requiere arena de tensores |
@@ -69,9 +69,9 @@ Usa Reservoir Computing (RC) y Echo State Networks (ESN).
 
 **🏆 Eón Gana:** Menor footprint de RAM gracias a que el reservoir NO requiere almacenar activaciones intermedias.
 
-### 2. Memoria Flash
+### 2. Memory Flash
 
-| Framework | Flash Mínima | Modelo Típico | Notas |
+| Framework | Flash Mínima | Model Típico | Notas |
 |-----------|--------------|---------------|-------|
 | **Eón** | **4 KB** | 4-15 KB | Solo W_out entrenado |
 | TFLite Micro | 50-100 KB | 100-500 KB | Intérprete + modelo |
@@ -83,7 +83,7 @@ Usa Reservoir Computing (RC) y Echo State Networks (ESN).
 
 ### 3. Capacidad Temporal (Series de Tiempo)
 
-| Framework | Memoria Temporal | Tipo | Notas |
+| Framework | Memory Temporal | Tipo | Notas |
 |-----------|------------------|------|-------|
 | **Eón** | **Inherente** | Recurrente Natural | El reservoir mantiene estado |
 | TFLite Micro | Manual (LSTM/GRU) | Pesos explícitos | 10-100x más parámetros |
@@ -109,9 +109,9 @@ Usa Reservoir Computing (RC) y Echo State Networks (ESN).
 | Framework | Aprende Nuevos Datos | Olvida Catastrófico | Adaptación |
 |-----------|---------------------|---------------------|------------|
 | **Eón** | **SÍ** | **NO** (Hebbiano) | Tiempo Real |
-| TFLite Micro | NO | N/A | Modelo fijo |
+| TFLite Micro | NO | N/A | Model fijo |
 | Edge Impulse | NO | N/A | Re-entrenamiento cloud |
-| Todos los demás | NO | N/A | Modelo estático |
+| Todos los demás | NO | N/A | Model estático |
 
 **🏆 Eón Gana:** Plasticidad Hebbiana permite adaptación sin olvido catastrófico.
 
@@ -152,13 +152,13 @@ Usa Reservoir Computing (RC) y Echo State Networks (ESN).
 
 ---
 
-## Comparativa de "Hierro": Consumo y Recursos
+## Comparison de "Hierro": Consumo y Recursos
 
 Aquí es donde Eón humilla a la competencia en términos de eficiencia bruta.
 
 | Métrica | Eón AI (Reservoir) | TensorFlow Lite Micro | Neuton.AI / Edge Impulse |
 |---------|--------------------|-----------------------|--------------------------|
-| **Memoria RAM Mínima** | **~1.3 KB - 2 KB** | ~20 KB - 50 KB (mínimo viable) | ~5 KB - 10 KB (modelos ultra optimizados) |
+| **Memory RAM Mínima** | **~1.3 KB - 2 KB** | ~20 KB - 50 KB (mínimo viable) | ~5 KB - 10 KB (modelos ultra optimizados) |
 | **Flash (Almacenamiento)** | **< 10 KB** | > 100 KB (librería + modelo) | ~20 KB - 50 KB |
 | **Entrenamiento** | **En el Chip (ms)** | En la Nube/PC (horas) | En la Nube (min/horas) |
 | **Matemática** | Simple (Sumas/Mult) | Compleja (Convoluciones) | Optimizada pero densa |
@@ -172,7 +172,7 @@ Aquí es donde Eón humilla a la competencia en términos de eficiencia bruta.
 
 ## La "Falacia" de la IA Generativa vs. TinyLM
 
-El proyecto Eón incluye TinyLM (Modelos de Lenguaje Pequeños - Fase 7). Comparemos con la realidad del mercado.
+El proyecto Eón incluye TinyLM (Models de Lenguaje Pequeños - Fase 7). Comparemos con la realidad del mercado.
 
 ### La Mentira del Mercado (Llama 3, Gemma, Phi-3)
 
@@ -186,7 +186,7 @@ Te dicen que son modelos "pequeños" (Small Language Models).
 
 Eón implementa procesamiento de lenguaje a nivel de byte/palabra usando dinámicas recurrentes.
 
-**Comparativa:** Se parece más a las antiguas cadenas de Markov o RNNs (Redes Neuronales Recurrentes) pero dopadas con la memoria del Reservoir.
+**Comparison:** Se parece más a las antiguas cadenas de Markov o RNNs (Redes Neuronales Recurrentes) pero dopadas con la memoria del Reservoir.
 
 | Aspecto | LLMs "Pequeños" | TinyLM (Eón) |
 |---------|-----------------|--------------|
@@ -218,13 +218,13 @@ Es **Determinista**.
 Es **Estocástico/Emergente**.
 - El código genera un "cerebro" aleatorio (`GENESIS.json`)
 - Tú no sabes qué neurona hace qué
-- Confías en que la complejidad matemática del caos es suficiente para resolver el problema
+- Confías en que la complejidad mathematical del caos es suficiente para resolver el problema
 
 **Perspectiva Esotérica:** Eón trata al microcontrolador como un oráculo. Le das datos y esperas que el "ecosistema" interno se estabilice en una respuesta correcta. Es más parecido a **cultivar un jardín** que a **construir un edificio**.
 
 ---
 
-## Swarm Intelligence: Mente Colectiva (Fase 6)
+## Swarm Intelligence: Collective Mind (Fase 6)
 
 La mayoría de TinyMLs son solitarios. Un sensor Bosch BME688 con IA detecta gases, pero no habla con el sensor de la otra habitación para llegar a una conclusión conjunta.
 
@@ -232,7 +232,7 @@ La mayoría de TinyMLs son solitarios. Un sensor Bosch BME688 con IA detecta gas
 
 Diseñado nativamente para ser una **Mente Colmena**.
 
-| Característica | TinyML Tradicional | Eón Colectivo |
+| Feature | TinyML Tradicional | Eón Colectivo |
 |----------------|-------------------|---------------|
 | Comunicación | Aislado | MQTT/WebSocket nativo |
 | Inferencia | Individual | **Distribuida** |
@@ -249,7 +249,7 @@ Diseñado nativamente para ser una **Mente Colmena**.
 
 ## Tabla Resumen
 
-| Característica | Eón | TFLite Micro | Edge Impulse | CMSIS-NN |
+| Feature | Eón | TFLite Micro | Edge Impulse | CMSIS-NN |
 |----------------|-----|--------------|--------------|----------|
 | RAM Mínima | **1.3 KB** | 16 KB | 8 KB | 4 KB |
 | Flash Mínima | **4 KB** | 50 KB | 20 KB | 5 KB |
@@ -258,7 +258,7 @@ Diseñado nativamente para ser una **Mente Colmena**.
 | Aprendizaje Continuo | **✅** | ❌ | ❌ | ❌ |
 | Implementación Simple | **✅** | ❌ | ❌ | ⚠️ |
 | Ecosistema Grande | ❌ | **✅** | **✅** | ⚠️ |
-| Documentación | ⚠️ | **✅** | **✅** | ⚠️ |
+| Documentation | ⚠️ | **✅** | **✅** | ⚠️ |
 
 ---
 
@@ -371,4 +371,4 @@ Para casos donde tienes modelos CNN pre-entrenados y suficiente memoria, los fra
 
 ---
 
-*Documento generado por Proyecto Eón v1.9.2*
+*Documento generado por Eón Project v1.9.2*

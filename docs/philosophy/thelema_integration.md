@@ -9,7 +9,7 @@ El **Principio de Voluntad Verdadera** (Thelema) establece que cada individuo (o
 
 ### Aplicación a Sistemas Distribuidos
 
-En el contexto de la **Mente Colectiva** de Eón (Fase 6), este principio se traduce en:
+En el contexto de la **Collective Mind** de Eón (Fase 6), este principio se traduce en:
 
 1. **Autonomía local**: Cada nodo IoT tiene derecho a rechazar tareas que no se alinean con su especialización
 2. **Eficiencia emergente**: La eficiencia del sistema emerge naturalmente cuando cada nodo hace "lo que nació para hacer"
@@ -17,7 +17,7 @@ En el contexto de la **Mente Colectiva** de Eón (Fase 6), este principio se tra
 
 ## Arquitectura
 
-### Componentes
+### Components
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -45,7 +45,7 @@ En el contexto de la **Mente Colectiva** de Eón (Fase 6), este principio se tra
 
 El **Vector de Voluntad Verdadera** es una estructura que representa:
 
-| Campo | Descripción | Rango |
+| Campo | Description | Rango |
 |-------|-------------|-------|
 | `genesis_domain` | Dominio nativo (con el que "nació" el nodo) | Enum |
 | `affinity[domain]` | Afinidad hacia cada dominio | 0.0 - 1.0 |
@@ -95,7 +95,7 @@ COORDINADOR busca otro nodo o replanifica
 
 ## Dominios Soportados
 
-| Enum | Nombre | Descripción |
+| Enum | Nombre | Description |
 |------|--------|-------------|
 | 0 | TEMPERATURE | Sensores de temperatura |
 | 1 | HUMIDITY | Sensores de humedad |
@@ -233,7 +233,7 @@ void loop() {
 
 ## Conclusión
 
-El Sistema de Voluntad Verdadera (Thelema) transforma la Mente Colectiva de Eón de una arquitectura tradicional cliente-servidor a un **ecosistema autónomo** donde cada nodo es una "estrella con su propia órbita".
+El Sistema de Voluntad Verdadera (Thelema) transforma la Collective Mind de Eón de una arquitectura tradicional cliente-servidor a un **ecosistema autónomo** donde cada nodo es una "estrella con su propia órbita".
 
 Esta filosofía no solo es técnicamente elegante (mejora eficiencia, reduce errores) sino que también refleja principios fundamentales sobre autonomía, especialización y armonía colectiva.
 
@@ -242,5 +242,5 @@ Esta filosofía no solo es técnicamente elegante (mejora eficiencia, reduce err
 
 ---
 
-*Implementado en Eón v1.8.0 - Proyecto Eón, Sistemas Ursol*  
+*Implementado en Eón v1.8.0 - Eón Project, Sistemas Ursol*  
 *Inspirado en filosofía Thelema y principios de sistemas complejos adaptativos*

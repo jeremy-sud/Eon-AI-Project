@@ -14,7 +14,7 @@ python benchmark.py --export  # Exportar a JSON
 
 ## 1. Tamaño del Reservoir
 
-| Neuronas | MSE        | Memoria    | Train (ms) | Predict (ms) |
+| Neuronas | MSE        | Memory    | Train (ms) | Predict (ms) |
 |----------|------------|------------|------------|--------------|
 | 10       | 0.000498   | 1.02 KB    | 32.3       | 16.5         |
 | 25       | 0.000568   | 5.47 KB    | 29.0       | 11.9         |
@@ -28,7 +28,7 @@ python benchmark.py --export  # Exportar a JSON
 
 ## 2. Cuantización
 
-| Precisión      | MSE        | Memoria (KB) | Precisión (%) | Compresión |
+| Precisión      | MSE        | Memory (KB) | Precisión (%) | Compresión |
 |----------------|------------|--------------|---------------|------------|
 | float64 (base) | 0.000369   | 80.47        | 100.0%        | 1.0x       |
 | **8-bit**      | 0.000543   | 9.96         | **52.9%**     | **8.1x**   |
@@ -39,7 +39,7 @@ python benchmark.py --export  # Exportar a JSON
 
 ## 3. Plasticidad Hebbiana
 
-| Modelo              | MSE        | Adaptaciones |
+| Model              | MSE        | Adaptaciones |
 |---------------------|------------|--------------|
 | ESN Estándar        | 0.000356   | 0            |
 | ESN + Hebbian       | 0.062474   | 2999         |
@@ -50,14 +50,14 @@ python benchmark.py --export  # Exportar a JSON
 ## 4. Módulos Místicos (Fase 11)
 
 ### TzimtzumESN - Poda Dinámica
-| Fase           | Conexiones Activas | MSE   | Descripción |
+| Fase           | Conexiones Activas | MSE   | Description |
 |----------------|--------------------|-------|-------------|
 | PLENITUD       | 100%               | 0.087 | Estado inicial |
 | DARK_NIGHT     | 50%                | 0.095 | Poda del 50% conexiones débiles |
 | RENACIMIENTO   | 100%               | 0.082 | Regeneración con nuevos pesos |
 
 ### AlchemicalPipeline - ETL Transmutación
-| Fase           | Reducción Ruido | Latencia | Descripción |
+| Fase           | Reducción Ruido | Latencia | Description |
 |----------------|-----------------|----------|-------------|
 | NIGREDO        | 0%              | <1ms     | Ingesta datos crudos |
 | ALBEDO         | ~70%            | <5ms     | Filtrado Kalman |
@@ -68,14 +68,14 @@ python benchmark.py --export  # Exportar a JSON
 |---------|----------|-----------------|-----|
 | Micro   | 8/unidad | 1x-8x           | Patrones rápidos |
 | Macro   | 10 unid. | Variable        | Patrones lentos |
-| Total   | ~80      | Multi-escala    | Memoria jerárquica |
+| Total   | ~80      | Multi-escala    | Memory jerárquica |
 
 ## 5. Sistema de Aprendizaje
 
-### Componentes
+### Components
 - **OnlineLearner**: Actualización en tiempo real
 - **LongTermMemory**: Persistencia de conocimiento
-- **FeedbackSystem**: Mejora con retroalimentación
+- **FeedbackSystem**: Improvement with feedback
 - **ConsolidationEngine**: Optimización nocturna
 
 ### Métricas
@@ -88,8 +88,8 @@ python benchmark.py --export  # Exportar a JSON
 
 ## 6. Motor ESN Optimizado (v1.9.2)
 
-### Nuevas Características
-| Característica            | Descripción                                      | Impacto           |
+### Nuevas Features
+| Feature            | Description                                      | Impacto           |
 |---------------------------|--------------------------------------------------|-------------------|
 | **Leaky Integration**     | Parámetro `leak_rate` para integración suave     | +Estabilidad      |
 | **Ridge Optimizado**      | `np.linalg.solve()` vs inversión directa         | **3x más rápido** |

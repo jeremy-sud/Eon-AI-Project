@@ -2,7 +2,7 @@
 
 Interfaz web completa para interactuar con Eón.
 
-## Inicio Rápido
+## Quick Start
 
 ```bash
 cd "Eón Project AI"
@@ -12,7 +12,7 @@ python web/server.py
 # Abrir http://localhost:5000
 ```
 
-## Estructura
+## Structure
 
 ```
 web/
@@ -35,14 +35,14 @@ web/
 ## API Endpoints
 
 ### Chat y Conversación
-| Endpoint | Método | Descripción |
+| Endpoint | Método | Description |
 |----------|--------|-------------|
 | `/api/chat` | POST | Enviar mensaje |
 | `/api/history` | GET/DELETE | Historial de chat |
 | `/api/personality` | GET/POST | Estilo de respuesta |
 
 ### Generación de Imágenes
-| Endpoint | Método | Descripción |
+| Endpoint | Método | Description |
 |----------|--------|-------------|
 | `/api/generate-image` | POST | Generar arte neuronal |
 
@@ -50,15 +50,15 @@ web/
 **Paletas**: cosmic, ocean, forest, sunset, aurora, fire, ice, matrix, vintage, neon, pastel, monochrome
 
 ### Sistema de Aprendizaje (v1.4)
-| Endpoint | Método | Descripción |
+| Endpoint | Método | Description |
 |----------|--------|-------------|
 | `/api/feedback` | POST | Enviar 👍/👎 |
 | `/api/learning-stats` | GET | Estadísticas de aprendizaje |
-| `/api/memory` | GET/DELETE | Memoria a largo plazo |
+| `/api/memory` | GET/DELETE | Memory a largo plazo |
 | `/api/consolidate` | POST | Forzar consolidación |
 
 ### Estado y Configuración
-| Endpoint | Método | Descripción |
+| Endpoint | Método | Description |
 |----------|--------|-------------|
 | `/api/status` | GET | Estado de Eón |
 | `/api/config` | GET/POST | Configuración de IA |
@@ -68,7 +68,7 @@ web/
 
 ## Sistema de Aprendizaje Continuo
 
-### Componentes
+### Components
 
 1. **OnlineLearner**: Actualización en tiempo real de W_out
 2. **LongTermMemory**: Almacena usuarios conocidos y hechos

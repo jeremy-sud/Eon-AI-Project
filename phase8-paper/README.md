@@ -1,6 +1,6 @@
-# Paper Académico - Proyecto Eón
+# Paper Académico - Eón Project
 
-## Estructura
+## Structure
 
 ```
 phase8-paper/
@@ -33,7 +33,7 @@ O usar Overleaf para compilación online.
 - [x] Introducción
 - [x] Metodología
 - [x] Experimentos
-- [x] Comparativas
+- [x] Comparisons
 - [ ] Figuras finales
 - [ ] Revisión de coautores
 - [ ] Envío

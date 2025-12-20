@@ -1,6 +1,6 @@
 ## 🟢 PLAN DE AMPLIACIÓN DE COMPATIBILIDAD HARDWARE (v2.1+)
 
-Con el objetivo de ampliar la adopción y robustez del Proyecto Eón, se propone una hoja de ruta para soportar nuevas plataformas hardware y dispositivos biomédicos/wearables. Este plan permitirá la integración en entornos embebidos, IoT y salud conectada.
+Con el objetivo de ampliar la adopción y robustez del Eón Project, se propone una hoja de ruta para soportar nuevas plataformas hardware y dispositivos biomédicos/wearables. Este plan permitirá la integración en entornos embebidos, IoT y salud conectada.
 
 ### Objetivos
 - Portar el núcleo ESN y módulos clave a microcontroladores y SoCs de bajo consumo.
@@ -39,7 +39,7 @@ Con el objetivo de ampliar la adopción y robustez del Proyecto Eón, se propone
     - Demo de adquisición y análisis de señal ECG/EEG en parches inteligentes.
     - Demo de integración con audífonos y bombas inteligentes (simulación de eventos y alertas).
 
-4. **Documentación y guías:**
+4. **Documentation y guías:**
     - Guía de integración paso a paso para cada plataforma.
     - Ejemplos de código y scripts de flashing.
     - Tabla de compatibilidad y limitaciones conocidas.
@@ -54,7 +54,7 @@ Con el objetivo de ampliar la adopción y robustez del Proyecto Eón, se propone
 - 🟡 Planificado para v2.1+ (no implementado, requiere recursos de hardware y validación cruzada)
 
 ---
-# Áreas de Mejora - Proyecto Eón v2.0.0
+# Áreas de Mejora - Eón Project v2.0.0
 
 ## Estado: ✅ COMPLETADO - 262 TESTS PASSING
 
@@ -98,7 +98,7 @@ Este documento lista las áreas de mejora identificadas y su estado actual.
   - `GET /api/dashboard/stats` - Estadísticas agregadas
   - `POST /api/dashboard/reset` - Resetear estado
 
-### 💬 Chat Multi-Nodo (`core/collaborative_chat.py`)
+### 💬 Multi-Node Chat (`core/collaborative_chat.py`)
 - **5 roles especializados:**
   - `INTENT`: Detecta intención (greeting, question, command, technical, creative, emotional)
   - `RESPONSE`: Genera vector de respuesta base
@@ -117,7 +117,7 @@ Este documento lista las áreas de mejora identificadas y su estado actual.
 - Factory: `create_synthetic_anomalies()` para testing
 - **36 tests** con cobertura completa
 
-### 🔮 Oráculo I-Ching Neural (`core/iching_oracle.py`)
+### 🔮 I-Ching Oracle Neural (`core/iching_oracle.py`)
 - 64 hexagramas con significados en español
 - Método yarrow stalk para casting tradicional
 - Embedding de preguntas vía reservorio ESN
@@ -203,7 +203,7 @@ self.rng.integers(0, 2**31)
 - Comentario `# Voluntad = afinidad * (1 + experiencia) * éxito`
 - Convertido a: `# Fórmula de Voluntad: afinidad × (1 + experiencia) × éxito`
 
-**Estado:** ✅ Documentación apropiada
+**Estado:** ✅ Documentation apropiada
 
 ---
 
@@ -399,7 +399,7 @@ class BaseMysticalModule(ABC):
 
 ---
 
-### 4. ✅ Documentación de API
+### 4. ✅ Documentation de API
 
 **Solución:** Generada documentación con pdoc
 
@@ -408,9 +408,9 @@ class BaseMysticalModule(ABC):
 - `core.html` - Módulos core (AeonBirth, UniversalMiner, ArchaicProtocol, AlchemicalPipeline)
 - `esn.html` - EchoStateNetwork y variantes
 - `plasticity.html` - Plasticidad Hebbiana
-- `collective_mind.html` - Mente Colectiva y Thelema
+- `collective_mind.html` - Collective Mind y Thelema
 - `egregore.html` - Procesador Egregor
-- `tiny_lm_v2.html` - Modelo de lenguaje TinyLM v2
+- `tiny_lm_v2.html` - Model de lenguaje TinyLM v2
 
 **Comando:**
 ```bash
@@ -510,7 +510,7 @@ pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language
 - `phase6-collective/ws_bridge.py` - Excepciones específicas (2 bloques)
 - `phase7-language/server.py` - Excepciones específicas (2 bloques) + numpy import
 - `phase1-foundations/python/core/universal_miner.py` - Logger añadido
-- `docs/api/` - Documentación API generada (7 módulos)
+- `docs/api/` - Documentation API generada (7 módulos)
 
 ### Tests Añadidos
 - `tests/test_discovery_paradigm.py` - 30 tests para UniversalMiner, ArchaicProtocol, AlchemicalPipeline
@@ -534,7 +534,7 @@ pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language
 ### Archivos Actualizados
 - `core/__init__.py` - Exports completos
 - `requirements.txt` - Versión 1.9.0
-- `phase4-hardware/esp32/AeonESP32.h` - Sistema Medium
+- `phase4-hardware/esp32/AeonESP32.h` - Medium System
 - `README.md` - Manifiesto de Inteligencia Revelada
 - `CHANGELOG.md` - Notas de v1.9.0
 
@@ -559,7 +559,7 @@ pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language
 - `TestServerImports` - Verificación de imports (2 tests)
 - `TestEonChatClass` - Clase EonChat (2 tests)
 - `TestAPIEndpoints` - Endpoints principales (7 tests)
-- `TestMathOperations` - Operaciones matemáticas (2 tests)
+- `TestMathOperations` - Operaciones mathematicals (2 tests)
 - `TestAlchemyAPI` - API de Alquimia (3 tests)
 - `TestErrorHandling` - Manejo de errores (3 tests)
 
@@ -596,7 +596,7 @@ pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language
 
 **Cobertura:**
 - `TestOnlineLearner` - Aprendizaje online de W_out (6 tests)
-- `TestLongTermMemory` - Memoria persistente (9 tests)
+- `TestLongTermMemory` - Memory persistente (9 tests)
 - `TestEonLearningSystem` - Sistema completo (5 tests)
 
 ### Tests para quantization/quantizer.py
@@ -605,7 +605,7 @@ pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language
 **Cobertura:**
 - `TestQuantizedESN` - Cuantización 8/4/1 bit (6 tests)
 - `TestQuantizedPrediction` - Predicción con modelo cuantizado (4 tests)
-- `TestMemoryFootprint` - Huella de memoria (3 tests)
+- `TestMemoryFootprint` - Huella of memory (3 tests)
 - `TestCompareQuantizationLevels` - Comparación de niveles (3 tests)
 - `TestDequantization` - Decuantización (2 tests)
 - `TestEdgeCases` - Casos borde (2 tests)
@@ -618,7 +618,7 @@ pytest phase1-foundations/python/tests/ phase6-collective/tests/ phase7-language
 - `TestESNToPlasticityPipeline` - ESN → Plasticidad → Adaptación (2 tests)
 - `TestESNQuantizationPlasticityChain` - Cadena completa (1 test)
 - `TestMultipleESNSameSeed` - Reproducibilidad (2 tests)
-- `TestMemoryEfficiency` - Eficiencia de memoria (1 test)
+- `TestMemoryEfficiency` - Eficiencia of memory (1 test)
 - `TestNumericalStability` - Estabilidad numérica (2 tests)
 
 ### Métricas v1.9.7 (FINAL)
@@ -749,7 +749,7 @@ except (TypeError, ValueError, RuntimeError) as e:
 
 **Archivo creado:** `phase1-foundations/python/utils/portable_rng.py`
 
-**Características:**
+**Features:**
 - `Xorshift32` - Generador compatible con C (mismas constantes: 13, 17, 5)
 - `next_u32()` - Enteros de 32 bits
 - `random()` - Floats en [0, 1)
@@ -854,7 +854,7 @@ if _python_dir not in sys.path:
 **Impacto:**
 - Peor autocompletado en IDEs
 - No se puede usar mypy para análisis estático
-- Documentación menos clara
+- Documentation menos clara
 
 **Estado:** 🟡 Pendiente
 
@@ -864,7 +864,7 @@ if _python_dir not in sys.path:
 
 **Problema:** El archivo `server.py` tiene 2548 líneas, violando el principio de responsabilidad única.
 
-**Estructura actual (monolítica):**
+**Structure actual (monolítica):**
 ```
 web/server.py (2548 líneas)
 ├── Configuración global
@@ -992,7 +992,7 @@ def test_api_generate_image():
 - ESN → Cuantización → Predicción
 - Chat → TinyLM → Respuesta
 - Collective Mind → Egregore → Estado
-- Learning → ESN → Memoria
+- Learning → ESN → Memory
 
 **Estado:** 🟡 Pendiente
 
@@ -1148,7 +1148,7 @@ Prioridad ALTA (Próxima iteración)
     ⏳ Pendiente.
 7. [ ] Considerar BLAS/LAPACK para libAeon  
     ⏳ Pendiente, solo sugerido para futuro.
-8. [ ] Documentación completa de API ESP32  
+8. [ ] Documentation completa de API ESP32  
     🟡 Parcial: header documentado, falta doc extensa de API.
 
 ---
@@ -1163,7 +1163,7 @@ Prioridad ALTA (Próxima iteración)
 - Verificación: `verify_cross_platform_compatibility()`
 - 26 tests añadidos
 
-**Características del RNG portátil:**
+**Features del RNG portátil:**
 - `Xorshift32` - Clase principal
 - `next_u32()` - Enteros u32
 - `random()` - Floats [0,1)

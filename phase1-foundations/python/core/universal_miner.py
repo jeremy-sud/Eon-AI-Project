@@ -144,10 +144,71 @@ class UniversalMiner:
             
         Returns:
             Tuple de (resonancia, espectro completo de eigenvalues)
+            
+        Raises:
+            ValueError: Si la matriz es singular o contiene NaN/Inf
         """
-        eigenvalues = np.linalg.eigvals(matrix)
+        # Validar matriz antes de calcular eigenvalores
+        if not np.isfinite(matrix).all():
+            raise ValueError("Matriz contiene valores NaN o Inf")
+        
+        try:
+            eigenvalues = np.linalg.eigvals(matrix)
+        except np.linalg.LinAlgError as e:
+            # Retornar resonancia infinita para matrices singulares
+            # Esto las descarta automáticamente en la búsqueda
+            return float('inf'), np.array([])
+        
+        if not np.isfinite(eigenvalues).all():
+            return float('inf'), np.array([])
+            
         resonance = np.max(np.abs(eigenvalues))
         return resonance, eigenvalues
+    
+    def _fast_spectral_radius(self, matrix: np.ndarray, max_iter: int = 30, tol: float = 1e-6) -> float:
+        """
+        Estimación rápida del radio espectral usando Power Iteration.
+        
+        Mucho más rápido que calcular todos los eigenvalores para matrices grandes.
+        Complejidad: O(n²) por iteración vs O(n³) para eigenvalores completos.
+        
+        Args:
+            matrix: Matriz del reservorio
+            max_iter: Máximo de iteraciones
+            tol: Tolerancia de convergencia
+            
+        Returns:
+            Estimación del radio espectral
+        """
+        n = matrix.shape[0]
+        # Vector inicial aleatorio normalizado (usando API moderna)
+        rng = np.random.default_rng()
+        v = rng.standard_normal(n)
+        v = v / np.linalg.norm(v)
+        
+        eigenvalue_estimate = 0.0
+        
+        for _ in range(max_iter):
+            # Power iteration
+            v_new = matrix @ v
+            norm = np.linalg.norm(v_new)
+            
+            if norm < 1e-10:
+                return 0.0  # Matriz nula o casi nula
+            
+            v_new = v_new / norm
+            
+            # Rayleigh quotient para mejor estimación
+            new_estimate = np.abs(np.vdot(matrix @ v_new, v_new))
+            
+            # Verificar convergencia
+            if abs(new_estimate - eigenvalue_estimate) < tol:
+                return float(np.sqrt(new_estimate)) if new_estimate > 0 else new_estimate
+            
+            eigenvalue_estimate = new_estimate
+            v = v_new
+        
+        return float(np.sqrt(eigenvalue_estimate)) if eigenvalue_estimate > 0 else eigenvalue_estimate
     
     def _check_golden_ratio(self, eigenvalues: np.ndarray) -> float:
         """Verifica presencia del ratio áureo en el espectro."""

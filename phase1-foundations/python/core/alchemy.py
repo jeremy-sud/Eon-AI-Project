@@ -260,12 +260,13 @@ class AlchemicalPipeline:
     
     def _change_phase(self, new_phase: AlchemicalPhase):
         """Cambia la fase actual y notifica."""
-        old_phase = self.state.current_phase
+        previous_phase = self.state.current_phase
         self.state.current_phase = new_phase
         self.state.phase_start_time = time.time()
         
         if self.config.on_phase_change:
-            self.config.on_phase_change(new_phase)
+            # Pasar la fase anterior al callback para contexto
+            self.config.on_phase_change(new_phase, previous_phase)
     
     def nigredo(self, raw_data: np.ndarray) -> np.ndarray:
         """
@@ -340,11 +341,18 @@ class AlchemicalPipeline:
             if std > 0:
                 z_scores = np.abs((filtered - mean) / std)
                 mask = z_scores < self.config.outlier_threshold
-                filtered = np.interp(
-                    np.arange(len(filtered)),
-                    np.where(mask)[0],
-                    filtered[mask]
-                ) if np.any(mask) else filtered
+                # Verificar que hay suficientes puntos válidos para interpolar
+                valid_indices = np.where(mask)[0]
+                if len(valid_indices) >= 2:
+                    filtered = np.interp(
+                        np.arange(len(filtered)),
+                        valid_indices,
+                        filtered[mask]
+                    )
+                elif len(valid_indices) == 1:
+                    # Solo un punto válido: usar su valor para todo
+                    filtered = np.full_like(filtered, filtered[mask][0])
+                # Si todos son outliers (valid_indices vacío), mantener datos originales
         
         # Paso 3: Suavizado adicional (media móvil)
         if self.config.use_moving_average and len(filtered) > self.config.window_size:
@@ -376,7 +384,7 @@ class AlchemicalPipeline:
         self, 
         data: Optional[np.ndarray] = None,
         esn: Optional[Any] = None,
-        prediction_horizon: int = 1
+        prediction_horizon: int = 1  # Reservado para predicción multi-paso (futuro)
     ) -> Dict[str, Any]:
         """
         RUBEDO - Fase de Iluminación 🔴
@@ -389,14 +397,19 @@ class AlchemicalPipeline:
         Args:
             data: Datos purificados (usa albedo_result si None)
             esn: EchoStateNetwork entrenado para inferencia
-            prediction_horizon: Cuántos pasos predecir
+            prediction_horizon: Cuántos pasos predecir (reservado para uso futuro)
             
         Returns:
             Diccionario con:
             - 'gold': La predicción/inferencia (La Piedra Filosofal)
             - 'confidence': Nivel de confianza
             - 'transmutation_complete': bool
+            
+        Note:
+            prediction_horizon será implementado en una futura versión para
+            predicción multi-paso. Actualmente solo se usa el último valor.
         """
+        _ = prediction_horizon  # Silenciar warning - reservado para futuro uso
         start = time.time()
         self._change_phase(AlchemicalPhase.RUBEDO)
         
@@ -624,8 +637,8 @@ def demonstrate_alchemy():
     print("   'De Plomo en Oro - Opus Magnum'")
     print("=" * 60)
     
-    # Crear datos ruidosos simulando sensor
-    np.random.seed(42)
+    # Crear datos ruidosos simulando sensor (usando API moderna de NumPy)
+    rng = np.random.default_rng(42)
     T = 500
     t = np.linspace(0, 10 * np.pi, T)
     
@@ -633,10 +646,10 @@ def demonstrate_alchemy():
     clean_signal = np.sin(t) + 0.3 * np.sin(3 * t)
     
     # Agregar "plomo" (ruido pesado)
-    noise = np.random.randn(T) * 0.5
+    noise = rng.standard_normal(T) * 0.5
     outliers = np.zeros(T)
-    outlier_indices = np.random.choice(T, size=20, replace=False)
-    outliers[outlier_indices] = np.random.randn(20) * 3
+    outlier_indices = rng.choice(T, size=20, replace=False)
+    outliers[outlier_indices] = rng.standard_normal(20) * 3
     
     raw_data = clean_signal + noise + outliers
     

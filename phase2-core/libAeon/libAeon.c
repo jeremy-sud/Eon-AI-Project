@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>  /* Para fabsf() */
 
 /* ============================================================
  * FUNCIONES INTERNAS
@@ -19,6 +20,9 @@
  * Período: 2^32 - 1, distribución uniforme mejorada
  */
 uint32_t aeon_random(uint32_t *state) {
+  if (state == NULL) {
+    return 0;  /* Seguridad: evitar dereferenciar NULL */
+  }
   uint32_t x = *state;
   x ^= x << 13;
   x ^= x >> 17;
@@ -58,9 +62,16 @@ aeon_state_t aeon_tanh_approx(aeon_state_t x) {
 
 /**
  * @brief Genera hash simple basado en datos
+ * @note Usa casting seguro de timestamp para evitar truncamiento en sistemas 64-bit
  */
 static void generate_hash(aeon_hash_t *hash, uint32_t seed, time_t timestamp) {
-  uint32_t state = seed ^ (uint32_t)timestamp;
+  if (hash == NULL) {
+    return;  /* Seguridad: validar puntero */
+  }
+  /* Casting seguro: usar XOR de parte alta y baja para preservar entropía */
+  uint32_t ts_low = (uint32_t)(timestamp & 0xFFFFFFFF);
+  uint32_t ts_high = (uint32_t)((timestamp >> 32) & 0xFFFFFFFF);
+  uint32_t state = seed ^ ts_low ^ ts_high;
 
   for (int i = 0; i < 16; i++) {
     state = aeon_random(&state);
@@ -185,11 +196,36 @@ int aeon_load(aeon_core_t *core, const char *filename) {
   if (f == NULL)
     return -2;
 
+  /* Verificar tamaño del archivo antes de leer */
+  fseek(f, 0, SEEK_END);
+  long file_size = ftell(f);
+  fseek(f, 0, SEEK_SET);
+  
+  if (file_size != (long)sizeof(aeon_core_t)) {
+    fclose(f);
+    return -4;  /* Error: tamaño de archivo inválido */
+  }
+
   /* Leer estructura completa */
-  size_t read = fread(core, sizeof(aeon_core_t), 1, f);
+  size_t bytes_read = fread(core, sizeof(aeon_core_t), 1, f);
   fclose(f);
 
-  return (read == 1) ? 0 : -3;
+  if (bytes_read != 1) {
+    return -3;  /* Error de lectura */
+  }
+
+  /* Validar datos cargados */
+  if (core->certificate.reservoir_size != AEON_RESERVOIR_SIZE) {
+    return -5;  /* Error: configuración incompatible */
+  }
+  
+  /* Validar versión (versión mayor debe coincidir) */
+  uint16_t loaded_major = core->certificate.version >> 8;
+  if (loaded_major != AEON_VERSION_MAJOR) {
+    return -6;  /* Error: versión incompatible */
+  }
+
+  return 0;
 }
 
 /* ============================================================
@@ -400,8 +436,9 @@ float aeon_train(aeon_core_t *core, const aeon_state_t *inputs,
 
     /* Normalizar fila pivote */
     float pivot = StS[col][col];
-    if (pivot == 0.0f)
-      pivot = 1e-10f; /* Evitar división por cero */
+    if (fabsf(pivot) < 1e-10f) {
+      pivot = (pivot >= 0.0f) ? 1e-10f : -1e-10f; /* Evitar división por cero preservando signo */
+    }
 
     for (int k = 0; k < AEON_RESERVOIR_SIZE; k++) {
       StS[col][k] /= pivot;
@@ -518,12 +555,20 @@ uint32_t aeon_age_seconds(const aeon_core_t *core) {
   return (uint32_t)(time(NULL) - core->certificate.birth_time);
 }
 
-void aeon_hash_to_string(const aeon_hash_t *hash, char *buffer) {
+void aeon_hash_to_string(const aeon_hash_t *hash, char *buffer, size_t buffer_size) {
   if (hash == NULL || buffer == NULL)
     return;
+  
+  /* Necesitamos al menos 33 bytes (32 hex + null terminator) */
+  if (buffer_size < 33) {
+    if (buffer_size > 0) {
+      buffer[0] = '\0';  /* Devolver string vacío si buffer muy pequeño */
+    }
+    return;
+  }
 
   for (int i = 0; i < 16; i++) {
-    sprintf(buffer + i * 2, "%02x", hash->bytes[i]);
+    snprintf(buffer + i * 2, 3, "%02x", hash->bytes[i]);
   }
   buffer[32] = '\0';
 }

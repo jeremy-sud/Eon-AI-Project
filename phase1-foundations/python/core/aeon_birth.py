@@ -250,7 +250,19 @@ class AeonBirth:
 
     @classmethod
     def load(cls, name, data_dir):
-        """Carga una instancia de Eón usando formato seguro (JSON + NPZ)."""
+        """Carga una instancia de Eón usando formato seguro (JSON + NPZ).
+        
+        Args:
+            name: Nombre de la instancia
+            data_dir: Directorio donde buscar los archivos
+            
+        Returns:
+            Instancia de AeonBirth cargada
+            
+        Raises:
+            FileNotFoundError: Si no se encuentran los archivos
+            ValueError: Si los archivos están corruptos o son incompatibles
+        """
         safe_name = "".join(x for x in name if x.isalnum() or x in "-_")
         path = os.path.join(data_dir, f"{safe_name}_birth.json")
         
@@ -261,8 +273,20 @@ class AeonBirth:
         if not os.path.exists(path):
             raise FileNotFoundError(f"Instance {name} not found")
         
-        with open(path, 'r') as f:
-            meta = json.load(f)
+        # Cargar metadatos con manejo de errores
+        try:
+            with open(path, 'r') as f:
+                meta = json.load(f)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Archivo de metadatos corrupto para {name}: {e}")
+        except IOError as e:
+            raise ValueError(f"Error leyendo metadatos de {name}: {e}")
+        
+        # Validar campos requeridos
+        required_fields = ['name', 'created_at']
+        missing = [f for f in required_fields if f not in meta]
+        if missing:
+            raise ValueError(f"Metadatos incompletos para {name}: faltan campos {missing}")
         
         # Crear instancia vacía
         instance = cls.__new__(cls)
@@ -283,8 +307,19 @@ class AeonBirth:
                 if actual_checksum != meta['state_checksum']:
                     raise ValueError(f"Checksum mismatch for {name}. File may be corrupted.")
             
-            # Cargar matrices
-            data = np.load(state_path_npz)
+            # Cargar matrices con manejo de errores
+            try:
+                data = np.load(state_path_npz)
+            except Exception as e:
+                raise ValueError(f"Error cargando estado de {name}: {e}")
+            
+            # Validar que el archivo contiene los campos esperados
+            required_arrays = ['n_inputs', 'n_reservoir', 'n_outputs', 'spectral_radius', 
+                              'sparsity', 'noise', 'leak_rate', 'W_in', 'W_reservoir', 
+                              'state', 'birth_time']
+            missing_arrays = [a for a in required_arrays if a not in data]
+            if missing_arrays:
+                raise ValueError(f"Estado incompleto para {name}: faltan arrays {missing_arrays}")
             
             # Reconstruir ESN
             instance.esn = EchoStateNetwork(

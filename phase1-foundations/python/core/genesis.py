@@ -47,13 +47,32 @@ class Genesis:
                 "El Momento Cero debe existir en la raíz del proyecto."
             )
         
-        with open(GENESIS_FILE, 'r') as f:
-            self._data = json.load(f)
+        try:
+            with open(GENESIS_FILE, 'r') as f:
+                self._data = json.load(f)
+        except json.JSONDecodeError as e:
+            raise RuntimeError(
+                f"GENESIS.json corrupto o mal formado: {e}. "
+                "El archivo debe contener JSON válido."
+            )
+        except IOError as e:
+            raise RuntimeError(
+                f"Error leyendo GENESIS.json: {e}"
+            )
         
-        # Parsear timestamp
-        self._birth_timestamp = datetime.fromisoformat(
-            self._data['birth_timestamp'].replace('+00:00', '')
-        )
+        # Parsear timestamp con manejo de errores
+        try:
+            timestamp_str = self._data.get('birth_timestamp', '')
+            if not timestamp_str:
+                raise ValueError("Campo 'birth_timestamp' vacío o ausente")
+            # Normalizar formato ISO 8601
+            timestamp_str = timestamp_str.replace('+00:00', '').replace('Z', '')
+            self._birth_timestamp = datetime.fromisoformat(timestamp_str)
+        except (ValueError, KeyError) as e:
+            raise RuntimeError(
+                f"Formato de timestamp inválido en GENESIS.json: {e}. "
+                "Debe ser formato ISO 8601 (ej: 2024-01-01T00:00:00)"
+            )
         
         Genesis._initialized = True
     

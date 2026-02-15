@@ -141,7 +141,7 @@ int main(int argc, char *argv[]) {
   }
 
   char hash_str[33];
-  aeon_hash_to_string(&core.certificate.birth_hash, hash_str);
+  aeon_hash_to_string(&core.certificate.birth_hash, hash_str, sizeof(hash_str));
   printf("    ✓ Seed: %u\n", seed);
   printf("    ✓ Hash: %.16s...\n", hash_str);
   printf("    ✓ Memoria: %u bytes\n", aeon_memory_usage(&core));

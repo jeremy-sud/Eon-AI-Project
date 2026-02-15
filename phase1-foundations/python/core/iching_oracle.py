@@ -181,6 +181,12 @@ class IChingOracle:
         self.current_state: Optional[np.ndarray] = None
         self.is_trained = False
         
+        # Crear lookup table para búsqueda O(1) de hexagramas por bits
+        self._hexagram_lookup: Dict[tuple, Hexagram] = {}
+        for hexagram in HEXAGRAMS.values():
+            bits_key = tuple(hexagram.lines)
+            self._hexagram_lookup[bits_key] = hexagram
+        
         logger.info(f"IChingOracle inicializado: reservoir={reservoir_size}")
     
     def _question_to_embedding(self, question: str) -> np.ndarray:
@@ -250,7 +256,20 @@ class IChingOracle:
         return self._find_closest_hexagram(bits)
     
     def _find_closest_hexagram(self, bits: np.ndarray) -> Hexagram:
-        """Encuentra el hexagrama más cercano a los bits dados."""
+        """
+        Encuentra el hexagrama más cercano a los bits dados.
+        
+        Usa lookup table para O(1) en coincidencia exacta,
+        con fallback a búsqueda lineal para coincidencias parciales.
+        """
+        # Convertir a enteros binarios (0 o 1)
+        binary_bits = tuple(int(b > 0.5) for b in bits)
+        
+        # Búsqueda O(1) para coincidencia exacta
+        if binary_bits in self._hexagram_lookup:
+            return self._hexagram_lookup[binary_bits]
+        
+        # Fallback: búsqueda de menor distancia de Hamming
         min_dist = float('inf')
         closest = HEXAGRAMS[1]
         
@@ -418,11 +437,16 @@ class IChingOracle:
         
         Args:
             question: La pregunta a consultar
-            consultation_type: Tipo de lectura
+            consultation_type: Tipo de lectura (reservado para uso futuro)
             
         Returns:
             OracleReading con el resultado
+            
+        Note:
+            consultation_type será usado en futuras versiones para
+            diferentes métodos de interpretación.
         """
+        _ = consultation_type  # Reservado para implementación futura
         timestamp = time.time()
         
         # Tirar las monedas/tallos

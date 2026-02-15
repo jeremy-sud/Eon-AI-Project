@@ -724,9 +724,9 @@ if __name__ == "__main__":
     # Crear protocolo
     protocol = ArchaicProtocol()
     
-    # Simular estado neuronal
-    np.random.seed(42)
-    neural_state = np.random.randn(100) * 0.5
+    # Simular estado neuronal (usando API moderna de NumPy)
+    rng = np.random.default_rng(42)
+    neural_state = rng.standard_normal(100) * 0.5
     
     # Consultar el oráculo
     print("Consultando el oráculo con el estado neuronal actual...")

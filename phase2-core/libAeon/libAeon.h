@@ -200,8 +200,9 @@ uint32_t aeon_age_seconds(const aeon_core_t *core);
  *
  * @param hash Puntero al hash
  * @param buffer Buffer de salida (mínimo 33 bytes)
+ * @param buffer_size Tamaño del buffer en bytes
  */
-void aeon_hash_to_string(const aeon_hash_t *hash, char *buffer);
+void aeon_hash_to_string(const aeon_hash_t *hash, char *buffer, size_t buffer_size);
 
 /**
  * @brief Poda conexiones débiles de la capa de salida

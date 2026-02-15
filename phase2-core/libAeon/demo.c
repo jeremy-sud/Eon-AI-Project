@@ -46,7 +46,7 @@ int main(void) {
   }
 
   char hash_str[33];
-  aeon_hash_to_string(&core.certificate.birth_hash, hash_str);
+  aeon_hash_to_string(&core.certificate.birth_hash, hash_str, sizeof(hash_str));
 
   printf("    ✓ Nacimiento: %ld (Unix timestamp)\n",
          (long)core.certificate.birth_time);

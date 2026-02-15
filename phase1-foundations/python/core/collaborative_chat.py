@@ -261,8 +261,17 @@ class ChatNode:
         )
     
     def _detect_intent(self, message: ChatMessage, input_vec: np.ndarray) -> Dict:
-        """Detecta la intención del mensaje."""
+        """Detecta la intención del mensaje usando patrones y estado del reservoir.
+        
+        Args:
+            message: Mensaje a analizar
+            input_vec: Vector de entrada del ESN (usado para modular confianza)
+        """
         text_lower = message.content.lower().strip()
+        
+        # Calcular norma del input para modular la confianza de detección
+        input_magnitude = float(np.linalg.norm(input_vec)) if input_vec.size > 0 else 1.0
+        confidence_modifier = min(1.0, 0.5 + input_magnitude * 0.1)  # Escalar entre 0.5-1.0
         
         # Patrones de intención
         greeting_patterns = ['hola', 'hello', 'hi', 'buenos', 'buenas', 'saludos', 'hey']
@@ -305,10 +314,14 @@ class ChatNode:
         # Usar estado del reservorio para ajustar confianza
         reservoir_confidence = np.mean(np.abs(self.state[:10]))
         
+        # Combinar con modificador del input para confianza final
+        raw_confidence = max_score / 3 + reservoir_confidence
+        final_confidence = min(raw_confidence * confidence_modifier, 1.0)
+        
         return {
             'intent': detected_intent.value,
             'scores': scores,
-            'confidence': min(max_score / 3 + reservoir_confidence, 1.0),
+            'confidence': final_confidence,
             'is_question': '?' in message.content
         }
     

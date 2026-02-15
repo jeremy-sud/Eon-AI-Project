@@ -296,6 +296,8 @@ class TzimtzumESN(EchoStateNetwork):
         active_importance = importance[active_connections]
         
         if len(active_importance) == 0:
+            # Restaurar fase a CHALLAL ya que no hay nada que podar
+            self.tzimtzum_state.phase = ContractionPhase.CHALLAL
             return {'pruned_count': 0, 'message': 'No hay conexiones que podar'}
         
         # Calcular umbral de poda (percentil basado en fracción)
@@ -308,6 +310,8 @@ class TzimtzumESN(EchoStateNetwork):
         max_to_prune = current_connections - min_connections
         
         if max_to_prune <= 0:
+            # Restaurar fase a CHALLAL ya que se alcanzó el mínimo
+            self.tzimtzum_state.phase = ContractionPhase.CHALLAL
             return {
                 'pruned_count': 0, 
                 'message': f'Ya en mínimo de conexiones ({min_connections})'

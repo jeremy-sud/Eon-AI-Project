@@ -56,11 +56,51 @@ Con el objetivo de ampliar la adopción y robustez del Proyecto Eón, se propone
 ---
 # Áreas de Mejora - Proyecto Eón v2.0.0
 
-## Estado: ✅ COMPLETADO - 262 TESTS PASSING
+## Estado: ⚠️ EN REVISIÓN - 343 TESTS PASSING
 
 Este documento lista las áreas de mejora identificadas y su estado actual.
 
-**Última auditoría completa:** 2025-12-13
+**Última auditoría completa:** 2026-02-15
+
+---
+
+## 🔴 DISCREPANCIAS ENCONTRADAS (Auditoría 2026-02-15)
+
+Durante la auditoría de febrero 2026, se encontraron varias discrepancias entre lo documentado y el estado real del código:
+
+### 1. ❌ Número de Tests Incorrecto
+- **Documentado:** 262 tests
+- **Real:** 343 tests
+- **Acción:** Actualizado en este documento
+
+### 2. ❌ print() vs Logging Subestimado
+- **Documentado:** "50+ llamadas print()"
+- **Real:** **500+ llamadas print()** en código de producción
+- **Archivos con más prints:**
+  - `mqtt_client.py`: 55 prints
+  - `benchmark_full.py`: 49 prints
+  - `collective_mind.py`: 36 prints
+  - `alchemy.py`: 27 prints
+  - `tzimtzum.py`: 24 prints
+- **Estado:** 🔴 CRÍTICO - No resuelto
+
+### 3. ❌ CORS No Configurado
+- **Documentado:** "🟢 Verificar"
+- **Real:** CORS **NO está configurado** en `web/server.py`
+- **Riesgo:** Vulnerabilidad de seguridad en API REST
+- **Estado:** 🔴 CRÍTICO - No implementado
+
+### 4. ❌ sys.path.insert() Extensivo
+- **Documentado:** Pendiente (status 🟡)
+- **Real:** **20+ archivos** usando sys.path.insert()
+- **Archivos afectados:**
+  - `web/server.py`
+  - `mqtt_client.py`
+  - `collective_mind.py`
+  - `tiny_lm.py`, `tiny_lm_v2.py`
+  - `tzimtzum.py`, `hebbian.py`
+  - `esn.py`, y más...
+- **Estado:** 🔴 CRÍTICO - Malas prácticas de imports
 
 ---
 
@@ -80,7 +120,7 @@ Este documento lista las áreas de mejora identificadas y su estado actual.
 | **Anomaly Detector** | **36** | ✅ **NUEVO v2.0** |
 | **I-Ching Oracle** | **33** | ✅ **NUEVO v2.0** |
 | **Collaborative Chat** | **44** | ✅ **NUEVO v2.0** |
-| **Total** | **262** | ✅ |
+| **Total** | **343** | ✅ |
 
 ---
 
@@ -291,25 +331,30 @@ except (ValueError, KeyError, IndexError, TypeError) as e:              # Antes:
 
 ---
 
-### 2. ✅ Logging vs print() para Debug
+### 2. ❌ Logging vs print() para Debug
 
-**Problema:** 50+ llamadas `print()` en módulos de producción
+**Problema:** **500+ llamadas `print()`** en módulos de producción (no 50+ como se documentó)
 
-**Archivos corregidos:**
-- `phase1-foundations/python/core/universal_miner.py` - ✅ Logger añadido
+**Archivos con más prints (top 10):**
+| Archivo | Prints |
+|---------|--------|
+| `mqtt_client.py` | 55 |
+| `benchmark_full.py` | 49 |
+| `collective_mind.py` | 36 |
+| `alchemy.py` | 27 |
+| `benchmark.py` | 26 |
+| `gematria.py` | 24 |
+| `tzimtzum.py` | 24 |
+| `recursive_esn.py` | 22 |
+| `ws_bridge.py` | 18 |
+| `hebbian_tzimtzum.py` | 18 |
 
-**Cambios realizados (v1.9.1):**
-```python
-import logging
-logger = logging.getLogger(__name__)
-```
+**Archivos con logger configurado:**
+- ✅ `universal_miner.py` - Logger configurado
+- ✅ `web/server.py` - Logger configurado
+- ❌ 18+ archivos pendientes
 
-**Archivos pendientes:**
-- `phase7-language/tiny_lm.py` (15+ prints)
-- `phase7-language/tiny_lm_v2.py` (15+ prints)
-- `benchmark_full.py` (10+ prints)
-
-**Estado:** ✅ Parcialmente Completado (1 archivo, logger preparado)
+**Estado:** 🔴 NO COMPLETADO - Solo 2 de 20+ archivos migrados
 
 ---
 
@@ -1150,6 +1195,209 @@ Prioridad ALTA (Próxima iteración)
     ⏳ Pendiente, solo sugerido para futuro.
 8. [ ] Documentación completa de API ESP32  
     🟡 Parcial: header documentado, falta doc extensa de API.
+
+---
+
+## 🔴 NUEVAS ÁREAS DE MEJORA IDENTIFICADAS (Auditoría 2026-02-15)
+
+### 1. 🔴 CRÍTICO: Configuración CORS Faltante
+
+**Archivo:** `web/server.py`
+
+**Problema:** La API REST no tiene configuración CORS, lo que:
+- Permite peticiones desde cualquier origen
+- Es un riesgo de seguridad (CSRF)
+- Puede causar problemas con frontends externos
+
+**Solución requerida:**
+```python
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["http://localhost:*", "http://127.0.0.1:*"],
+        "methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Content-Type"]
+    }
+})
+```
+
+**Archivo pip:** `pip install flask-cors`
+**Estado:** 🔴 No implementado - CRÍTICO
+
+---
+
+### 2. 🔴 CRÍTICO: Archivos Monolíticos Excesivos
+
+| Archivo | Líneas | Problema |
+|---------|--------|----------|
+| `web/server.py` | **2805** | Violación masiva de SRP |
+| `collective_mind.py` | 943 | Demasiado grande |
+| `tzimtzum.py` | 787 | Complejidad alta |
+| `collaborative_chat.py` | 749 | Debería dividirse |
+| `archaic_protocol.py` | 746 | Complejidad alta |
+
+**Recomendación para `web/server.py`:**
+```
+web/
+├── server.py          (~200 líneas - rutas y config)
+├── chat/
+│   ├── __init__.py
+│   ├── eon_chat.py    (clase EonChat)
+│   ├── patterns.py    (patrones de respuesta)
+│   └── intents.py     (detección de intención)
+├── api/
+│   ├── __init__.py
+│   ├── image.py       (endpoints de imagen)
+│   ├── dream.py       (endpoints de dream)
+│   └── config.py      (endpoints de config)
+└── utils/
+    └── math_utils.py  (calculadora y utilidades)
+```
+
+**Estado:** 🔴 No implementado - Bloquea mantenibilidad
+
+---
+
+### 3. 🔴 CRÍTICO: 500+ print() en Código de Producción
+
+**Distribución por archivo:**
+```
+55 - phase6-collective/mqtt_client.py
+49 - benchmark_full.py
+36 - phase6-collective/collective_mind.py
+27 - phase1-foundations/python/core/alchemy.py
+26 - phase1-foundations/python/benchmark.py
+24 - phase7-language/src/gematria.py
+24 - phase1-foundations/python/plasticity/tzimtzum.py
+22 - phase1-foundations/python/esn/recursive_esn.py
+18 - phase6-collective/ws_bridge.py
+18 - phase1-foundations/python/plasticity/hebbian_tzimtzum.py
+... (más de 20 archivos adicionales)
+```
+
+**Solución:**
+1. Añadir `import logging` y `logger = logging.getLogger(__name__)` a cada archivo
+2. Reemplazar `print(f"mensaje")` → `logger.info("mensaje")`
+3. Mantener prints SOLO en bloques `if __name__ == "__main__":` para demos
+
+**Estado:** 🔴 No implementado - Dificulta debugging en producción
+
+---
+
+### 4. 🟠 ALTO: sys.path.insert() Anti-patrón
+
+**20+ archivos** usan manipulación de sys.path:
+
+```python
+# MALO (repetido en 20+ archivos)
+import sys
+import os
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_python_dir = os.path.dirname(_current_dir)
+if _python_dir not in sys.path:
+    sys.path.insert(0, _python_dir)
+```
+
+**Archivos afectados:**
+- `web/server.py`, `web/tests/*.py`
+- `phase6-collective/*.py`
+- `phase7-language/*.py`
+- `phase1-foundations/python/plasticity/*.py`
+- `phase1-foundations/python/esn/esn.py`
+- `benchmark_full.py`
+
+**Solución correcta:**
+1. Crear `pyproject.toml` o `setup.py` con estructura de paquete
+2. Instalar en modo desarrollo: `pip install -e .`
+3. Usar imports absolutos: `from aeon.esn import EchoStateNetwork`
+
+**Estado:** 🟠 No implementado - Arquitectura frágil
+
+---
+
+### 5. 🟠 ALTO: Tests Usando API NumPy Legacy
+
+Aunque el código de producción migró a `default_rng()`, los tests todavía usan:
+- `np.random.randn()` - API legacy
+- `np.random.rand()` - API legacy
+
+**Archivos de test afectados:**
+- `test_learning.py` (5 usos)
+- `test_engine_improvements.py` (8 usos)
+- `test_anomaly_detector.py` (1 uso)
+
+**Solución:**
+```python
+# Antes
+data = np.random.randn(100, 1)
+
+# Después
+rng = np.random.default_rng(42)
+data = rng.standard_normal((100, 1))
+```
+
+**Estado:** 🟠 Pendiente - Inconsistencia con código de producción
+
+---
+
+### 6. 🟡 MEDIO: Type Hints Incompletos
+
+**Archivos sin type hints de retorno en funciones:**
+
+| Archivo | Funciones sin hints |
+|---------|---------------------|
+| `web/server.py` | ~100+ endpoints |
+| `collective_mind.py` | ~30 métodos |
+| `egregore.py` | ~20 métodos |
+
+**Ejemplo de mejora:**
+```python
+# Antes
+def chat():
+    ...
+
+# Después
+def chat() -> Response:
+    ...
+```
+
+**Estado:** 🟡 Parcial - Afecta documentación automática
+
+---
+
+### 7. 🟢 BAJO: Archivos de Demo Sin Separación
+
+Muchos archivos tienen bloques `if __name__ == "__main__":` extensos (50+ líneas) que podrían estar en archivos separados:
+
+- `collective_mind.py` - 100+ líneas de demo
+- `egregore.py` - 50+ líneas de demo
+- `alchemy.py` - Demo integrada
+
+**Recomendación:** Crear carpeta `examples/` con demos separadas
+
+**Estado:** 🟢 Opcional - Mejora organización
+
+---
+
+## 📊 Resumen de Verificación (2026-02-15)
+
+| Área | Documentado | Real | Estado |
+|------|-------------|------|--------|
+| Tests totales | 262 | 343 | ✅ Mejor |
+| print() en producción | 50+ | 500+ | 🔴 Peor |
+| CORS configurado | "Verificar" | No | 🔴 Falso |
+| sys.path.insert() | "Pendiente" | 20+ archivos | 🔴 Crítico |
+| default_rng() | ✅ | ✅ | ✅ OK |
+| Logging universal_miner | ✅ | ✅ | ✅ OK |
+| Tests integración | ✅ | ✅ | ✅ OK |
+| server.py dividido | "Pendiente" | No | 🔴 No hecho |
+
+---
+
+*Documento actualizado: 2026-02-15*
+*Próxima auditoría recomendada: 2026-03-15*
 
 ---
 

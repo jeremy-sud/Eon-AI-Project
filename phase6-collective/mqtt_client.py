@@ -17,11 +17,19 @@ import time
 import base64
 import struct
 import argparse
+import logging
 import threading
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Dict, Callable, Optional
 import numpy as np
+
+# Configuración de logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Intentar importar paho-mqtt
 try:
@@ -29,7 +37,7 @@ try:
     MQTT_AVAILABLE = True
 except ImportError:
     MQTT_AVAILABLE = False
-    print("⚠️  paho-mqtt no instalado. Ejecutar: pip install paho-mqtt")
+    logger.warning("paho-mqtt no instalado. Ejecutar: pip install paho-mqtt")
 
 # Path del proyecto
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -148,7 +156,7 @@ class AeonMQTTNode:
         """Callback de conexión."""
         if rc == 0:
             self.connected = True
-            print(f"✓ [{self.node_id}] Conectado a {self.broker}:{self.port}")
+            logger.info(f"[{self.node_id}] Conectado a {self.broker}:{self.port}")
             
             # Suscribirse a tópicos
             self.client.subscribe(f"{self.topic_sync}/#")
@@ -157,12 +165,12 @@ class AeonMQTTNode:
             # Anunciar presencia
             self._publish_status()
         else:
-            print(f"✗ [{self.node_id}] Error de conexión: {rc}")
+            logger.error(f"[{self.node_id}] Error de conexión: {rc}")
             
     def _on_disconnect(self, client, userdata, rc):
         """Callback de desconexión."""
         self.connected = False
-        print(f"⚠ [{self.node_id}] Desconectado (rc={rc})")
+        logger.warning(f"[{self.node_id}] Desconectado (rc={rc})")
         
     def _on_message(self, client, userdata, msg):
         """Callback de mensaje recibido."""
@@ -177,7 +185,7 @@ class AeonMQTTNode:
                 self._handle_status_message(topic, payload)
                 
         except (ValueError, KeyError, IndexError) as e:
-            print(f"✗ [{self.node_id}] Error procesando mensaje: {e}")
+            logger.error(f"[{self.node_id}] Error procesando mensaje: {e}")
             
     def _handle_sync_message(self, topic: str, payload: bytes):
         """Procesa mensaje de sincronización."""
@@ -195,10 +203,10 @@ class AeonMQTTNode:
             if not packet:
                 return
             
-            print(f"📥 [{self.node_id}] Sync recibido de {sender_id}")
-            print(f"    Tipo: {PACKET_TYPE_NAMES.get(packet['type'], 'UNKNOWN')}")
-            print(f"    Pesos: {packet['count']}")
-            print(f"    Compresión: {packet.get('compression', 'N/A')}x")
+            logger.info(f"[{self.node_id}] Sync recibido de {sender_id}")
+            logger.debug(f"    Tipo: {PACKET_TYPE_NAMES.get(packet['type'], 'UNKNOWN')}")
+            logger.debug(f"    Pesos: {packet['count']}")
+            logger.debug(f"    Compresión: {packet.get('compression', 'N/A')}x")
             
             # Importar pesos
             if packet['type'] == PACKET_TYPES['SYNC']:
@@ -211,7 +219,7 @@ class AeonMQTTNode:
                     self.on_sync_received(sender_id, packet)
                     
         except (ValueError, KeyError, IndexError, struct.error) as e:
-            print(f"✗ [{self.node_id}] Error en sync: {e}")
+            logger.error(f"[{self.node_id}] Error en sync: {e}")
             
     def _handle_status_message(self, _topic: str, payload: bytes):
         """Procesa mensaje de estado."""
@@ -244,7 +252,7 @@ class AeonMQTTNode:
             True si la conexión fue exitosa
         """
         if not MQTT_AVAILABLE:
-            print("✗ paho-mqtt no disponible")
+            logger.error("paho-mqtt no disponible")
             return False
             
         try:
@@ -260,7 +268,7 @@ class AeonMQTTNode:
             return False
             
         except OSError as e:
-            print(f"✗ [{self.node_id}] Error conectando: {e}")
+            logger.error(f"[{self.node_id}] Error conectando: {e}")
             return False
             
     def disconnect(self):
@@ -297,7 +305,7 @@ class AeonMQTTNode:
             True si la publicación fue exitosa
         """
         if not self.connected:
-            print(f"✗ [{self.node_id}] No conectado")
+            logger.warning(f"[{self.node_id}] No conectado")
             return False
             
         try:
@@ -312,14 +320,14 @@ class AeonMQTTNode:
             )
             
             if result.rc == mqtt.MQTT_ERR_SUCCESS:
-                print(f"📤 [{self.node_id}] Pesos publicados ({len(packet)} bytes)")
+                logger.info(f"[{self.node_id}] Pesos publicados ({len(packet)} bytes)")
                 return True
             else:
-                print(f"✗ [{self.node_id}] Error publicando: {result.rc}")
+                logger.error(f"[{self.node_id}] Error publicando: {result.rc}")
                 return False
                 
         except (AttributeError, OSError, ValueError) as e:
-            print(f"✗ [{self.node_id}] Error: {e}")
+            logger.error(f"[{self.node_id}] Error: {e}")
             return False
             
     def _create_binary_packet(self) -> bytes:
@@ -395,13 +403,13 @@ class AeonMQTTNode:
             }
             
         except (struct.error, ValueError, IndexError) as e:
-            print(f"Error decodificando: {e}")
+            logger.error(f"Error decodificando: {e}")
             return None
             
     def _import_weights_from_packet(self, packet: dict):
         """Importa pesos desde paquete decodificado."""
         if packet['count'] != self.n_reservoir:
-            print(f"⚠ Tamaño incompatible: {packet['count']} vs {self.n_reservoir}")
+            logger.warning(f"Tamaño incompatible: {packet['count']} vs {self.n_reservoir}")
             return
             
         # Reconstruir pesos desde bits

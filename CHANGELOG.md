@@ -2,6 +2,36 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [2.1.0] - 2026-03-09
+
+### 🔒 Seguridad y Logging
+
+#### ✅ CORS Configurado
+- **`requirements.txt`**: Añadido `flask-cors>=4.0.0`
+- **`web/server.py`**: CORS configurado para endpoints `/api/*`
+  - Orígenes: `*` (configurar para producción)
+  - Métodos: GET, POST, PUT, DELETE, OPTIONS
+  - Headers permitidos: Content-Type, Authorization
+
+#### 📝 Migración de print() a logging
+- **`web/server.py`**: 11 prints migrados a logger
+- **`phase6-collective/mqtt_client.py`**: 13 prints de producción migrados
+- **`benchmark_full.py`**: 5 advertencias de imports migradas
+- **Nota**: Prints en bloques `if __name__ == "__main__":` se mantienen para demos interactivas
+
+#### 🛡️ Validación de Seguridad
+- Verificado que calculadora NO usa `eval()` - implementación segura con lambdas
+- Validación de entrada mediante regex patterns
+
+### 📊 Métricas v2.1.0
+| Métrica | v2.0.0 | v2.1.0 |
+|---------|--------|--------|
+| Archivos con logging | 3 | **6** |
+| CORS | ❌ | ✅ |
+| Prints de producción migrados | 0 | **29** |
+
+---
+
 ## [2.0.0] - 2025-12-13
 
 ### 🌌 Dashboard v2.0 y Chat Multi-Nodo

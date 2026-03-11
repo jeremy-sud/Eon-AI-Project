@@ -55,35 +55,35 @@ try:
     ESN_AVAILABLE = True
 except ImportError:
     ESN_AVAILABLE = False
-    print(" [WARN] ESN no disponible")
+    logger.warning("ESN no disponible")
 
 try:
     from quantization.quantizer import QuantizedESN
     QUANT_AVAILABLE = True
 except ImportError:
     QUANT_AVAILABLE = False
-    print(" [WARN] Cuantización no disponible")
+    logger.warning("Cuantización no disponible")
 
 try:
     from plasticity.hebbian import HebbianESN
     PLASTICITY_AVAILABLE = True
 except ImportError:
     PLASTICITY_AVAILABLE = False
-    print(" [WARN] Plasticidad no disponible")
+    logger.warning("Plasticidad no disponible")
 
 try:
     from tiny_lm_v2 import TinyLMv2
     TINYLM_AVAILABLE = True
 except ImportError:
     TINYLM_AVAILABLE = False
-    print(" [WARN] TinyLMv2 no disponible")
+    logger.warning("TinyLMv2 no disponible")
 
 try:
     from learning import EonLearningSystem, OnlineLearner, LongTermMemory
     LEARNING_AVAILABLE = True
 except ImportError:
     LEARNING_AVAILABLE = False
-    print(" [WARN] Sistema de aprendizaje no disponible")
+    logger.warning("Sistema de aprendizaje no disponible")
 
 
 def format_bytes(bytes_val: int) -> str:

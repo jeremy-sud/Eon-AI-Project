@@ -2,7 +2,7 @@
 # Proyecto Eón - Dependencias Python
 # ===========================================
 # Filosofía: Solo lo esencial, minimalismo TinyML
-# Versión: 1.9.7
+# Versión: 2.1.0
 # ===========================================
 
 # =====================
@@ -14,6 +14,7 @@ numpy>=1.21.0           # Operaciones matriciales ESN
 # WEB SERVER
 # =====================
 flask>=2.0.0            # Servidor web dashboard
+flask-cors>=4.0.0       # Cross-Origin Resource Sharing (CORS)
 pillow>=9.0.0           # Generación de imágenes
 
 # =====================

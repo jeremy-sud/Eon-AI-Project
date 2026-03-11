@@ -5,6 +5,7 @@ API REST para interactuar con el núcleo de Eón.
 
 import logging
 from flask import Flask, request, jsonify, send_from_directory, render_template
+from flask_cors import CORS
 from typing import Optional
 import numpy as np
 import re
@@ -45,6 +46,16 @@ except ImportError:
 
 
 app = Flask(__name__, static_folder='static')
+
+# Configurar CORS para permitir peticiones desde cualquier origen
+# En producción, restringir a dominios específicos
+CORS(app, resources={
+    r"/api/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # Directorio para persistencia de datos
 DATA_DIR = os.path.join(_current_dir, 'data')
@@ -143,27 +154,27 @@ _genesis_info = get_genesis()
 
 try:
     _aeon_instance = AeonBirth.load(f"Eon-{_genesis_info.birth_hash[:8]}", DATA_DIR)
-    print(f" [INFO] Eón cargado: {_aeon_instance.name}")
-    print(f" [INFO] Edad: {_aeon_instance.age}")
+    logger.info(f"Eón cargado: {_aeon_instance.name}")
+    logger.info(f"Edad: {_aeon_instance.age}")
 except FileNotFoundError:
-    print(" [INFO] Momento Cero: Creando instancia única de Eón...")
+    logger.info("Momento Cero: Creando instancia única de Eón...")
     _aeon_instance = AeonBirth(
         n_reservoir=100,
         name=f"Eon-{_genesis_info.birth_hash[:8]}",
         data_dir=DATA_DIR
     )
-    print(f" [INFO] Eón ha nacido: {_aeon_instance.name}")
+    logger.info(f"Eón ha nacido: {_aeon_instance.name}")
 
 # Inicializar Sistema de Aprendizaje Continuo
 _learning_system = EonLearningSystem(DATA_DIR, _aeon_instance.esn)
-print(" [INFO] Sistema de aprendizaje inicializado")
+logger.info("Sistema de aprendizaje inicializado")
 
 # Inicializar TinyLMv2 para generación de texto (puede deshabilitarse con EON_DISABLE_TINYLM=1)
 _tinylm_model = None
 _disable_tinylm = os.getenv('EON_DISABLE_TINYLM', '0') == '1'
 if _tinylm_available and not _disable_tinylm:
     try:
-        print(" [INFO] Inicializando TinyLMv2...")
+        logger.info("Inicializando TinyLMv2...")
         _tinylm_model = TinyLMv2(n_reservoir=256, vocab_size=300, embedding_dim=32)
         
         # Texto de entrenamiento con filosofía de Eón
@@ -191,15 +202,15 @@ if _tinylm_available and not _disable_tinylm:
         """ * 8
         
         stats = _tinylm_model.train(_training_text, epochs=2, washout=30)
-        print(f" [INFO] TinyLMv2 entrenado: {stats['accuracy']:.1%} accuracy, {stats['vocab_size']} palabras")
+        logger.info(f"TinyLMv2 entrenado: {stats['accuracy']:.1%} accuracy, {stats['vocab_size']} palabras")
     except (ImportError, AttributeError) as e:
-        print(f" [WARN] Error inicializando TinyLMv2: {e}")
+        logger.warning(f"Error inicializando TinyLMv2: {e}")
         _tinylm_model = None
     except (ValueError, RuntimeError) as e:
-        print(f" [WARN] Error entrenando TinyLMv2: {e}")
+        logger.warning(f"Error entrenando TinyLMv2: {e}")
         _tinylm_model = None
 elif _disable_tinylm:
-    print(" [INFO] TinyLMv2 deshabilitado por variable de entorno EON_DISABLE_TINYLM=1")
+    logger.info("TinyLMv2 deshabilitado por variable de entorno EON_DISABLE_TINYLM=1")
 
  
 

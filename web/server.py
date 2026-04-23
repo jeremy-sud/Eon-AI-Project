@@ -19,14 +19,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Path setup
 _current_dir = os.path.dirname(os.path.abspath(__file__))
-_python_dir = os.path.join(os.path.dirname(_current_dir), "phase1-foundations", "python")
-_language_dir = os.path.join(os.path.dirname(_current_dir), "phase7-language")
-if _python_dir not in sys.path:
-    sys.path.insert(0, _python_dir)
-if _language_dir not in sys.path:
-    sys.path.insert(0, _language_dir)
 
 from core.aeon_birth import AeonBirth
 from core.genesis import get_genesis
@@ -43,6 +36,16 @@ try:
 except ImportError:
     _tinylm_available = False
     logger.warning("TinyLMv2 no disponible, usando respuestas predefinidas")
+
+# Importar EgregorArtist (generador de arte procedural del Egrégor)
+try:
+    from egregore_art import EgregorArtist
+    _egregore_artist = EgregorArtist(random_state=42)
+    _artist_available = True
+except Exception as _artist_err:
+    _egregore_artist = None
+    _artist_available = False
+    logger.warning(f"EgregorArtist no disponible: {_artist_err}")
 
 
 app = Flask(__name__, static_folder='static')
@@ -2798,6 +2801,55 @@ def api_dashboard_reset():
     }
     
     return jsonify({'success': True, 'message': 'Dashboard reseteado'})
+
+
+# =============================================================================
+#                          EGRÉGOR ART API
+# =============================================================================
+
+@app.route('/api/egregore/art', methods=['GET'])
+def egregore_art():
+    """
+    Genera los parámetros de visualización procedural del estado actual del Egrégor.
+
+    Query params (opcionales):
+        mood  — Forzar un mood específico (e.g., ?mood=agitated)
+        all   — Si está presente, devuelve estilos para todos los moods
+
+    Returns:
+        JSON con palette, motion, geometry y noise_field para EgregorVisualizer.js
+    """
+    if not _artist_available:
+        return jsonify({'success': False, 'error': 'EgregorArtist no disponible'}), 503
+
+    try:
+        from web.egregore_art import EgregorMood
+
+        # ¿Piden todos los estilos?
+        if request.args.get('all') is not None:
+            return jsonify({'success': True, 'styles': _egregore_artist.all_styles()})
+
+        # Mood explícito por query param
+        mood_param = request.args.get('mood')
+        if mood_param:
+            try:
+                mood = EgregorMood(mood_param.lower())
+                state = mood
+            except ValueError:
+                return jsonify({'success': False, 'error': f'Mood desconocido: {mood_param}'}), 400
+        else:
+            # Usar el estado actual del Egrégor
+            state = {
+                'mood': _egregore_state.get('mood', 'balanced'),
+                'coherence': float(_egregore_state.get('coherence', 0.5)),
+            }
+
+        style = _egregore_artist.generate(state)
+        return jsonify({'success': True, **style.to_dict()})
+
+    except Exception as e:
+        logger.error(f"Error en /api/egregore/art: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 if __name__ == '__main__':

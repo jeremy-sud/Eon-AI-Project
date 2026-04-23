@@ -22,14 +22,10 @@
 
 import numpy as np
 from typing import Optional, Dict, List
-import sys
 import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from plasticity.hebbian import HebbianESN
 from plasticity.tzimtzum import TzimtzumConfig, TzimtzumState, ContractionPhase
-
 
 class HebbianTzimtzumESN(HebbianESN):
     """
@@ -397,7 +393,6 @@ class HebbianTzimtzumESN(HebbianESN):
             }
         }
 
-
 def demonstrate_hebbian_tzimtzum():
     """Demostración del HebbianTzimtzumESN."""
     print("=" * 60)
@@ -493,7 +488,6 @@ def demonstrate_hebbian_tzimtzum():
     """)
     
     return esn
-
 
 if __name__ == "__main__":
     esn = demonstrate_hebbian_tzimtzum()

@@ -41,12 +41,6 @@ import os
 # Configuración de logging
 logger = logging.getLogger(__name__)
 
-# Path setup
-_current_dir = os.path.dirname(os.path.abspath(__file__))
-_python_dir = os.path.join(os.path.dirname(_current_dir), "phase1-foundations", "python")
-if _python_dir not in sys.path:
-    sys.path.insert(0, _python_dir)
-
 
 class AlchemicalPhase(Enum):
     """

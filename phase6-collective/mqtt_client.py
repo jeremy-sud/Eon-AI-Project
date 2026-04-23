@@ -11,7 +11,6 @@ Uso:
 (c) 2024 Sistemas Ursol - Jeremy Arias Solano
 """
 
-import sys
 import json
 import time
 import base64
@@ -39,12 +38,9 @@ except ImportError:
     MQTT_AVAILABLE = False
     logger.warning("paho-mqtt no instalado. Ejecutar: pip install paho-mqtt")
 
-# Path del proyecto
 PROJECT_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(PROJECT_ROOT / "phase1-foundations" / "python"))
 
 from esn.esn import EchoStateNetwork
-
 
 # ============================================================
 # PROTOCOLO 1-BIT - Formato de Paquete
@@ -66,7 +62,6 @@ PACKET_TYPES = {
 }
 
 PACKET_TYPE_NAMES = {v: k for k, v in PACKET_TYPES.items()}
-
 
 class AeonMQTTNode:
     """
@@ -441,7 +436,6 @@ class AeonMQTTNode:
         thread = threading.Thread(target=heartbeat_loop, daemon=True)
         thread.start()
 
-
 # ============================================================
 # CLI Principal
 # ============================================================
@@ -477,7 +471,6 @@ def _run_demo(node: AeonMQTTNode):
     print()
     print("✓ Demo completado")
 
-
 def _run_interactive(node: AeonMQTTNode, broker: str, port: int):
     """Ejecuta modo interactivo con broker real."""
     print(f"Conectando a {broker}:{port}...")
@@ -505,7 +498,6 @@ def _run_interactive(node: AeonMQTTNode, broker: str, port: int):
         node.disconnect()
         print("Desconectado")
 
-
 def _command_loop(node: AeonMQTTNode):
     """Loop de comandos interactivo."""
     print("\nEscuchando mensajes (Ctrl+C para salir)...")
@@ -521,7 +513,6 @@ def _command_loop(node: AeonMQTTNode):
             print(f"Syncs recibidos: {node.sync_count}")
         elif cmd in ("quit", "exit", "q"):
             break
-
 
 def main():
     parser = argparse.ArgumentParser(description="Eón MQTT Client")
@@ -549,7 +540,6 @@ def main():
         _run_demo(node)
     else:
         _run_interactive(node, args.broker, args.port)
-
 
 if __name__ == "__main__":
     main()

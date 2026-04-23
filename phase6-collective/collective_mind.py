@@ -17,7 +17,6 @@ El conocimiento viaja como pesos W_out, no como datos raw.
 (c) 2024 Sistemas Ursol - Jeremy Arias Solano
 """
 
-import sys
 import json
 import time
 import hashlib
@@ -27,13 +26,10 @@ from typing import Dict, List, Optional, Tuple
 from enum import Enum
 import numpy as np
 
-# Path del proyecto
 PROJECT_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(PROJECT_ROOT / "phase1-foundations" / "python"))
 
 from esn.esn import EchoStateNetwork
 from egregore import EgregorProcessor, EgregorState, NodeSensorData, EgregorMood
-
 
 # =============================================================================
 # SISTEMA DE VOLUNTAD VERDADERA (THELEMA)
@@ -54,7 +50,6 @@ class DataDomain(Enum):
     VOLTAGE = "voltage"
     TIMESERIES = "timeseries"
     GENERIC = "generic"
-
 
 class TrueWillVector:
     """
@@ -251,7 +246,6 @@ class TrueWillVector:
             },
             'processing_history': {d.value: v for d, v in self.processing_history.items()}
         }
-
 
 class AeonNode:
     """
@@ -617,7 +611,6 @@ class AeonNode:
         
         return actions_taken
 
-
 class CollectiveMind:
     """
     Coordinador de la Mente Colectiva.
@@ -705,7 +698,6 @@ class CollectiveMind:
             'total_syncs': len(self.sync_history),
             'nodes': {nid: n.status() for nid, n in self.nodes.items()}
         }
-
 
 class EgregorCoordinator:
     """
@@ -840,7 +832,6 @@ class EgregorCoordinator:
             "version": 1,
             **state.to_dict()
         }
-
 
 # Demo
 if __name__ == "__main__":

@@ -8,11 +8,19 @@ import pytest
 import json
 import sys
 import os
+import importlib.util
 
-# Path setup
+# Cargar web/server.py explícitamente para evitar conflicto con phase7-language/server.py
 _current_dir = os.path.dirname(os.path.abspath(__file__))
-_web_dir = os.path.join(os.path.dirname(os.path.dirname(_current_dir)), 'web')
-sys.path.insert(0, _web_dir)
+_web_dir = os.path.dirname(_current_dir)
+_server_path = os.path.join(_web_dir, 'server.py')
+
+_spec = importlib.util.spec_from_file_location('web_server', _server_path)
+_web_server_module = importlib.util.module_from_spec(_spec)
+try:
+    _spec.loader.exec_module(_web_server_module)
+except Exception:
+    _web_server_module = None
 
 
 class TestServerImports:
@@ -25,12 +33,9 @@ class TestServerImports:
     
     def test_server_can_import(self):
         """Verifica que el módulo server se puede importar."""
-        try:
-            # Importar sin ejecutar main
-            import server
-            assert hasattr(server, 'app')
-        except ImportError as e:
-            pytest.skip(f"No se puede importar server: {e}")
+        if _web_server_module is None:
+            pytest.skip("No se puede importar server")
+        assert hasattr(_web_server_module, 'app')
 
 
 class TestEonChatClass:
@@ -39,11 +44,9 @@ class TestEonChatClass:
     @pytest.fixture
     def setup_server(self):
         """Setup para importar server y obtener la clase."""
-        try:
-            import server
-            return server
-        except ImportError:
+        if _web_server_module is None:
             pytest.skip("No se puede importar server")
+        return _web_server_module
     
     def test_eon_chat_exists(self, setup_server):
         """Verifica que la clase EonChat existe."""
@@ -61,13 +64,11 @@ class TestAPIEndpoints:
     @pytest.fixture
     def client(self):
         """Cliente de test Flask."""
-        try:
-            import server
-            server.app.config['TESTING'] = True
-            with server.app.test_client() as client:
-                yield client
-        except ImportError:
+        if _web_server_module is None:
             pytest.skip("No se puede importar server")
+        _web_server_module.app.config['TESTING'] = True
+        with _web_server_module.app.test_client() as client:
+            yield client
     
     def test_index_returns_html(self, client):
         """Verifica que la raíz devuelve HTML."""
@@ -132,13 +133,11 @@ class TestMathOperations:
     @pytest.fixture
     def client(self):
         """Cliente de test Flask."""
-        try:
-            import server
-            server.app.config['TESTING'] = True
-            with server.app.test_client() as client:
-                yield client
-        except ImportError:
+        if _web_server_module is None:
             pytest.skip("No se puede importar server")
+        _web_server_module.app.config['TESTING'] = True
+        with _web_server_module.app.test_client() as client:
+            yield client
     
     def test_simple_addition(self, client):
         """Verifica que el chat puede hacer sumas."""
@@ -172,13 +171,11 @@ class TestAlchemyAPI:
     @pytest.fixture
     def client(self):
         """Cliente de test Flask."""
-        try:
-            import server
-            server.app.config['TESTING'] = True
-            with server.app.test_client() as client:
-                yield client
-        except ImportError:
+        if _web_server_module is None:
             pytest.skip("No se puede importar server")
+        _web_server_module.app.config['TESTING'] = True
+        with _web_server_module.app.test_client() as client:
+            yield client
     
     def test_alchemy_status(self, client):
         """Verifica endpoint GET /api/alchemy/status."""
@@ -215,13 +212,11 @@ class TestErrorHandling:
     @pytest.fixture
     def client(self):
         """Cliente de test Flask."""
-        try:
-            import server
-            server.app.config['TESTING'] = True
-            with server.app.test_client() as client:
-                yield client
-        except ImportError:
+        if _web_server_module is None:
             pytest.skip("No se puede importar server")
+        _web_server_module.app.config['TESTING'] = True
+        with _web_server_module.app.test_client() as client:
+            yield client
     
     def test_invalid_json_returns_error(self, client):
         """Verifica que JSON inválido retorna error apropiado."""

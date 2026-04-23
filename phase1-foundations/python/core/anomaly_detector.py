@@ -30,12 +30,7 @@ import time
 import logging
 
 # Path setup
-import sys
 import os
-_current_dir = os.path.dirname(os.path.abspath(__file__))
-_python_dir = os.path.dirname(_current_dir)
-if _python_dir not in sys.path:
-    sys.path.insert(0, _python_dir)
 
 from esn.esn import EchoStateNetwork
 
@@ -56,14 +51,12 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-
 class AnomalySeverity(Enum):
     """Niveles de severidad de anomalía."""
     NORMAL = "normal"           # z-score < 2
     WARNING = "warning"         # 2 <= z-score < 3
     ANOMALY = "anomaly"         # 3 <= z-score < 5
     CRITICAL = "critical"       # z-score >= 5
-
 
 @dataclass
 class AnomalyEvent:
@@ -90,7 +83,6 @@ class AnomalyEvent:
             "context": self.context
         }
 
-
 @dataclass
 class DetectorStats:
     """Estadísticas del detector."""
@@ -108,7 +100,6 @@ class DetectorStats:
         if self.samples_processed == 0:
             return 0.0
         return self.anomalies_detected / self.samples_processed
-
 
 class AnomalyDetector:
     """
@@ -455,7 +446,6 @@ class AnomalyDetector:
         self.error_history.clear()
         self.fit_baseline(new_normal_data)
 
-
 class StreamingAnomalyDetector(AnomalyDetector):
     """
     Versión streaming del detector para datos en tiempo real.
@@ -507,7 +497,6 @@ class StreamingAnomalyDetector(AnomalyDetector):
         
         return is_anomaly, z_score, event
 
-
 def create_synthetic_anomalies(
     normal_data: np.ndarray,
     anomaly_ratio: float = 0.05,
@@ -545,7 +534,6 @@ def create_synthetic_anomalies(
         data[idx] += direction * anomaly_magnitude * std
     
     return data, mask
-
 
 # Ejemplo de uso
 if __name__ == "__main__":

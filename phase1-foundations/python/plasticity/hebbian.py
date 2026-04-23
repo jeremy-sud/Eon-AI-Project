@@ -7,18 +7,10 @@ Implementación de aprendizaje local continuo inspirado en neurociencia.
 
 import numpy as np
 from typing import Optional, Tuple
-import sys
 import os
-
-# Agregar path del proyecto para imports
-_current_dir = os.path.dirname(os.path.abspath(__file__))
-_python_dir = os.path.dirname(_current_dir)
-if _python_dir not in sys.path:
-    sys.path.insert(0, _python_dir)
 
 from esn.esn import EchoStateNetwork, generate_mackey_glass
 from utils.matrix_init import compute_spectral_radius
-
 
 class HebbianESN(EchoStateNetwork):
     """
@@ -215,7 +207,6 @@ class HebbianESN(EchoStateNetwork):
         self.weight_history = []
         self._adaptation_count = 0
 
-
 def compare_plasticity_types():
     """
     Compara diferentes tipos de plasticidad.
@@ -313,7 +304,6 @@ def compare_plasticity_types():
 ║  sin necesidad de backpropagation global.                     ║
 ╚═══════════════════════════════════════════════════════════════╝
     """)
-
 
 if __name__ == "__main__":
     compare_plasticity_types()

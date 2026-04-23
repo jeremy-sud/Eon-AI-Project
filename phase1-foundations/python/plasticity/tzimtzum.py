@@ -38,14 +38,9 @@ import numpy as np
 from typing import Optional, Tuple, Dict, List, Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-import sys
 import os
 
-# Agregar path del proyecto
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-
 from esn.esn import EchoStateNetwork
-
 
 class ContractionPhase(Enum):
     """
@@ -58,7 +53,6 @@ class ContractionPhase(Enum):
     DARK_NIGHT = auto()     # Proceso de poda activo
     CHALLAL = auto()        # Vacío primordial, mínimas conexiones
     RENACIMIENTO = auto()   # Recrecimiento de conexiones
-
 
 @dataclass
 class TzimtzumState:
@@ -100,7 +94,6 @@ class TzimtzumState:
             'compression_ratio': self.compression_ratio
         }
 
-
 @dataclass
 class TzimtzumConfig:
     """
@@ -132,7 +125,6 @@ class TzimtzumConfig:
     
     # Semilla para reproducibilidad del regrowth
     regrowth_seed: Optional[int] = None
-
 
 class TzimtzumESN(EchoStateNetwork):
     """
@@ -609,7 +601,6 @@ class TzimtzumESN(EchoStateNetwork):
 """
         return viz
 
-
 class TzimtzumMixin:
     """
     Mixin para agregar capacidades Tzimtzum a cualquier ESN.
@@ -657,7 +648,6 @@ class TzimtzumMixin:
         self.tzimtzum_state.pruning_cycles += 1
         
         return {'pruned_count': int(pruned_count)}
-
 
 def demonstrate_tzimtzum():
     """
@@ -781,7 +771,6 @@ def demonstrate_tzimtzum():
     """)
     
     return tzim
-
 
 if __name__ == "__main__":
     tzim = demonstrate_tzimtzum()

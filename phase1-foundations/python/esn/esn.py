@@ -11,13 +11,7 @@ import time
 import warnings
 from typing import Optional, Tuple
 
-# Importar utilidades compartidas
-import sys
 import os
-_current_dir = os.path.dirname(os.path.abspath(__file__))
-_python_dir = os.path.dirname(_current_dir)
-if _python_dir not in sys.path:
-    sys.path.insert(0, _python_dir)
 
 try:
     from utils.matrix_init import (
@@ -31,7 +25,6 @@ try:
     _UTILS_AVAILABLE = True
 except ImportError:
     _UTILS_AVAILABLE = False
-
 
 class EchoStateNetwork:
     """
@@ -316,7 +309,6 @@ class EchoStateNetwork:
         """Resetea el estado del reservoir a ceros."""
         self.state = np.zeros(self.n_reservoir)
 
-
 def generate_mackey_glass(n_samples: int = 2000, tau: int = 17, delta_t: float = 1.0) -> np.ndarray:
     """
     Genera la serie temporal Mackey-Glass.
@@ -352,7 +344,6 @@ def generate_mackey_glass(n_samples: int = 2000, tau: int = 17, delta_t: float =
         series[t] = x_t
         
     return series
-
 
 if __name__ == "__main__":
     # Ejemplo básico de uso

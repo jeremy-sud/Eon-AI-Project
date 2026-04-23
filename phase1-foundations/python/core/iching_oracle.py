@@ -28,18 +28,12 @@ import logging
 import hashlib
 
 # Path setup
-import sys
 import os
-_current_dir = os.path.dirname(os.path.abspath(__file__))
-_python_dir = os.path.dirname(_current_dir)
-if _python_dir not in sys.path:
-    sys.path.insert(0, _python_dir)
 
 from esn.esn import EchoStateNetwork
 from core.archaic_protocol import Hexagram, Trigram, HEXAGRAMS, ArchaicProtocol
 
 logger = logging.getLogger(__name__)
-
 
 class ConsultationType(Enum):
     """Tipos de consulta al oráculo."""
@@ -48,14 +42,12 @@ class ConsultationType(Enum):
     SEQUENCE = "sequence"       # Secuencia de hexagramas
     MEDITATION = "meditation"   # Sin pregunta, estado actual
 
-
 class LineChange(Enum):
     """Tipos de línea en el I-Ching."""
     OLD_YIN = 6     # ⚋ Yin viejo (cambia a Yang)
     YOUNG_YANG = 7  # ⚊ Yang joven (estable)
     YOUNG_YIN = 8   # ⚋ Yin joven (estable)
     OLD_YANG = 9    # ⚊ Yang viejo (cambia a Yin)
-
 
 @dataclass
 class OracleReading:
@@ -107,7 +99,6 @@ class OracleReading:
             "resonance": self.resonance_score
         }
 
-
 @dataclass
 class OracleStats:
     """Estadísticas del oráculo."""
@@ -118,7 +109,6 @@ class OracleStats:
     @property
     def avg_resonance(self) -> float:
         return self.total_resonance / self.consultations if self.consultations > 0 else 0.0
-
 
 class IChingOracle:
     """
@@ -643,7 +633,6 @@ class IChingOracle:
         """
         return self.consult("", ConsultationType.MEDITATION)
 
-
 def create_oracle(
     reservoir_size: int = 64,
     pretrained: bool = True,
@@ -669,7 +658,6 @@ def create_oracle(
         oracle.train_on_transitions(n_sequences=500)
     
     return oracle
-
 
 # Demo
 if __name__ == "__main__":

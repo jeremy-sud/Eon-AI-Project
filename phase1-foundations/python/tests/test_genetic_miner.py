@@ -12,7 +12,8 @@ import numpy as np
 
 # ─── Path setup (sin sys.path.insert; eon-py está instalado como paquete) ───
 from core.genetic_miner import GeneticMiner
-from core.universal_miner import ExcavationResult, ResonanceType
+from core.universal_miner import ExcavationResult, ResonanceType, SeedVault
+from core.seed_archaeologist import SeedArchaeologist
 
 
 # ════════════════════════════════════════════════════════════
@@ -268,3 +269,71 @@ class TestUtilities:
     def test_summary_generations_completed(self, miner, result_after_evolve):
         s = miner.summary()
         assert s["generations_completed"] == miner.generations
+
+
+# ════════════════════════════════════════════════════════════
+#  Integración con SeedArchaeologist
+# ════════════════════════════════════════════════════════════
+
+class TestArchaeologistIntegration:
+    def test_archaeologist_disabled_by_default(self):
+        gm = GeneticMiner()
+        assert not gm.use_archaeologist
+        stats = gm.archaeologist_stats()
+        assert not stats["enabled"]
+
+    def test_archaeologist_enabled(self):
+        gm = GeneticMiner(use_archaeologist=True)
+        assert gm.use_archaeologist
+        stats = gm.archaeologist_stats()
+        assert stats["enabled"]
+        assert "fertile_regions_found" in stats
+
+    def test_archaeologist_with_vault(self):
+        vault = SeedVault()
+        gm = GeneticMiner(
+            use_archaeologist=True,
+            fertile_bias=0.7,
+            archaeologist_samples=100,
+            population_size=20,
+            generations=3,
+            random_state=42
+        )
+        
+        # Función fitness simple
+        def fitness(seed: int) -> float:
+            return -abs(seed - 12345)
+        
+        # Evolución con vault
+        result = gm.evolve(fitness, vault)
+        
+        # Verificar que se generó un resultado válido
+        assert isinstance(result, ExcavationResult)
+        assert result.resonance != float("-inf")
+        
+        # Verificar estadísticas del archaeologist
+        stats = gm.archaeologist_stats()
+        assert stats["enabled"]
+        assert stats["fertile_bias"] == 0.7
+        assert stats["archaeologist_samples"] == 100
+        assert "landscape_stats" in stats
+
+    def test_archaeologist_population_initialization(self):
+        vault = SeedVault()
+        gm = GeneticMiner(
+            use_archaeologist=True,
+            fertile_bias=0.8,
+            population_size=10,
+            random_state=42
+        )
+        
+        # Inicializar población con vault
+        population = gm._init_population(vault)
+        
+        # Verificar que la población tiene elementos (puede ser menos si no hay regiones fértiles)
+        assert len(population) > 0
+        assert len(population) <= 10
+        
+        # Verificar que todas las semillas están en rango
+        for seed in population:
+            assert gm._SEED_MIN <= seed <= gm._SEED_MAX

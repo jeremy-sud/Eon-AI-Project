@@ -2,15 +2,17 @@
 
 Este documento detalla el análisis de consumo energético y uso de recursos del Motor Eón.
 
-## Benchmark Integral v2.2
+## Benchmark Integral (Actual)
 
 Ejecutar con:
 ```bash
-cd phase1-foundations/python
-python benchmark.py --quick   # Modo rápido (~30s)
-python benchmark.py           # Modo completo (~2min)
-python benchmark.py --export  # Exportar a JSON
+python benchmark_full.py --quick     # Modo rápido
+python benchmark_full.py             # Modo completo
+python benchmark_full.py --export results.json
 ```
+
+> Nota: `benchmark_full.py` en la raíz es el benchmark integral actual. El archivo `phase1-foundations/python/benchmark.py` se mantiene como benchmark legacy del núcleo ESN.
+
 
 ## 1. Tamaño del Reservoir
 
@@ -138,4 +140,4 @@ Eón es la solución óptima cuando se requiere:
 
 ---
 
-*Última actualización: 2025-12-10 (v2.2)*
+*Última actualización: 2026-05-05 (v2.2)*

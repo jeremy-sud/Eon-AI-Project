@@ -2,7 +2,7 @@
 
 > Ideas de mejora basadas en la infraestructura existente del proyecto.
 > 
-> Última actualización: 2025-01-14
+> Última actualización: 2024-01-15
 
 ---
 
@@ -10,21 +10,30 @@
 
 | # | Idea | Dificultad | Impacto | Prioridad | Estado |
 |---|------|------------|---------|-----------|--------|
-| 13 | Detección de Anomalías | ⭐ | 🔥🔥🔥 | **ALTA** | 🔄 Pendiente |
-| 9 | Dashboard Mejorado | ⭐⭐ | 🔥🔥🔥 | **ALTA** | 🔄 Pendiente |
-| 2 | Oráculo I-Ching | ⭐⭐⭐ | 🔥🔥🔥 | **ALTA** | 🔄 Pendiente |
-| 6 | Chat Multi-Nodo | ⭐⭐⭐ | 🔥🔥🔥 | **ALTA** | 🔄 Pendiente |
-| 7 | Cuantización Adaptativa | ⭐⭐ | 🔥🔥 | MEDIA | 🔄 Pendiente |
-| 11 | Ciclos Circadianos | ⭐⭐ | 🔥🔥 | MEDIA | 🔄 Pendiente |
-| 14 | Streaming ESN | ⭐⭐ | 🔥🔥 | MEDIA | 🔄 Pendiente |
-| 1 | Meta-Aprendizaje Cross-Seed | ⭐⭐⭐ | 🔥🔥 | MEDIA | 🔄 Pendiente |
-| 3 | Reservoir Morphing | ⭐⭐⭐ | 🔥🔥 | BAJA | 🔄 Pendiente |
-| 4 | Sincronización Cuántica | ⭐⭐⭐ | 🔥 | BAJA | 🔄 Pendiente |
-| 5 | Arte con Egrégor | ⭐⭐ | 🔥 | BAJA | 🔄 Pendiente |
-| 8 | Evolución Genética | ⭐⭐⭐ | 🔥🔥 | BAJA | 🔄 Pendiente |
-| 10 | Firma Neuronal | ⭐⭐ | 🔥 | BAJA | 🔄 Pendiente |
-| 12 | Attention Ligero | ⭐⭐⭐ | 🔥🔥 | BAJA | 🔄 Pendiente |
-| 15 | Arqueología de Semillas | ⭐⭐ | 🔥 | BAJA | 🔄 Pendiente |
+| 16 | TinyAttention → TinyLMv2 | 🔄 Parcial | ALTA | ⭐⭐ |
+| 17 | SeedArchaeologist → GeneticMiner | ✅ Completada | ALTA | ⭐⭐ |
+| 24 | API REST Completa | 🔄 Pendiente | ALTA | ⭐⭐ |
+| 18 | NeuralWatermark → Collective Mind | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 21 | Dashboard Dinámico | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 19 | Circadian Rhythms → ESN Training | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 25 | Benchmarks Comparativos | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 23 | Visualización 2D/3D | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 20 | Hardware Integration | 🔄 Pendiente | BAJA | ⭐⭐⭐ |
+| 22 | Multi-Head Attention | 🔄 Pendiente | BAJA | ⭐⭐ |
+| 26 | Optimización Memoria | 🔄 Pendiente | BAJA | ⭐⭐ |
+| 27 | Persistencia Estado | 🔄 Pendiente | BAJA | ⭐⭐ |
+| 16 | TinyAttention → TinyLMv2 | 🔄 Parcial | ALTA | ⭐⭐ |
+| 17 | SeedArchaeologist → GeneticMiner | 🔄 Pendiente | ALTA | ⭐⭐ |
+| 18 | NeuralWatermark → Collective Mind | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 19 | Circadian Rhythms → ESN Training | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 20 | Hardware Integration | 🔄 Pendiente | BAJA | ⭐⭐⭐ |
+| 21 | Dashboard Dinámico | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 16 | TinyAttention → TinyLMv2 | 🔄 Parcial | ALTA | ⭐⭐ |
+| 17 | SeedArchaeologist → GeneticMiner | 🔄 Pendiente | ALTA | ⭐⭐ |
+| 18 | NeuralWatermark → Collective Mind | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 19 | Circadian Rhythms → ESN Training | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 20 | Hardware Integration | 🔄 Pendiente | BAJA | ⭐⭐⭐ |
+| 21 | Dashboard Dinámico | 🔄 Pendiente | MEDIA | ⭐⭐ |
 
 ---
 
@@ -869,5 +878,241 @@ class SeedArchaeologist:
 
 ---
 
-*Documento creado: 2025-01-14*
-*Próxima revisión: Después de v2.0*
+## 🚀 Mejoras e Integraciones Futuras (v2.3+)
+
+### Integraciones a Medias Identificadas
+
+| # | Integración | Estado | Prioridad | Complejidad |
+|---|-------------|--------|-----------|-------------|
+| 16 | TinyAttention → TinyLMv2 | 🔄 Parcial | ALTA | ⭐⭐ |
+| 17 | SeedArchaeologist → GeneticMiner | 🔄 Pendiente | ALTA | ⭐⭐ |
+| 18 | NeuralWatermark → Collective Mind | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 19 | Circadian Rhythms → ESN Training | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 20 | Hardware (Arduino/ESP32) → Python Core | 🔄 Pendiente | BAJA | ⭐⭐⭐ |
+| 21 | Dashboard → Métricas en Tiempo Real | 🔄 Pendiente | MEDIA | ⭐⭐ |
+
+### Mejoras en Componentes Existentes
+
+| # | Mejora | Componente | Estado | Prioridad |
+|---|--------|------------|--------|-----------|
+| 22 | Multi-Head Attention | TinyAttention | 🔄 Pendiente | BAJA |
+| 23 | Visualización 2D/3D | SeedArchaeologist | 🔄 Pendiente | MEDIA |
+| 24 | API REST Completa | Todos los módulos | 🔄 Pendiente | ALTA |
+| 25 | Benchmarks Comparativos | Sistema completo | 🔄 Pendiente | MEDIA |
+| 26 | Optimización Memoria | TinyAttention | 🔄 Pendiente | BAJA |
+| 27 | Persistencia Estado | CircadianClock | 🔄 Pendiente | BAJA |
+
+---
+
+### 🔄 Idea #16: Integración Completa TinyAttention → TinyLMv2
+
+**Estado Actual**: TinyAttention existe como módulo separado con AttentionTinyLMv2 opcional.
+
+**Problema**: TinyLMv2 base no usa atención. AttentionTinyLMv2 es una subclase separada.
+
+**Solución Propuesta**:
+- Integrar TinyAttention directamente en TinyLMv2 como opción configurable
+- Modificar `forward()` para aplicar atención sobre secuencia antes del ESN
+- Mantener compatibilidad backward
+
+**Archivos**: `phase7-language/tiny_lm_v2.py`, `phase7-language/tiny_attention.py`
+
+**Beneficios**: Mejor captura de dependencias largo alcance, mayor perplexity.
+
+---
+
+### 🔄 Idea #17: SeedArchaeologist → GeneticMiner Integration
+
+**Estado Actual**: Ambos existen independientemente.
+
+**Problema**: GeneticMiner busca semillas aleatoriamente sin usar mapas de fertilidad.
+
+**Solución Propuesta**:
+- Usar `find_fertile_regions()` para inicializar población genética
+- Guiar mutaciones hacia regiones fértiles conocidas
+- Logging de evolución con métricas arqueológicas
+
+**Archivos**: `core/genetic_miner.py`, `core/seed_archaeologist.py`
+
+**Beneficios**: Aceleración dramática de convergencia genética.
+
+---
+
+### 🔄 Idea #18: NeuralWatermark → Collective Mind Authentication
+
+**Estado Actual**: Collective Mind comparte modelos sin autenticación.
+
+**Problema**: Riesgo de modelos falsificados o maliciosos en federated learning.
+
+**Solución Propuesta**:
+- Watermark automático en modelos antes de compartir
+- Verificación de watermark en modelos recibidos
+- Rechazo de modelos sin firma válida o de owner desconocido
+
+**Archivos**: `phase6-collective/collective_mind.py`, `utils/watermark.py`
+
+**Beneficios**: Seguridad en aprendizaje federado, trazabilidad de modelos.
+
+---
+
+### 🔄 Idea #19: Circadian Rhythms → ESN Training Adaptation
+
+**Estado Actual**: CircadianClock existe pero no afecta training.
+
+**Problema**: ESN no se adapta a ciclos circadianos naturales.
+
+**Solución Propuesta**:
+- Modificar learning rate según fase circadiana
+- Ajustar sparsity durante "sueño" vs "vigilia"
+- Logging de performance por fase del día
+
+**Archivos**: `core/circadian.py`, `esn/esn.py`
+
+**Beneficios**: Mejor alineación con ritmos biológicos, performance más natural.
+
+---
+
+### 🔄 Idea #20: Hardware Integration Arduino/ESP32 → Python Core
+
+**Estado Actual**: Código C++ existe pero no integrado.
+
+**Problema**: Hardware no se comunica con sistema Python principal.
+
+**Solución Propuesta**:
+- MQTT bridge entre Arduino/ESP32 y Python
+- TinyESN corriendo en microcontroladores
+- Sincronización de modelos vía Collective Mind
+
+**Archivos**: `phase4-hardware/arduino/`, `phase4-hardware/esp32/`, `phase6-collective/mqtt_client.py`
+
+**Beneficios**: Edge computing distribuido, menor latencia.
+
+---
+
+### 🔄 Idea #21: Dashboard Dinámico con Métricas en Tiempo Real
+
+**Estado Actual**: Dashboard HTML estático.
+
+**Problema**: No muestra métricas de nuevos módulos (SeedArchaeologist, watermarking, etc.).
+
+**Solución Propuesta**:
+- WebSocket para updates en tiempo real
+- Visualización de mapas de fertilidad
+- Métricas de collective mind y circadian rhythms
+- API REST backend en Flask/FastAPI
+
+**Archivos**: `phase6-collective/dashboard.html`, `web/server.py`
+
+**Beneficios**: Mejor monitoreo y debugging del sistema.
+
+---
+
+### 🔄 Idea #22: Multi-Head Attention en TinyAttention
+
+**Estado Actual**: Solo single-head.
+
+**Problema**: Limitada capacidad de modelado de diferentes tipos de dependencias.
+
+**Solución Propuesta**:
+- Extender a múltiples cabezas de atención
+- Mantener ultra-ligero (< 100KB total)
+- Configurable: 1-4 cabezas
+
+**Archivos**: `phase7-language/tiny_attention.py`
+
+**Beneficios**: Mejor performance en tareas complejas.
+
+---
+
+### 🔄 Idea #23: Visualización 2D/3D de Espacios de Semillas
+
+**Estado Actual**: Solo análisis numérico.
+
+**Problema**: Difícil interpretar mapas de fertilidad.
+
+**Solución Propuesta**:
+- Reducción dimensionalidad (t-SNE/UMAP)
+- Plotly.js para visualización interactiva
+- Clustering visual de regiones fértiles
+
+**Archivos**: `core/seed_archaeologist.py`, `web/`
+
+**Beneficios**: Mejor comprensión del landscape de semillas.
+
+---
+
+### 🔄 Idea #24: API REST Completa para Todos los Módulos
+
+**Estado Actual**: APIs parciales en collective mind.
+
+**Problema**: No todos los módulos son accesibles vía HTTP.
+
+**Solución Propuesta**:
+- Endpoints para: watermarking, genetic mining, seed archaeology
+- Documentación OpenAPI/Swagger
+- Autenticación básica
+
+**Archivos**: `web/server.py`, `phase6-collective/`
+
+**Beneficios**: Mejor integración con otros sistemas.
+
+---
+
+### 🔄 Idea #25: Benchmarks Comparativos Entre Versiones
+
+**Estado Actual**: Benchmarks individuales.
+
+**Problema**: Difícil comparar performance entre versiones.
+
+**Solución Propuesta**:
+- Suite de benchmarks automatizada
+- Comparación TinyLMv1 vs v2 + attention
+- Métricas: latency, accuracy, memory, perplexity
+
+**Archivos**: `benchmark_full.py`, `docs/benchmarks.md`
+
+**Beneficios**: Mejor tracking de progreso.
+
+---
+
+### 🔄 Idea #26: Optimización de Memoria en TinyAttention
+
+**Estado Actual**: ~24KB para dim=32.
+
+**Problema**: Podría ser más eficiente.
+
+**Solución Propuesta**:
+- Quantization de matrices de atención
+- Sparse attention patterns
+- Memory pooling para secuencias largas
+
+**Archivos**: `phase7-language/tiny_attention.py`
+
+**Beneficios**: Compatibilidad con más dispositivos edge.
+
+---
+
+### 🔄 Idea #27: Persistencia de Estado Circadian
+
+**Estado Actual**: CircadianClock stateless.
+
+**Problema**: Reinicia en cada ejecución.
+
+**Solución Propuesta**:
+- Guardar estado en archivo/Redis
+- Restaurar fase actual al iniciar
+- Logging histórico de fases
+
+**Archivos**: `core/circadian.py`
+
+**Beneficios**: Continuidad en reinicios del sistema.
+
+---
+
+✅ **Integración Completada (2024-01-15)**: SeedArchaeologist → GeneticMiner
+   - Inicialización inteligente de población genética usando mapas de fertilidad
+   - Parámetros opcionales: use_archaeologist, fertile_bias, archaeologist_samples
+   - Compatibilidad backward mantenida, tests unitarios agregados
+
+*Documento actualizado: 2024-01-15*
+*Próxima revisión: Después de v2.3*

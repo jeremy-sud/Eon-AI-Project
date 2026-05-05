@@ -24,6 +24,8 @@ _current_dir = os.path.dirname(os.path.abspath(__file__))
 from core.aeon_birth import AeonBirth
 from core.genesis import get_genesis
 from core.alchemy import AlchemicalPipeline, AlchemicalConfig, AlchemicalPhase
+from core.anomaly_detector import AnomalyDetector, StreamingAnomalyDetector
+from core.iching_oracle import IChingOracle, create_oracle
 from esn.esn import generate_mackey_glass
 
 # Importar sistema de aprendizaje continuo
@@ -215,18 +217,28 @@ if _tinylm_available and not _disable_tinylm:
 elif _disable_tinylm:
     logger.info("TinyLMv2 deshabilitado por variable de entorno EON_DISABLE_TINYLM=1")
 
- 
+# Inicializar Detector de Anomalías
+_anomaly_detector = None
+try:
+    logger.info("Inicializando detector de anomalías...")
+    # Crear datos normales para calibración
+    normal_data = generate_mackey_glass(1000)
+    _anomaly_detector = AnomalyDetector(_aeon_instance.esn, threshold_sigma=3.0)
+    _anomaly_detector.fit_baseline(normal_data.reshape(-1, 1))
+    logger.info("Detector de anomalías calibrado")
+except Exception as e:
+    logger.warning(f"Error inicializando detector de anomalías: {e}")
+    _anomaly_detector = None
 
-
-@app.route('/')
-def index():
-    """Servir página principal."""
-    return send_from_directory('static', 'index.html')
-
-@app.route('/dashboard')
-def dashboard_v2():
-    """Servir Dashboard v2.0 (plantilla en templates/dashboard_v2.html)."""
-    return render_template('dashboard_v2.html')
+# Inicializar Oráculo I-Ching Neural
+_iching_oracle = None
+try:
+    logger.info("Inicializando Oráculo I-Ching Neural...")
+    _iching_oracle = create_oracle(reservoir_size=64, pretrained=True, random_state=42)
+    logger.info("Oráculo I-Ching listo para consultas")
+except Exception as e:
+    logger.warning(f"Error inicializando Oráculo I-Ching: {e}")
+    _iching_oracle = None
 
 @app.route('/api/config', methods=['GET', 'POST'])
 def config():
@@ -2271,6 +2283,102 @@ def get_status():
         'success': True,
         'status': status
     })
+
+
+@app.route('/api/anomaly/detect', methods=['POST'])
+def detect_anomaly():
+    """Detectar anomalías en datos usando el detector de Eón."""
+    
+    if _anomaly_detector is None:
+        return jsonify({
+            'success': False,
+            'error': 'Detector de anomalías no disponible'
+        }), 503
+    
+    data = request.get_json() or {}
+    values = data.get('values', [])
+    
+    if not values:
+        return jsonify({
+            'success': False,
+            'error': 'Se requieren valores para detectar anomalías'
+        }), 400
+    
+    try:
+        # Convertir a array numpy
+        values_array = np.array(values, dtype=float)
+        if values_array.ndim == 1:
+            values_array = values_array.reshape(-1, 1)
+        
+        # Detectar anomalías
+        anomalies = []
+        for i, point in enumerate(values_array):
+            is_anomaly, z_score, event = _anomaly_detector.detect(point.flatten())
+            if event:
+                anomalies.append({
+                    'index': i,
+                    'value': float(point[0]),
+                    'is_anomaly': is_anomaly,
+                    'z_score': z_score,
+                    'severity': event.severity.value,
+                    'description': event.description,
+                    'timestamp': event.timestamp
+                })
+        
+        # Estadísticas del detector
+        stats = _anomaly_detector.get_stats()
+        
+        return jsonify({
+            'success': True,
+            'anomalies': anomalies,
+            'detector_stats': stats,
+            'total_points': len(values),
+            'anomaly_count': len(anomalies)
+        })
+        
+    except Exception as e:
+        logger.error(f"Error detectando anomalías: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'Error interno: {str(e)}'
+        }), 500
+
+
+@app.route('/api/oracle', methods=['POST'])
+def consult_oracle():
+    """Consultar el Oráculo I-Ching Neural."""
+    
+    if _iching_oracle is None:
+        return jsonify({
+            'success': False,
+            'error': 'Oráculo I-Ching no disponible'
+        }), 503
+    
+    data = request.get_json() or {}
+    question = data.get('question', '').strip()
+    
+    if not question:
+        return jsonify({
+            'success': False,
+            'error': 'Se requiere una pregunta para la consulta'
+        }), 400
+    
+    try:
+        # Realizar consulta
+        reading = _iching_oracle.consult(question)
+        
+        return jsonify({
+            'success': True,
+            'reading': reading.to_dict(),
+            'oracle_stats': _iching_oracle.get_stats()
+        })
+        
+    except Exception as e:
+        logger.error(f"Error consultando oráculo: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'Error interno: {str(e)}'
+        }), 500
 
 
 @app.route('/api/learn', methods=['POST'])

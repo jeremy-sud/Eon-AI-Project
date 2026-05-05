@@ -17,7 +17,35 @@ La versión 2 introduce mejoras significativas en arquitectura y memoria:
 
 - `tiny_lm_v2.py`: Implementación completa del modelo.
 - `src/trie_vocab.py`: Estructura de datos Trie eficiente.
-- `server.py`: Interfaz Web para demos.
+- `server.py`: Interfaz Web para demos y chat colaborativo.
+
+## Chat Colaborativo Multi-Nodo
+
+El servidor incluye un sistema de chat colaborativo donde múltiples nodos ESN especializados colaboran para generar respuestas coherentes:
+
+- **Nodo Analista**: Detecta intención del mensaje
+- **Nodo Generador**: Crea respuesta base
+- **Nodo Validador**: Verifica coherencia
+
+### API Endpoint
+
+```
+POST /chat
+{
+  "message": "Tu pregunta aquí"
+}
+```
+
+Respuesta:
+```json
+{
+  "success": true,
+  "response": "Respuesta colaborativa generada",
+  "contributions": 3,
+  "coherence_score": 0.85,
+  "processing_time": 0.123
+}
+```
 
 ## Ejecución
 

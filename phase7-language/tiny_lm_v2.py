@@ -28,6 +28,14 @@ from esn.esn import EchoStateNetwork
 from src.trie_vocab import TrieVocab
 from src.gematria import GematriaTokenizer, GematriaEmbeddingLayer
 
+# Import TinyAttention for optional integration
+try:
+    from tiny_attention import TinyAttention
+    TINY_ATTENTION_AVAILABLE = True
+except ImportError:
+    TINY_ATTENTION_AVAILABLE = False
+    TinyAttention = None
+
 
 class WordTokenizer:
     """
@@ -138,7 +146,10 @@ class TinyLMv2:
                  n_reservoir: int = 256,
                  vocab_size: int = 500,
                  embedding_dim: int = 32,
-                 tokenizer_type: Literal["word", "gematria"] = "word"):
+                 tokenizer_type: Literal["word", "gematria"] = "word",
+                 use_attention: bool = False,
+                 attention_dim: Optional[int] = None,
+                 attention_causal: bool = True):
         """
         Inicializa el modelo de lenguaje.
         
@@ -147,11 +158,31 @@ class TinyLMv2:
             vocab_size: Tamaño máximo del vocabulario
             embedding_dim: Dimensión de embeddings
             tokenizer_type: Tipo de tokenizador ("word" o "gematria")
+            use_attention: Si usar TinyAttention para procesar secuencias
+            attention_dim: Dimensión de atención (default = embedding_dim)
+            attention_causal: Si la atención es causal (recomendado para LM)
         """
         self.n_reservoir = n_reservoir
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
         self.tokenizer_type = tokenizer_type
+        self.use_attention = use_attention
+        
+        # Configurar atención si está disponible y solicitada
+        if use_attention:
+            if not TINY_ATTENTION_AVAILABLE:
+                raise ImportError(
+                    "TinyAttention no está disponible. Instala tiny_attention.py"
+                )
+            attn_dim = attention_dim or embedding_dim
+            self.attention = TinyAttention(
+                dim=attn_dim, 
+                causal=attention_causal,
+                random_state=42
+            )
+            logger.info(f"TinyAttention habilitado: dim={attn_dim}, causal={attention_causal}")
+        else:
+            self.attention = None
         
         # Seleccionar tokenizador según tipo
         if tokenizer_type == "gematria":
@@ -294,7 +325,8 @@ class TinyLMv2:
                  max_tokens: int = 30,
                  temperature: float = 0.7,
                  top_k: int = 10,
-                 strategy: str = 'sampling') -> str:
+                 strategy: str = 'sampling',
+                 attention_window: int = 8) -> str:
         """
         Genera texto.
         
@@ -304,6 +336,7 @@ class TinyLMv2:
             temperature: Creatividad (menor = más determinista)
             top_k: Número de candidatos para sampling
             strategy: 'greedy', 'sampling', o 'beam'
+            attention_window: Ventana de contexto para atención (si habilitada)
             
         Returns:
             Texto generado
@@ -317,9 +350,18 @@ class TinyLMv2:
         # Procesar prompt
         prompt_indices = self.tokenizer.encode(prompt)
         
+        # Buffer de embeddings para atención
+        if self.use_attention:
+            embedding_buffer = []
+        
         # Calentar el reservoir con el prompt
         for idx in prompt_indices:
             emb = self._get_embedding(idx)
+            if self.use_attention:
+                embedding_buffer.append(emb)
+                # Mantener solo la ventana reciente
+                if len(embedding_buffer) > attention_window:
+                    embedding_buffer.pop(0)
             self.esn._update_state(emb)
         
         # Generar
@@ -332,7 +374,23 @@ class TinyLMv2:
         
         for _ in range(max_tokens):
             emb = self._get_embedding(current_idx)
-            state = self.esn._update_state(emb)
+            
+            # Aplicar atención si está habilitada
+            if self.use_attention and len(embedding_buffer) > 0:
+                # Crear secuencia con el nuevo embedding
+                sequence = np.array(embedding_buffer + [emb])
+                # Aplicar atención
+                attended_emb = self.attention.forward(sequence)[-1]  # Último elemento
+            else:
+                attended_emb = emb
+            
+            # Actualizar buffer
+            if self.use_attention:
+                embedding_buffer.append(attended_emb)
+                if len(embedding_buffer) > attention_window:
+                    embedding_buffer.pop(0)
+            
+            state = self.esn._update_state(attended_emb)
             logits = np.dot(state, self.esn.W_out)
             
             if strategy == 'greedy':
@@ -357,13 +415,23 @@ class TinyLMv2:
             self.n_reservoir * self.tokenizer.actual_vocab_size * 8  # W_out
         )
         
-        return {
+        # Agregar memoria de atención si está habilitada
+        if self.use_attention and self.attention:
+            memory_bytes += self.attention.memory_bytes()
+        
+        stats = {
             'n_reservoir': self.n_reservoir,
             'vocab_size': self.tokenizer.actual_vocab_size if hasattr(self.tokenizer, 'actual_vocab_size') else 0,
             'embedding_dim': self.embedding_dim,
             'is_trained': self.is_trained,
-            'memory_kb': memory_bytes / 1024
+            'memory_kb': memory_bytes / 1024,
+            'use_attention': self.use_attention
         }
+        
+        if self.use_attention and self.attention:
+            stats['attention'] = self.attention.summary()
+        
+        return stats
 
 
 # Demo

@@ -62,6 +62,19 @@ from .collaborative_chat import (
     create_collaborative_chat
 )
 
+# Evolución Genética (v2.2)
+from .genetic_miner import GeneticMiner
+
+# Firma Neuronal (v2.2)
+try:
+    from ..utils.watermark import NeuralWatermark, extract_owner
+except ImportError:
+    # Fallback para imports absolutos
+    from utils.watermark import NeuralWatermark, extract_owner
+
+# Arqueología de Semillas (v2.2)
+from .seed_archaeologist import SeedArchaeologist
+
 __all__ = [
     # Core
     'AeonBirth',
@@ -112,4 +125,14 @@ __all__ = [
     'NodeContribution',
     'CollaborativeResponse',
     'create_collaborative_chat',
+    
+    # Genetic Evolution
+    'GeneticMiner',
+    
+    # Neural Watermarking
+    'NeuralWatermark',
+    'extract_owner',
+    
+    # Seed Archaeology
+    'SeedArchaeologist',
 ]

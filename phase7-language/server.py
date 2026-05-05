@@ -14,9 +14,40 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "phase1-foundations" / "python"))
 
 from tiny_lm_v2 import TinyLMv2
+from core.collaborative_chat import CollaborativeChatOrchestrator, ChatNode, NodeRole
+from esn.esn import EchoStateNetwork
 
 app = Flask(__name__)
 model = None
+chat_orchestrator = None
+
+# Inicializar chat colaborativo
+try:
+    # Crear nodos especializados
+    nodes = []
+    
+    # Nodo de análisis de intención
+    intent_esn = EchoStateNetwork(n_inputs=50, n_reservoir=100, n_outputs=5, random_state=1)
+    intent_node = ChatNode("intent_analyzer", NodeRole.INTENT, intent_esn)
+    nodes.append(intent_node)
+    
+    # Nodo de generación de respuesta
+    response_esn = EchoStateNetwork(n_inputs=50, n_reservoir=100, n_outputs=50, random_state=2)
+    response_node = ChatNode("response_generator", NodeRole.RESPONSE, response_esn)
+    nodes.append(response_node)
+    
+    # Nodo de validación de coherencia
+    coherence_esn = EchoStateNetwork(n_inputs=50, n_reservoir=100, n_outputs=1, random_state=3)
+    coherence_node = ChatNode("coherence_validator", NodeRole.COHERENCE, coherence_esn)
+    nodes.append(coherence_node)
+    
+    # Crear orquestador (sin egregore por ahora)
+    chat_orchestrator = CollaborativeChatOrchestrator(nodes, egregore=None)
+    print("Chat colaborativo inicializado con", len(nodes), "nodos")
+    
+except Exception as e:
+    print(f"Error inicializando chat colaborativo: {e}")
+    chat_orchestrator = None
 
 TRAINING_TEXTS = {
     'filosofia': """
@@ -309,6 +340,34 @@ def generate_text():
         
         return jsonify({'success': True, 'text': text})
     except (ValueError, KeyError, IndexError, TypeError) as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/chat', methods=['POST'])
+def collaborative_chat():
+    global chat_orchestrator
+    try:
+        if chat_orchestrator is None:
+            return jsonify({'success': False, 'error': 'Chat colaborativo no disponible'})
+        
+        data = request.json
+        message = data.get('message', '').strip()
+        
+        if not message:
+            return jsonify({'success': False, 'error': 'Mensaje requerido'})
+        
+        # Procesar mensaje colaborativamente
+        response = chat_orchestrator.respond(message)
+        
+        return jsonify({
+            'success': True,
+            'response': response.content,
+            'contributions': len(response.contributions),
+            'coherence_score': response.coherence_score,
+            'processing_time': response.total_time
+        })
+    except Exception as e:
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)})

@@ -23,6 +23,14 @@ from core.universal_miner import (
     UniversalMiner, ExcavationResult, ResonanceType, SeedVault
 )
 
+# Optional import for SeedArchaeologist integration
+try:
+    from core.seed_archaeologist import SeedArchaeologist
+    SEED_ARCHAEOLOGIST_AVAILABLE = True
+except ImportError:
+    SEED_ARCHAEOLOGIST_AVAILABLE = False
+    SeedArchaeologist = None
+
 
 class GeneticMiner:
     """
@@ -40,8 +48,19 @@ class GeneticMiner:
             result = miner.excavate(start_seed=seed, max_attempts=1)
             return result.resonance
 
+        # Evolución básica
         genetic = GeneticMiner(population_size=30, generations=20)
         result = genetic.evolve(fitness)
+
+        # Evolución con archaeologist (más eficiente)
+        vault = SeedVault()
+        genetic_smart = GeneticMiner(
+            population_size=30, 
+            generations=20,
+            use_archaeologist=True,
+            fertile_bias=0.8
+        )
+        result = genetic_smart.evolve(fitness, vault)
     """
 
     # Rango de semillas válidas (uint32)
@@ -58,6 +77,9 @@ class GeneticMiner:
         mutation_scale: float = 0.05,
         elitism: int = 2,
         random_state: Optional[int] = None,
+        use_archaeologist: bool = False,
+        archaeologist_samples: int = 1000,
+        fertile_bias: float = 0.7,
     ):
         """
         Args:
@@ -69,6 +91,9 @@ class GeneticMiner:
             mutation_scale: Escala relativa de mutación (fracción del rango).
             elitism: Cuántos mejores individuos pasan sin cambios.
             random_state: Semilla para reproducibilidad.
+            use_archaeologist: Si usar SeedArchaeologist para guiar evolución.
+            archaeologist_samples: Muestras para crear mapa de fertilidad.
+            fertile_bias: Fracción de población inicializada en regiones fértiles.
         """
         if population_size < 4:
             raise ValueError("population_size debe ser >= 4")
@@ -78,6 +103,8 @@ class GeneticMiner:
             raise ValueError("crossover_rate debe estar en (0, 1]")
         if not (0.0 <= mutation_rate <= 1.0):
             raise ValueError("mutation_rate debe estar en [0, 1]")
+        if use_archaeologist and not SEED_ARCHAEOLOGIST_AVAILABLE:
+            raise ImportError("SeedArchaeologist no disponible. Instala seed_archaeologist.py")
 
         self.population_size = population_size
         self.generations = generations
@@ -86,17 +113,69 @@ class GeneticMiner:
         self.mutation_rate = mutation_rate
         self.mutation_scale = mutation_scale
         self.elitism = min(elitism, population_size)
+        self.use_archaeologist = use_archaeologist
+        self.archaeologist_samples = archaeologist_samples
+        self.fertile_bias = fertile_bias
 
         self._rng = np.random.RandomState(random_state)
         self._history: List[dict] = []
+        self._archaeologist: Optional[SeedArchaeologist] = None
+        self._fertile_regions: List[Tuple[int, int]] = []
 
     # ─── Inicialización ────────────────────────────────────────────────────
 
-    def _init_population(self) -> List[int]:
-        """Genera población inicial de semillas aleatorias."""
+    def _init_population(self, vault: Optional[SeedVault] = None) -> List[int]:
+        """Genera población inicial de semillas."""
+        if self.use_archaeologist and vault is not None:
+            return self._init_population_with_archaeologist(vault)
+        else:
+            return self._init_population_random()
+
+    def _init_population_random(self) -> List[int]:
+        """Genera población inicial completamente aleatoria."""
         seeds = self._rng.randint(
             self._SEED_MIN, self._SEED_MAX + 1, size=self.population_size
         ).tolist()
+        return seeds
+
+    def _init_population_with_archaeologist(self, vault: SeedVault) -> List[int]:
+        """Genera población inicial usando mapas de fertilidad."""
+        # Inicializar arqueólogo si no existe
+        if self._archaeologist is None:
+            self._archaeologist = SeedArchaeologist(vault, random_state=self._rng.randint(0, 2**32))
+
+        # Crear mapa de fertilidad
+        landscape = self._archaeologist.create_landscape_map(
+            n_samples=self.archaeologist_samples,
+            verbose=False
+        )
+
+        # Encontrar regiones fértiles
+        self._fertile_regions = self._archaeologist.find_fertile_regions(
+            threshold_percentile=75.0,  # Top 25% más fértiles
+            min_region_size=5
+        )
+
+        seeds = []
+        n_fertile = int(self.population_size * self.fertile_bias)
+        n_random = self.population_size - n_fertile
+
+        # Generar semillas en regiones fértiles
+        if self._fertile_regions:
+            for _ in range(n_fertile):
+                region = self._rng.choice(self._fertile_regions)
+                start, end = region
+                seed = self._rng.randint(start, end + 1)
+                seeds.append(seed)
+
+        # Generar semillas aleatorias para el resto
+        random_seeds = self._rng.randint(
+            self._SEED_MIN, self._SEED_MAX + 1, size=n_random
+        ).tolist()
+        seeds.extend(random_seeds)
+
+        # Mezclar para evitar sesgos
+        self._rng.shuffle(seeds)
         return seeds
 
     # ─── Selección ─────────────────────────────────────────────────────────
@@ -181,6 +260,7 @@ class GeneticMiner:
     def evolve(
         self,
         fitness_fn: Callable[[int], float],
+        vault: Optional[SeedVault] = None,
         verbose: bool = False,
     ) -> ExcavationResult:
         """
@@ -189,6 +269,7 @@ class GeneticMiner:
         Args:
             fitness_fn: Función (seed: int) -> float.
                        Mayor valor = mejor semilla.
+            vault: SeedVault opcional para integración con archaeologist.
             verbose: Imprime progreso por generación si es True.
 
         Returns:
@@ -197,7 +278,7 @@ class GeneticMiner:
         t_start = time.time()
         self._history = []
 
-        population = self._init_population()
+        population = self._init_population(vault)
         best_seed: int = population[0]
         best_score: float = float("-inf")
         total_evals: int = 0
@@ -274,6 +355,23 @@ class GeneticMiner:
     def history(self) -> List[dict]:
         """Estadísticas por generación. Vacío antes de llamar evolve()."""
         return list(self._history)
+
+    def archaeologist_stats(self) -> dict:
+        """Estadísticas sobre el uso de SeedArchaeologist."""
+        if not self.use_archaeologist:
+            return {"enabled": False}
+        
+        stats = {
+            "enabled": True,
+            "fertile_regions_found": len(self._fertile_regions),
+            "fertile_bias": self.fertile_bias,
+            "archaeologist_samples": self.archaeologist_samples,
+        }
+        
+        if self._archaeologist:
+            stats["landscape_stats"] = self._archaeologist.landscape_statistics()
+        
+        return stats
 
     def convergence_curve(self) -> np.ndarray:
         """

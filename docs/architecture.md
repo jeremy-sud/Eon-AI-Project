@@ -260,7 +260,7 @@ weight_count: 2 bytes  # Number of weights
 
 ```bash
 pytest phase1-foundations/python/tests/ -v
-# 262 tests passing:
+# 343 tests passing:
 # - ESN Core: 45 tests
 # - Plasticity: 28 tests
 # - Quantization: 20 tests

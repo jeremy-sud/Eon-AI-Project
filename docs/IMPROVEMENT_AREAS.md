@@ -108,6 +108,20 @@ Durante la auditoría de febrero 2026, se encontraron varias discrepancias entre
   - `esn.py`, y más...
 - **Estado:** 🔴 CRÍTICO - Malas prácticas de imports
 
+## 🔧 Auditoría de Benchmarks 2026-05
+- El benchmark integral actual se ejecuta desde `benchmark_full.py` en la raíz.
+- `docs/benchmarks.md` todavía documenta `phase1-foundations/python/benchmark.py`; debe sincronizarse con `benchmark_full.py` o marcarse como benchmark legacy.
+- Documentación adicional a revisar: `README.md`, `docs/architecture.md`, `docs/benchmarks.md`.
+- Los benchmarks actuales identifican las siguientes áreas de mejora:
+  - `benchmark_esn_sizes`: 50-100 neuronas parecen ser el balance mejor entre precisión y memoria. Explorar tamaños intermedios y evaluaciones de latencia en hardware embebido.
+  - `benchmark_quantization`: 8-bit retiene precisión aceptable. 4-bit y 1-bit degradan muy fuerte, lo que sugiere que la cuantización debe ser adaptativa e híbrida, no uniforme.
+  - `benchmark_plasticity`: Solo se prueban Hebbian y Anti-Hebbian. Falta evaluación de STDP, plasticidad adaptativa y ajuste dinámico de tasa de aprendizaje.
+  - `benchmark_tinylm`: El modelo se entrena solo 1 época y el benchmark mide tokens/segundo sin evaluar calidad semántica real. Requiere métricas de coherencia, perplexity y contexto.
+  - `benchmark_learning_system`: La memoria de largo plazo usa búsquedas lineales. Escalar a cientos de miles de hechos requerirá indexación, vectores semánticos o cachés de consulta.
+  - `benchmark_image_generation`: Usa generación de ruido aleatorio con PIL. Es una métrica de placeholder; la mejora real está en integrar un verdadero generador procedural/fractal o un modelo generativo ligero.
+  - `benchmark_chat_system`: Actualmente es una evaluación de throughput de patrones keyword-based, no de comprensión conversacional. Debería medirse precisión de intención y coherencia con un dataset de frases.
+- Resultado inmediato: actualizar la documentación de benchmarks para reflejar el benchmark real y anotar que algunos tests son métricas de placeholder.
+
 ---
 
 ## 📊 Resumen de Tests v2.0.0

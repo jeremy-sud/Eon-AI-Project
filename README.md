@@ -186,7 +186,7 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 - **Chat Multi-Nodo**: Sistema colaborativo con nodos especializados (Intent, Response, Coherence, Sentiment, Context)
 - **Detector de Anomalías**: Detección streaming con severidades (LOW, MEDIUM, HIGH, CRITICAL) y callbacks
 - **Oráculo I-Ching Neural**: 64 hexagramas, casting yarrow stalk, adivinación de secuencias
-- **262 Tests**: Cobertura completa de todos los módulos
+- **343 Tests**: Cobertura completa de todos los módulos
 
 ## 📊 Comparativa
 
@@ -319,6 +319,8 @@ La interfaz web incluye:
 | `/api/learning-stats` | GET | Estadísticas de aprendizaje |
 | `/api/memory` | GET/DELETE | Gestión de memoria a largo plazo |
 | `/api/consolidate` | POST | Forzar consolidación ("sueño") |
+| `/api/anomaly/detect` | POST | Detectar anomalías en datos |
+| `/api/oracle` | POST | Consultar Oráculo I-Ching Neural |
 | **`/dashboard`** | GET | **Dashboard v2.0 (D3.js)** |
 | **`/api/nodes`** | GET | **Lista de nodos activos** |
 | **`/api/egregore`** | GET | **Estado del Egrégor** |
@@ -619,7 +621,7 @@ cd "Eón Project AI/phase1-foundations/python"
 pip install pytest pytest-asyncio
 python -m pytest tests/ -v
 
-# Resultado: 262 tests passing
+# Resultado: 343 tests passing
 # - ESN Core: 45 tests
 # - Plasticity: 28 tests
 # - Quantization: 20 tests
@@ -656,7 +658,7 @@ python -m pytest tests/ -v
   - [x] Chat Multi-Nodo Colaborativo
   - [x] Detector de Anomalías Streaming
   - [x] Oráculo I-Ching Neural
-  - [x] 262 Tests (cobertura ~85%)
+  - [x] 343 Tests (cobertura ~85%)
 - [ ] Fase 13: Publicación y Comunidad
 
 ## 📈 Benchmarks de Energía

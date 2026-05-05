@@ -89,9 +89,10 @@ make clean && make run
 
 Si tu cambio afecta rendimiento:
 
-1. Ejecuta `benchmark.py` antes y después
-2. Incluye resultados en el PR
-3. Justifica cualquier degradación
+1. Ejecuta `benchmark_full.py` antes y después (benchmark integral actual)
+2. Si trabajas solo con el núcleo ESN, también puedes usar `phase1-foundations/python/benchmark.py`
+3. Incluye resultados en el PR
+4. Justifica cualquier degradación
 
 ## 📝 Commits
 

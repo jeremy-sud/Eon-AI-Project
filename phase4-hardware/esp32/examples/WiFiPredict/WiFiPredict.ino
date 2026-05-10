@@ -3,7 +3,7 @@
  *
  * Entrena localmente y envía predicciones a un servidor.
  *
- * (c) 2024 Sistemas Ursol - Jeremy Arias Solano
+ * (c) 2024 SenseLab - Build with Sense
  */
 
 #include "AeonESP32.h"

@@ -9,7 +9,7 @@ Este módulo implementa el aprendizaje real de Eón:
 - Plasticidad Hebbiana integrada
 - Consolidación durante inactividad ("sueño")
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 import os

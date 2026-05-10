@@ -242,5 +242,5 @@ Esta filosofía no solo es técnicamente elegante (mejora eficiencia, reduce err
 
 ---
 
-*Implementado en Eón v1.8.0 - Proyecto Eón, Sistemas Ursol*  
+*Implementado en Eón v1.8.0 - Proyecto Eón, SenseLab*  
 *Inspirado en filosofía Thelema y principios de sistemas complejos adaptativos*

@@ -2,7 +2,7 @@
 Proyecto Eón - TinyLM v2 Web Server
 ===================================
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 import sys
@@ -221,7 +221,7 @@ HTML = """
         </div>
 
         <p style="text-align:center; color:var(--muted); font-size:0.75rem; margin-top:2rem;">
-            Proyecto Eón - Sistemas Ursol - Jeremy Arias Solano
+            Proyecto Eón - SenseLab - Jeremy Arias Solano
         </p>
     </div>
 

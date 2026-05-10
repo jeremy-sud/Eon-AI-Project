@@ -4,7 +4,7 @@ Proyecto Eón - Inicialización de Matrices y Utilidades
 
 Funciones compartidas para evitar código duplicado en el motor ESN.
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 import numpy as np

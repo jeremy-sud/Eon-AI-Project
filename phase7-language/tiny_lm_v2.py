@@ -8,7 +8,7 @@ Versión mejorada con:
 - Reservoir más grande (256 neuronas)
 - Greedy/Beam decoding
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 import sys
@@ -496,4 +496,4 @@ if __name__ == "__main__":
     print("="*60)
     
     print("\n✓ Demo completado")
-    print("Proyecto Eón - Sistemas Ursol")
+    print("Proyecto Eón - SenseLab")

@@ -352,6 +352,6 @@ Esto abre la puerta a IA verdaderamente ubicua: en sensores, wearables, y dispos
 
 ---
 
-**Proyecto Eón** - MIT License - 2024 [Sistemas Ursol](https://github.com/SistemasUrsol)
+**Proyecto Eón** - MIT License - 2024 [SenseLab](https://github.com/SenseLab-dev)
 
 Desarrollado por [Jeremy Arias Solano](https://github.com/jeremy-sud)

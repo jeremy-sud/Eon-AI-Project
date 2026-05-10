@@ -6,7 +6,7 @@
  *
  * Hardware: Solo Arduino, sin componentes adicionales.
  *
- * (c) 2024 Sistemas Ursol - Jeremy Arias Solano
+ * (c) 2024 SenseLab - Build with Sense
  */
 
 #include "Aeon.h"
@@ -71,7 +71,7 @@ void setup() {
   }
 
   Serial.println(F("\n✓ Demo completado"));
-  Serial.println(F("Proyecto Eón - Sistemas Ursol"));
+  Serial.println(F("Proyecto Eón - SenseLab"));
 }
 
 void loop() {

@@ -987,4 +987,4 @@ Byte 14+:   Bits empaquetados (ceil(N/8) bytes)
 
 ---
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense

@@ -15,7 +15,7 @@ Algoritmo: Xorshift32 de George Marsaglia
 - Constantes: 13, 17, 5 (mismas que libAeon.c)
 - Período: 2^32 - 1
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 import numpy as np
@@ -347,4 +347,4 @@ if __name__ == "__main__":
     
     print("\n" + "="*60)
     print("✓ Demo completado")
-    print("Proyecto Eón - Sistemas Ursol")
+    print("Proyecto Eón - SenseLab")

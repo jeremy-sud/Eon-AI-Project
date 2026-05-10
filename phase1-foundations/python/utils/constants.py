@@ -5,7 +5,7 @@ Proyecto Eón - Constantes Globales
 Constantes compartidas entre todos los módulos para garantizar
 consistencia y facilitar el mantenimiento.
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 # ============================================================================

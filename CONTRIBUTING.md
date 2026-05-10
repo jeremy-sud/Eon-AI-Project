@@ -110,6 +110,6 @@ Al contribuir, aceptas que tu código será licenciado bajo MIT.
 
 ---
 
-**Proyecto Eón** - [Sistemas Ursol](https://github.com/SistemasUrsol)
+**Proyecto Eón** - [SenseLab](https://github.com/SenseLab-dev)
 
-Desarrollado por [Jeremy Arias Solano](https://github.com/jeremy-sud)
+**SenseLab - Build with Sense**

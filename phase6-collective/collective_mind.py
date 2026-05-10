@@ -14,7 +14,7 @@ Arquitectura:
 
 El conocimiento viaja como pesos W_out, no como datos raw.
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 import json
@@ -931,4 +931,4 @@ if __name__ == "__main__":
         print(f"        - Peers: {nstatus['peers']}")
     
     print("\n✓ Mente Colectiva operativa")
-    print("Proyecto Eón - Sistemas Ursol")
+    print("Proyecto Eón - SenseLab")

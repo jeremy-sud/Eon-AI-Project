@@ -11,7 +11,7 @@ Uso:
 Dependencias:
     pip install websockets paho-mqtt
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 import sys

@@ -2,7 +2,7 @@
 
 **Versión:** 1.0  
 **Fecha de Vigencia:** [FECHA]  
-**Titular de los Derechos:** [NOMBRE DEL AUTOR/EMPRESA]
+**Titular de los Derechos:** SenseLab
 
 Este documento describe los términos y condiciones estándar para la opción de Licenciamiento Comercial de Eón, diseñada para entidades que deseen incorporar la tecnología de Eón en productos o servicios propietarios sin adherirse a las obligaciones de copyleft de la licencia AGPLv3.
 

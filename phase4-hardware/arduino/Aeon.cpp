@@ -1,7 +1,7 @@
 /**
  * Aeon.cpp - Implementación de librería Arduino
  *
- * (c) 2024 Sistemas Ursol - Jeremy Arias Solano
+ * (c) 2024 SenseLab - Build with Sense
  */
 
 #include "Aeon.h"

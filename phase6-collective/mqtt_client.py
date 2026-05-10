@@ -8,7 +8,7 @@ Compatible con Mosquitto, HiveMQ, y otros brokers MQTT.
 Uso:
     python mqtt_client.py --broker localhost --port 1883
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 import json

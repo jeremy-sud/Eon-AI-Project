@@ -18,7 +18,7 @@ Uso:
     python benchmark_full.py --quick     # Modo rápido
     python benchmark_full.py --export    # Exportar resultados a JSON
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 import numpy as np

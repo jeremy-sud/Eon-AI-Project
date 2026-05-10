@@ -25,7 +25,7 @@ Arquitectura:
 
 "La suma es mayor que las partes" - Gestalt
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 import time

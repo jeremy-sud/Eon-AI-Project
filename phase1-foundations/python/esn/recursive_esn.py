@@ -28,7 +28,7 @@ Ventaja: Procesa patrones a múltiples escalas temporales
 "Quod est inferius est sicut quod est superius"
                     - La Tabla Esmeralda
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 import numpy as np

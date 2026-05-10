@@ -209,5 +209,5 @@ Ver `phase6-collective/collective_mind.py` para el wrapper Python.
 
 ---
 
-*Proyecto Eón - Sistemas Ursol*
+*Proyecto Eón - SenseLab*
 *"La inteligencia no se crea, se descubre."*

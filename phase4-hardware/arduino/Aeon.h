@@ -12,8 +12,8 @@
  *
  * Memoria: ~500 bytes para 16 neuronas
  *
- * (c) 2024 Sistemas Ursol - Jeremy Arias Solano
- * https://github.com/SistemasUrsol
+ * (c) 2024 SenseLab - Build with Sense
+ * https://github.com/SenseLab-dev
  */
 
 #ifndef AEON_H

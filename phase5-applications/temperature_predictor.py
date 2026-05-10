@@ -8,7 +8,7 @@ usando el ESN ultraligero.
 Uso:
     python temperature_predictor.py
 
-(c) 2024 Sistemas Ursol - Jeremy Arias Solano
+(c) 2024 SenseLab - Build with Sense
 """
 
 import sys
@@ -275,4 +275,4 @@ if __name__ == "__main__":
         print(f"      • {key}: {value}")
     
     print("\n✓ Demo completado")
-    print("Proyecto Eón - Sistemas Ursol")
+    print("Proyecto Eón - SenseLab")

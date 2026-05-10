@@ -15,7 +15,7 @@
  * 3. En el otro, escribir 'rx' para modo receptor
  * 4. Alejar los dispositivos y observar métricas
  * 
- * (c) 2024 Sistemas Ursol - Jeremy Arias Solano
+ * (c) 2024 SenseLab - Build with Sense
  */
 
 #include <SPI.h>

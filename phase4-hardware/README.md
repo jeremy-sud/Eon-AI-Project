@@ -264,4 +264,4 @@ Instalar desde Arduino Library Manager:
 
 ---
 
-*Eón Project - Sistemas Ursol © 2024*
+*Eón Project - SenseLab © 2024*

@@ -4,8 +4,9 @@
   "birth_timestamp_unix": 1733657763,
   "birth_hash": "ef50094c9b085d02a7e3b1c4d5f68901",
   "version": "1.0.0",
-  "organization": "Sistemas Ursol",
-  "organization_url": "https://github.com/SistemasUrsol",
+  "organization": "SenseLab",
+  "organization_url": "https://github.com/SenseLab-dev",
+  "slogan": "Build with Sense",
   "developer": "Jeremy Arias Solano",
   "developer_url": "https://github.com/jeremy-sud",
   "philosophy": "La inteligencia no se crea, se descubre."

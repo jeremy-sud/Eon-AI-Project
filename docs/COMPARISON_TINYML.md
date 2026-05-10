@@ -45,7 +45,7 @@ Usa Reservoir Computing (RC) y Echo State Networks (ESN).
 
 | Framework | Desarrollador | Tipo | Licencia |
 |-----------|---------------|------|----------|
-| **Eón** | Sistemas Ursol | ESN/Reservoir Computing | MIT |
+| **Eón** | SenseLab | ESN/Reservoir Computing | MIT |
 | TensorFlow Lite Micro | Google | CNN/MLP Cuantizados | Apache 2.0 |
 | Edge Impulse | Edge Impulse Inc. | AutoML + Exportación | Freemium |
 | CMSIS-NN | ARM | Kernels Optimizados | Apache 2.0 |

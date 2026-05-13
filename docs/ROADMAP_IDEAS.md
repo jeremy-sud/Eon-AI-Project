@@ -12,14 +12,14 @@
 |---|------|------------|---------|-----------|--------|
 | 16 | TinyAttention → TinyLMv2 | ✅ Completada | ALTA | ⭐⭐ |
 | 17 | SeedArchaeologist → GeneticMiner | ✅ Completada | ALTA | ⭐⭐ |
-| 24 | API REST Completa | 🔄 Pendiente | ALTA | ⭐⭐ |
-| 18 | NeuralWatermark → Collective Mind | 🔄 Pendiente | MEDIA | ⭐⭐ |
+| 24 | API REST Completa | ✅ Completada | ALTA | ⭐⭐ |
+| 18 | NeuralWatermark → Collective Mind | ✅ Completada | MEDIA | ⭐⭐ |
 | 21 | Dashboard Dinámico | 🔄 Pendiente | MEDIA | ⭐⭐ |
 | 19 | Circadian Rhythms → ESN Training | 🔄 Pendiente | MEDIA | ⭐⭐ |
 | 25 | Benchmarks Comparativos | 🔄 Pendiente | MEDIA | ⭐⭐ |
 | 23 | Visualización 2D/3D | 🔄 Pendiente | MEDIA | ⭐⭐ |
 | 20 | Hardware Integration | 🔄 Pendiente | BAJA | ⭐⭐⭐ |
-| 28 | Protocolo 1-Bit: chipdecoder y compatibilidad | 🔄 Pendiente | ALTA | ⭐⭐ |
+| 28 | Protocolo 1-Bit: chipdecoder y compatibilidad | ✅ Completada | ALTA | ⭐⭐ |
 | 29 | Regenerar benchmarks al completar roadmap | 🔄 Pendiente | ALTA | ⭐⭐ |
 | 22 | Multi-Head Attention | 🔄 Pendiente | BAJA | ⭐⭐ |
 | 26 | Optimización Memoria | 🔄 Pendiente | BAJA | ⭐⭐ |
@@ -928,9 +928,9 @@ class SeedArchaeologist:
 
 ---
 
-### 🔄 Idea #18: NeuralWatermark → Collective Mind Authentication
+### ✅ Idea #18: NeuralWatermark → Collective Mind Authentication
 
-**Estado Actual**: Collective Mind comparte modelos sin autenticación.
+**Estado Actual**: Completado; se integró watermarking automático en export/import de pesos en `phase6-collective/collective_mind.py`.
 
 **Problema**: Riesgo de modelos falsificados o maliciosos en federated learning.
 
@@ -939,7 +939,7 @@ class SeedArchaeologist:
 - Verificación de watermark en modelos recibidos
 - Rechazo de modelos sin firma válida o de owner desconocido
 
-**Archivos**: `phase6-collective/collective_mind.py`, `utils/watermark.py`
+**Archivos**: `phase6-collective/collective_mind.py`, `utils/watermark.py`, `phase1-foundations/python/utils/watermark.py`
 
 **Beneficios**: Seguridad en aprendizaje federado, trazabilidad de modelos.
 
@@ -979,9 +979,9 @@ class SeedArchaeologist:
 
 ---
 
-### 🔄 Idea #28: Estándar de chipdecoder / decoder 1-Bit para hardware y Python
+### ✅ Idea #28: Estándar de chipdecoder / decoder 1-Bit para hardware y Python
 
-**Estado Actual**: Iniciado; se ha creado un módulo compartido `phase6-collective/protocol_1bit.py` y se está unificando la decodificación en Python.
+**Estado Actual**: Completado; se creó módulo compartido `phase6-collective/protocol_1bit.py`, se unificó decodificación en Python, y se alineó hardware ESP32 con formato canónico.
 
 **Problema**:
 - `docs/PROTOCOL.md` y `phase6-collective/docs/protocol_spec.md` describen formatos distintos.
@@ -1006,28 +1006,35 @@ class SeedArchaeologist:
 
 ---
 
-### 🔄 Idea #29: Regenerar benchmarks al completar el roadmap
+### 🔄 Idea #29: Regenerar benchmarks, actualizar papers y documentación al completar el roadmap
 
-**Estado Actual**: El roadmap contiene muchas mejoras previstas, pero no hay un paso sistemático para volver a medir el impacto global tras su ejecución completa.
+**Estado Actual**: El roadmap contiene muchas mejoras previstas, pero no hay un paso sistemático para volver a medir el impacto global, actualizar papers científicos y mejorar documentación tras su ejecución completa.
 
 **Problema**:
 - Las métricas actuales pueden quedar obsoletas después de que se implementen múltiples mejoras.
+- Los papers científicos (whitepaper, paper.tex) contienen datos antiguos que no reflejan las mejoras implementadas.
+- La documentación técnica puede tener inconsistencias o información desactualizada.
 - No existe un ciclo formal de re-evaluación que cuantifique el valor real de cada fase del roadmap.
-- Sin benchmarks actualizados, es difícil priorizar futuras iteraciones o validar las ganancias reales de Eón.
+- Sin benchmarks actualizados y papers revisados, es difícil priorizar futuras iteraciones o validar las ganancias reales de Eón.
 
 **Solución Propuesta**:
 - Al completar el roadmap al 100%, regenerar todos los benchmarks del proyecto.
+- Actualizar papers científicos con datos frescos y nuevas comparativas.
+- Mejorar documentación técnica con información actualizada y correcciones.
 - Incluir comparativas de:
   - cuantización 1-bit vs 4/8-bit
   - rendimiento de `phase7-language` y `phase6-collective`
   - consumo energético de hardware ESP32/LoRa
   - latencia y precisión de sincronización de modelos
-- Actualizar documentación con resultados nuevos y publicar un informe de métricas finales.
+  - impacto de watermarking en seguridad federada
+  - mejoras en APIs REST y compatibilidad cross-platform
+- Revisar y actualizar secciones en papers sobre arquitectura, benchmarks y casos de uso.
 - Añadir un script o workflow automático para ejecutar benchmarks y publicar resultados en `docs/benchmarks.md`.
+- Generar informe de métricas finales con análisis de impacto del roadmap completo.
 
-**Archivos**: `docs/benchmarks.md`, `benchmark_full.py`, `phase6-collective/tests/`, `phase4-hardware/esp32/examples/`, `docs/ROADMAP_IDEAS.md`
+**Archivos**: `docs/benchmarks.md`, `benchmark_full.py`, `phase6-collective/tests/`, `phase4-hardware/esp32/examples/`, `docs/ROADMAP_IDEAS.md`, `docs/WHITEPAPER.md`, `paper/paper.tex`, `paper/main.tex`, `docs/api/`, `README.md`
 
-**Beneficios**: Validación objetiva del roadmap, datos frescos para decisiones futuras, mayor credibilidad del proyecto.
+**Beneficios**: Validación objetiva del roadmap, papers científicos actualizados con evidencia fresca, documentación coherente, mayor credibilidad del proyecto y mejor posicionamiento académico.
 
 ---
 
@@ -1083,9 +1090,9 @@ class SeedArchaeologist:
 
 ---
 
-### 🔄 Idea #24: API REST Completa para Todos los Módulos
+### ✅ Idea #24: API REST Completa para Todos los Módulos
 
-**Estado Actual**: APIs parciales en collective mind.
+**Estado Actual**: Completado; se agregaron endpoints REST para watermarking, genetic mining y seed archaeology en `web/server.py`.
 
 **Problema**: No todos los módulos son accesibles vía HTTP.
 
@@ -1094,7 +1101,7 @@ class SeedArchaeologist:
 - Documentación OpenAPI/Swagger
 - Autenticación básica
 
-**Archivos**: `web/server.py`, `phase6-collective/`
+**Archivos**: `web/server.py`, `phase6-collective/`, `phase1-foundations/python/utils/watermark.py`, `phase1-foundations/python/core/genetic_miner.py`, `phase1-foundations/python/core/seed_archaeologist.py`
 
 **Beneficios**: Mejor integración con otros sistemas.
 

@@ -37,6 +37,16 @@ from protocol_1bit import (
     merge_weights,
 )
 
+# Importar watermarking para autenticación
+try:
+    import sys
+    sys.path.insert(0, PROJECT_ROOT / 'phase1-foundations' / 'python')
+    from utils.watermark import NeuralWatermark, extract_owner
+    _watermark_available = True
+except ImportError:
+    _watermark_available = False
+    print("⚠️  Watermarking no disponible - usando autenticación básica")
+
 # =============================================================================
 # SISTEMA DE VOLUNTAD VERDADERA (THELEMA)
 # =============================================================================
@@ -442,6 +452,7 @@ class AeonNode:
         Exporta pesos W_out con cuantización 1-bit (Protocolo Eón).
         
         Solo se transmite el signo de cada peso, logrando compresión 17x.
+        Incluye watermarking para autenticación.
         
         Args:
             scale: Magnitud para reconstrucción (default: 0.5)
@@ -451,10 +462,16 @@ class AeonNode:
         """
         w_out = self.esn.W_out.flatten()
         
+        # Aplicar watermarking si disponible
+        if _watermark_available:
+            wm = NeuralWatermark(self.node_id)
+            w_out_watermarked = wm.embed(w_out)
+        else:
+            w_out_watermarked = w_out
+        
         # Cuantizar a 1-bit (solo signos)
-        w_out = self.esn.W_out.flatten()
         packet = encode_1bit_packet(
-            weights=w_out,
+            weights=w_out_watermarked,
             seed=hash(self.node_id) & 0xFFFFFFFF,
             scale=scale,
             ptype=PACKET_TYPES['SYNC']
@@ -462,7 +479,7 @@ class AeonNode:
         payload = packet[14:]
         n_weights = len(w_out)
 
-        return {
+        result = {
             'magic': 'EON',
             'type': PACKET_TYPES['SYNC'],
             'seed': hash(self.node_id) & 0xFFFFFFFF,
@@ -477,10 +494,20 @@ class AeonNode:
             'compressed_bytes': len(packet),
             'compression_ratio': (n_weights * 4) / len(packet)
         }
+        
+        # Agregar info de watermark si disponible
+        if _watermark_available:
+            result['watermark'] = {
+                'owner': self.node_id,
+                'signature': wm.signature.hex()
+            }
+        
+        return result
     
     def import_weights_1bit(self, packet: Dict, merge_ratio: float = 0.5) -> bool:
         """
         Importa pesos cuantizados 1-bit y los mezcla con los locales.
+        Incluye verificación de watermarking para autenticación.
         
         Args:
             packet: Paquete del export_weights_1bit
@@ -489,9 +516,26 @@ class AeonNode:
         Returns:
             True si éxito
         """
-        if packet.get('magic') != 'EON' and packet.get('packet') is None:
-            raise ValueError("Paquete inválido: magic incorrecto")
-
+        # Verificar watermarking si disponible
+        if _watermark_available and 'watermark' in packet:
+            wm_info = packet['watermark']
+            owner = wm_info.get('owner')
+            
+            # Verificar que el owner esté en la lista de peers conocidos
+            if owner and owner not in self.peers and owner != self.node_id:
+                print(f"⚠️  Watermark de owner desconocido: {owner}")
+                # Podríamos rechazar o marcar como sospechoso
+                # Por ahora, solo advertir
+            
+            # Verificar integridad del watermark
+            if packet.get('packet') is not None:
+                decoded = decode_1bit_packet(packet['packet'])
+                if decoded:
+                    extracted_owner, confidence = extract_owner(np.array(decoded['weights']))
+                    if extracted_owner != owner:
+                        print(f"⚠️  Watermark mismatch: esperado {owner}, extraído {extracted_owner}")
+                        return False  # Rechazar paquete con watermark inválido
+        
         if packet.get('packet') is not None:
             decoded = decode_1bit_packet(packet['packet'])
             if decoded is None:

@@ -21,6 +21,9 @@ logger = logging.getLogger(__name__)
 
 _current_dir = os.path.dirname(os.path.abspath(__file__))
 
+# Ajustar path para importar módulos de phase1-foundations
+sys.path.insert(0, os.path.join(_current_dir, '..', 'phase1-foundations', 'python'))
+
 from core.aeon_birth import AeonBirth
 from core.genesis import get_genesis
 from core.alchemy import AlchemicalPipeline, AlchemicalConfig, AlchemicalPhase
@@ -48,6 +51,20 @@ except Exception as _artist_err:
     _egregore_artist = None
     _artist_available = False
     logger.warning(f"EgregorArtist no disponible: {_artist_err}")
+
+# Importar módulos de phase1-foundations para API completa
+try:
+    # Ajustar path para importar desde phase1-foundations
+    sys.path.insert(0, os.path.join(_current_dir, '..', 'phase1-foundations', 'python'))
+    
+    from utils.watermark import NeuralWatermark, extract_owner
+    from core.genetic_miner import GeneticMiner
+    from core.seed_archaeologist import SeedArchaeologist
+    _advanced_modules_available = True
+    logger.info("Módulos avanzados cargados: watermark, genetic_miner, seed_archaeologist")
+except ImportError as e:
+    _advanced_modules_available = False
+    logger.warning(f"Módulos avanzados no disponibles: {e}")
 
 
 app = Flask(__name__, static_folder='static')
@@ -2957,6 +2974,166 @@ def egregore_art():
 
     except Exception as e:
         logger.error(f"Error en /api/egregore/art: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# =============================================================================
+#                    ADVANCED MODULES API (ROADMAP #24)
+# =============================================================================
+
+@app.route('/api/watermark/embed', methods=['POST'])
+def embed_watermark():
+    """Embed watermark in neural weights."""
+    if not _advanced_modules_available:
+        return jsonify({'success': False, 'error': 'Watermark module not available'}), 503
+    
+    try:
+        data = request.get_json()
+        owner = data.get('owner', '')
+        weights = np.array(data.get('weights', []))
+        
+        if not owner or len(weights) == 0:
+            return jsonify({'success': False, 'error': 'Missing owner or weights'}), 400
+        
+        wm = NeuralWatermark(owner)
+        watermarked_weights = wm.embed(weights)
+        
+        return jsonify({
+            'success': True,
+            'watermarked_weights': watermarked_weights.tolist(),
+            'owner': owner,
+            'signature': wm.signature.hex()
+        })
+    except Exception as e:
+        logger.error(f"Error embedding watermark: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/watermark/extract', methods=['POST'])
+def extract_watermark():
+    """Extract watermark from neural weights."""
+    if not _advanced_modules_available:
+        return jsonify({'success': False, 'error': 'Watermark module not available'}), 503
+    
+    try:
+        data = request.get_json()
+        weights = np.array(data.get('weights', []))
+        
+        if len(weights) == 0:
+            return jsonify({'success': False, 'error': 'Missing weights'}), 400
+        
+        owner, confidence = extract_owner(weights)
+        
+        return jsonify({
+            'success': True,
+            'owner': owner,
+            'confidence': confidence
+        })
+    except Exception as e:
+        logger.error(f"Error extracting watermark: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/genetic-mine', methods=['POST'])
+def genetic_mine():
+    """Run genetic mining to find optimal ESN seeds."""
+    if not _advanced_modules_available:
+        return jsonify({'success': False, 'error': 'GeneticMiner module not available'}), 503
+    
+    try:
+        data = request.get_json()
+        population_size = data.get('population_size', 50)
+        generations = data.get('generations', 30)
+        seed_range = data.get('seed_range', [0, 1000000])
+        use_archaeologist = data.get('use_archaeologist', True)
+        
+        miner = GeneticMiner(
+            population_size=population_size,
+            generations=generations,
+            seed_range=seed_range,
+            use_archaeologist=use_archaeologist
+        )
+        
+        best_seed, best_fitness, history = miner.mine()
+        
+        return jsonify({
+            'success': True,
+            'best_seed': best_seed,
+            'best_fitness': best_fitness,
+            'generations': len(history),
+            'history': history
+        })
+    except Exception as e:
+        logger.error(f"Error in genetic mining: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/seed-archaeology/analyze', methods=['POST'])
+def seed_archaeology_analyze():
+    """Analyze seed landscape for fertility patterns."""
+    if not _advanced_modules_available:
+        return jsonify({'success': False, 'error': 'SeedArchaeologist module not available'}), 503
+    
+    try:
+        data = request.get_json()
+        seed_range = data.get('seed_range', [0, 10000])
+        resolution = data.get('resolution', 100)
+        
+        archaeologist = SeedArchaeologist(seed_range=seed_range, resolution=resolution)
+        fertility_map = archaeologist.analyze_fertility()
+        
+        # Convert numpy arrays to lists for JSON serialization
+        result_map = {}
+        for seed, data in fertility_map.items():
+            result_map[int(seed)] = {
+                'fitness': float(data['fitness']),
+                'resonance': float(data['resonance']),
+                'coordinates': data['coordinates'].tolist() if hasattr(data['coordinates'], 'tolist') else data['coordinates']
+            }
+        
+        return jsonify({
+            'success': True,
+            'fertility_map': result_map,
+            'total_seeds': len(result_map),
+            'resolution': resolution
+        })
+    except Exception as e:
+        logger.error(f"Error in seed archaeology: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/seed-archaeology/clusters', methods=['POST'])
+def seed_archaeology_clusters():
+    """Find fertility clusters in seed landscape."""
+    if not _advanced_modules_available:
+        return jsonify({'success': False, 'error': 'SeedArchaeologist module not available'}), 503
+    
+    try:
+        data = request.get_json()
+        seed_range = data.get('seed_range', [0, 10000])
+        resolution = data.get('resolution', 100)
+        n_clusters = data.get('n_clusters', 5)
+        
+        archaeologist = SeedArchaeologist(seed_range=seed_range, resolution=resolution)
+        clusters = archaeologist.find_clusters(n_clusters=n_clusters)
+        
+        # Convert to JSON-serializable format
+        result_clusters = []
+        for cluster in clusters:
+            result_clusters.append({
+                'center': cluster['center'].tolist() if hasattr(cluster['center'], 'tolist') else cluster['center'],
+                'seeds': [int(s) for s in cluster['seeds']],
+                'avg_fitness': float(cluster['avg_fitness']),
+                'size': len(cluster['seeds'])
+            })
+        
+        return jsonify({
+            'success': True,
+            'clusters': result_clusters,
+            'total_clusters': len(result_clusters)
+        })
+    except Exception as e:
+        logger.error(f"Error finding clusters: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 

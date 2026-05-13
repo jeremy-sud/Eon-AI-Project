@@ -30,6 +30,12 @@ PROJECT_ROOT = Path(__file__).parent.parent
 
 from esn.esn import EchoStateNetwork
 from egregore import EgregorProcessor, EgregorState, NodeSensorData, EgregorMood
+from protocol_1bit import (
+    PACKET_TYPES,
+    decode_1bit_packet,
+    encode_1bit_packet,
+    merge_weights,
+)
 
 # =============================================================================
 # SISTEMA DE VOLUNTAD VERDADERA (THELEMA)
@@ -446,31 +452,30 @@ class AeonNode:
         w_out = self.esn.W_out.flatten()
         
         # Cuantizar a 1-bit (solo signos)
+        w_out = self.esn.W_out.flatten()
+        packet = encode_1bit_packet(
+            weights=w_out,
+            seed=hash(self.node_id) & 0xFFFFFFFF,
+            scale=scale,
+            ptype=PACKET_TYPES['SYNC']
+        )
+        payload = packet[14:]
         n_weights = len(w_out)
-        n_bytes = (n_weights + 7) // 8
-        payload = bytearray(n_bytes)
-        
-        for i, w in enumerate(w_out):
-            if w >= 0:
-                byte_idx = i // 8
-                bit_idx = i % 8
-                payload[byte_idx] |= (1 << bit_idx)
-        
-        # Construir paquete según protocolo
+
         return {
             'magic': 'EON',
-            'type': 0x01,  # W_OUT_UPDATE
+            'type': PACKET_TYPES['SYNC'],
             'seed': hash(self.node_id) & 0xFFFFFFFF,
             'count': n_weights,
             'scale': scale,
-            'payload': bytes(payload),
+            'payload': payload,
+            'packet': packet,
             'node_id': self.node_id,
             'samples_learned': self.samples_learned,
             'timestamp': datetime.now(timezone.utc).isoformat(),
-            # Estadísticas de compresión
             'original_bytes': n_weights * 4,  # float32
-            'compressed_bytes': n_bytes + 10,  # payload + header
-            'compression_ratio': (n_weights * 4) / (n_bytes + 10)
+            'compressed_bytes': len(packet),
+            'compression_ratio': (n_weights * 4) / len(packet)
         }
     
     def import_weights_1bit(self, packet: Dict, merge_ratio: float = 0.5) -> bool:
@@ -484,37 +489,34 @@ class AeonNode:
         Returns:
             True si éxito
         """
-        if packet.get('magic') != 'EON':
+        if packet.get('magic') != 'EON' and packet.get('packet') is None:
             raise ValueError("Paquete inválido: magic incorrecto")
-        
-        n_weights = packet['count']
-        scale = packet.get('scale', 0.5)
-        payload = packet['payload']
-        
-        # Verificar tamaño
-        expected_bytes = (n_weights + 7) // 8
-        if len(payload) != expected_bytes:
-            raise ValueError(f"Payload size mismatch: {len(payload)} vs {expected_bytes}")
-        
-        # Dequantizar
+
+        if packet.get('packet') is not None:
+            decoded = decode_1bit_packet(packet['packet'])
+            if decoded is None:
+                raise ValueError("Paquete binario inválido")
+            payload = decoded['payload']
+            scale = decoded['scale']
+            n_weights = decoded['count']
+        else:
+            n_weights = packet['count']
+            scale = packet.get('scale', 0.5)
+            payload = packet['payload']
+
+        # Desempaquetar y reconstruir pesos
         external_weights = np.zeros(n_weights)
         for i in range(n_weights):
             byte_idx = i // 8
-            bit_idx = i % 8
+            bit_idx = 7 - (i % 8)
             if payload[byte_idx] & (1 << bit_idx):
                 external_weights[i] = scale
             else:
                 external_weights[i] = -scale
-        
-        # Reshape para coincidir con W_out
+
         external_weights = external_weights.reshape(self.esn.W_out.shape)
-        
-        # Mezclar
-        self.esn.W_out = (
-            self.esn.W_out * (1 - merge_ratio) +
-            external_weights * merge_ratio
-        )
-        
+        self.esn.W_out = merge_weights(self.esn.W_out, external_weights, merge_ratio)
+
         self.sync_count += 1
         self.last_sync = datetime.now(timezone.utc).isoformat()
         

@@ -23,20 +23,21 @@ En un ESN (Echo State Network), los pesos de salida $W_{out}$ son los únicos qu
 | **Eón 1-Bit** | **14 bytes** | **23 bytes** | **42 bytes** |
 | **Ratio** | **9x** | **17x** | **24x** |
 
-*Incluye header de 10 bytes*
+*Incluye header de 14 bytes*
 
 ## Estructura del Paquete
 
 ```
 Offset  Campo      Tipo        Descripción
-──────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────
 0       MAGIC      char[3]     "EON" (identificador)
 3       TYPE       uint8_t     0x01 = W_OUT_UPDATE
                                0x02 = STATE_QUERY
                                0x03 = HEARTBEAT
 4       SEED       uint32_t    Semilla del reservoir (debe coincidir)
 8       COUNT      uint16_t    Número de pesos (N)
-10      PAYLOAD    uint8_t[]   Bits empaquetados (⌈N/8⌉ bytes)
+10      SCALE      float32     Magnitud fija usada para reconstrucción
+14      PAYLOAD    uint8_t[]   Bits empaquetados (⌈N/8⌉ bytes)
 ```
 
 ### Empaquetado de Bits
@@ -55,6 +56,14 @@ Valor del bit:
 
 Donde `SCALE` es típicamente 0.5 o el valor RMS de los pesos originales.
 
+### Orden de bits
+Cada peso se codifica en el byte correspondiente usando un orden MSB-first:
+- Weight[0] → byte 0, bit 7
+- Weight[1] → byte 0, bit 6
+- ...
+- Weight[7] → byte 0, bit 0
+- Weight[8] → byte 1, bit 7
+
 ## Algoritmo de Cuantización
 
 ### Encoder (Nodo Emisor)
@@ -63,7 +72,7 @@ Donde `SCALE` es típicamente 0.5 o el valor RMS de los pesos originales.
 void encode_1bit(const float* weights, int count, uint8_t* payload) {
     for (int i = 0; i < count; i++) {
         int byte_idx = i / 8;
-        int bit_idx = i % 8;
+        int bit_idx = 7 - (i % 8);
         
         if (weights[i] >= 0) {
             payload[byte_idx] |= (1 << bit_idx);
@@ -79,7 +88,7 @@ void decode_1bit(const uint8_t* payload, int count,
                  float scale, float* weights) {
     for (int i = 0; i < count; i++) {
         int byte_idx = i / 8;
-        int bit_idx = i % 8;
+        int bit_idx = 7 - (i % 8);
         
         bool is_positive = (payload[byte_idx] >> bit_idx) & 1;
         weights[i] = is_positive ? scale : -scale;

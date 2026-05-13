@@ -19,6 +19,8 @@
 | 25 | Benchmarks Comparativos | 🔄 Pendiente | MEDIA | ⭐⭐ |
 | 23 | Visualización 2D/3D | 🔄 Pendiente | MEDIA | ⭐⭐ |
 | 20 | Hardware Integration | 🔄 Pendiente | BAJA | ⭐⭐⭐ |
+| 28 | Protocolo 1-Bit: chipdecoder y compatibilidad | 🔄 Pendiente | ALTA | ⭐⭐ |
+| 29 | Regenerar benchmarks al completar roadmap | 🔄 Pendiente | ALTA | ⭐⭐ |
 | 22 | Multi-Head Attention | 🔄 Pendiente | BAJA | ⭐⭐ |
 | 26 | Optimización Memoria | 🔄 Pendiente | BAJA | ⭐⭐ |
 | 27 | Persistencia Estado | 🔄 Pendiente | BAJA | ⭐⭐ |
@@ -974,6 +976,58 @@ class SeedArchaeologist:
 **Archivos**: `phase4-hardware/arduino/`, `phase4-hardware/esp32/`, `phase6-collective/mqtt_client.py`
 
 **Beneficios**: Edge computing distribuido, menor latencia.
+
+---
+
+### 🔄 Idea #28: Estándar de chipdecoder / decoder 1-Bit para hardware y Python
+
+**Estado Actual**: Iniciado; se ha creado un módulo compartido `phase6-collective/protocol_1bit.py` y se está unificando la decodificación en Python.
+
+**Problema**:
+- `docs/PROTOCOL.md` y `phase6-collective/docs/protocol_spec.md` describen formatos distintos.
+- `phase6-collective/mqtt_client.py` y `phase6-collective/ws_bridge.py` usan su propia versión del header y el empaquetado de bits.
+- No existe un módulo único `chipdecoder` o clase de protocolo compartida para garantizar compatibilidad Python ↔ hardware.
+- Falta validación CRC/checksum, verificación robusta de semilla y pruebas de roundtrip.
+
+**Solución Propuesta**:
+- Crear un módulo común de protocolo 1-bit: `phase6-collective/protocol_1bit.py`.
+- Unificar endianness, bit order y campos de header en una única especificación canónica.
+- Implementar funciones compartidas:
+  - `encode_1bit_packet(weights, seed, scale, type)`
+  - `decode_1bit_packet(data)`
+  - `validate_packet(data)`
+  - `merge_weights(local, external, ratio)`
+- Extender hardware/ESP32/Arduino para usar el mismo formato y checksums.
+- Añadir tests de compatibilidad byte-a-byte y de roundtrip en `phase6-collective/tests/`.
+
+**Archivos**: `phase6-collective/protocol_1bit.py`, `phase6-collective/mqtt_client.py`, `phase6-collective/ws_bridge.py`, `phase4-hardware/esp32/`, `phase4-hardware/arduino/`, `phase6-collective/tests/test_ws_bridge.py`
+
+**Beneficios**: Compatibilidad cruzada, menor deuda técnica, integración fiable con chips y redes IoT.
+
+---
+
+### 🔄 Idea #29: Regenerar benchmarks al completar el roadmap
+
+**Estado Actual**: El roadmap contiene muchas mejoras previstas, pero no hay un paso sistemático para volver a medir el impacto global tras su ejecución completa.
+
+**Problema**:
+- Las métricas actuales pueden quedar obsoletas después de que se implementen múltiples mejoras.
+- No existe un ciclo formal de re-evaluación que cuantifique el valor real de cada fase del roadmap.
+- Sin benchmarks actualizados, es difícil priorizar futuras iteraciones o validar las ganancias reales de Eón.
+
+**Solución Propuesta**:
+- Al completar el roadmap al 100%, regenerar todos los benchmarks del proyecto.
+- Incluir comparativas de:
+  - cuantización 1-bit vs 4/8-bit
+  - rendimiento de `phase7-language` y `phase6-collective`
+  - consumo energético de hardware ESP32/LoRa
+  - latencia y precisión de sincronización de modelos
+- Actualizar documentación con resultados nuevos y publicar un informe de métricas finales.
+- Añadir un script o workflow automático para ejecutar benchmarks y publicar resultados en `docs/benchmarks.md`.
+
+**Archivos**: `docs/benchmarks.md`, `benchmark_full.py`, `phase6-collective/tests/`, `phase4-hardware/esp32/examples/`, `docs/ROADMAP_IDEAS.md`
+
+**Beneficios**: Validación objetiva del roadmap, datos frescos para decisiones futuras, mayor credibilidad del proyecto.
 
 ---
 

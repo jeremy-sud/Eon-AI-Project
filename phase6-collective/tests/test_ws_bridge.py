@@ -19,6 +19,7 @@ sys.path.insert(0, '/home/dawnweaber/Workspace/Eón Project AI/phase6-collective
 # Try to import ws_bridge components
 try:
     from ws_bridge import MQTTWebSocketBridge
+    from protocol_1bit import encode_1bit_packet, decode_1bit_packet, PACKET_TYPES
 except ImportError:
     # Create mock for when dependencies aren't installed
     MQTTWebSocketBridge = None
@@ -123,6 +124,22 @@ class TestProtocol1Bit:
         
         assert compressed_size == 21
         assert ratio >= 9.0  # 9.5x documented
+
+    def test_protocol_1bit_roundtrip(self):
+        """Test roundtrip encoding/decoding with the shared 1-bit protocol module."""
+        weights = [0.3, -0.1, 0.0, 1.0, -0.5, 0.25, -0.75, 0.05]
+        packet = encode_1bit_packet(weights, seed=1234, scale=0.5, ptype=PACKET_TYPES['SYNC'])
+        decoded = decode_1bit_packet(packet)
+
+        assert decoded is not None
+        assert decoded['magic'] == 'EON'
+        assert decoded['type'] == PACKET_TYPES['SYNC']
+        assert decoded['seed'] == 1234
+        assert decoded['count'] == len(weights)
+        assert decoded['scale'] == 0.5
+        assert decoded['weights'] == [0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5]
+        assert decoded['original_size'] == len(weights) * 4
+        assert decoded['compressed_size'] == len(packet)
 
 
 class TestMessageFormats:

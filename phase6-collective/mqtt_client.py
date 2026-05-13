@@ -41,6 +41,12 @@ except ImportError:
 PROJECT_ROOT = Path(__file__).parent.parent
 
 from esn.esn import EchoStateNetwork
+from protocol_1bit import (
+    PACKET_TYPES,
+    PACKET_TYPE_NAMES,
+    decode_1bit_packet,
+    encode_1bit_packet,
+)
 
 # ============================================================
 # PROTOCOLO 1-BIT - Formato de Paquete
@@ -52,16 +58,6 @@ from esn.esn import EchoStateNetwork
 # Byte 10-13: Scale (float32)
 # Byte 14+:   Payload (bits empaquetados)
 # ============================================================
-
-PACKET_TYPES = {
-    'SYNC': 1,      # Sincronización de pesos
-    'REQ': 2,       # Solicitud de pesos
-    'ACK': 3,       # Confirmación
-    'PING': 4,      # Heartbeat
-    'STATUS': 5,    # Estado del nodo
-}
-
-PACKET_TYPE_NAMES = {v: k for k, v in PACKET_TYPES.items()}
 
 class AeonMQTTNode:
     """
@@ -328,78 +324,35 @@ class AeonMQTTNode:
     def _create_binary_packet(self) -> bytes:
         """
         Crea paquete binario con protocolo 1-bit.
-        
-        Formato:
-            Magic (3B) + Type (1B) + Seed (4B) + Count (2B) + Scale (4B) + Bits
         """
         w_out = self.esn.W_out.flatten()
-        
-        # Header
-        magic = b"EON"
-        ptype = PACKET_TYPES['SYNC']
         seed = hash(self.node_id) % (2**32)
-        count = len(w_out)
         scale = float(np.abs(w_out).max())
-        
-        # Cuantizar a 1-bit (signo)
-        bits = (w_out >= 0).astype(np.uint8)
-        
-        # Empaquetar bits en bytes
-        n_bytes = (count + 7) // 8
-        packed = bytearray(n_bytes)
-        for i, bit in enumerate(bits):
-            if bit:
-                packed[i // 8] |= (1 << (7 - (i % 8)))
-                
-        # Construir paquete
-        packet = bytearray()
-        packet.extend(magic)
-        packet.append(ptype)
-        packet.extend(struct.pack(">I", seed))      # Big-endian uint32
-        packet.extend(struct.pack(">H", count))     # Big-endian uint16
-        packet.extend(struct.pack(">f", scale))     # Big-endian float32
-        packet.extend(packed)
-        
-        return bytes(packet)
+
+        return encode_1bit_packet(
+            weights=w_out,
+            seed=seed,
+            scale=scale,
+            ptype=PACKET_TYPES['SYNC']
+        )
         
     def _decode_binary_packet(self, data: bytes) -> Optional[dict]:
         """Decodifica paquete binario."""
-        if len(data) < 14:
+        decoded = decode_1bit_packet(data)
+        if decoded is None:
             return None
-            
-        try:
-            magic = data[0:3].decode()
-            if magic != "EON":
-                return None
-                
-            ptype = data[3]
-            seed = struct.unpack(">I", data[4:8])[0]
-            count = struct.unpack(">H", data[8:10])[0]
-            scale = struct.unpack(">f", data[10:14])[0]
-            packed = data[14:]
-            
-            # Desempaquetar bits
-            bits = []
-            for byte in packed:
-                for i in range(8):
-                    if len(bits) < count:
-                        bits.append((byte >> (7 - i)) & 1)
-                        
-            return {
-                "magic": magic,
-                "type": ptype,
-                "seed": seed,
-                "count": count,
-                "scale": scale,
-                "bits": bits,
-                "original_size": count * 4,
-                "compressed_size": len(data),
-                "compression": round(count * 4 / len(data), 1),
-            }
-            
-        except (struct.error, ValueError, IndexError) as e:
-            logger.error(f"Error decodificando: {e}")
-            return None
+
+        return {
+            'magic': decoded['magic'],
+            'type': decoded['type'],
+            'seed': decoded['seed'],
+            'count': decoded['count'],
+            'scale': decoded['scale'],
+            'bits': [1 if w > 0 else 0 for w in decoded['weights']],
+            'original_size': decoded['original_size'],
+            'compressed_size': decoded['compressed_size'],
+            'compression': decoded['compression_ratio'],
+        }
             
     def _import_weights_from_packet(self, packet: dict):
         """Importa pesos desde paquete decodificado."""

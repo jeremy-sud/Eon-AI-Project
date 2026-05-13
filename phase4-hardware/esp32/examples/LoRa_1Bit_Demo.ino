@@ -67,6 +67,34 @@
 
 #define RESERVOIR_SIZE 32  // Mantener pequeño para LoRa
 
+static uint32_t floatToBits(float value) {
+    union { float f; uint32_t u; } conv;
+    conv.f = value;
+    return conv.u;
+}
+
+static float bitsToFloat(uint32_t value) {
+    union { uint32_t u; float f; } conv;
+    conv.u = value;
+    return conv.f;
+}
+
+static void writeFloatBE(uint8_t* dest, float value) {
+    uint32_t bits = floatToBits(value);
+    dest[0] = (bits >> 24) & 0xFF;
+    dest[1] = (bits >> 16) & 0xFF;
+    dest[2] = (bits >> 8) & 0xFF;
+    dest[3] = bits & 0xFF;
+}
+
+static float readFloatBE(const uint8_t* src) {
+    uint32_t bits = ((uint32_t)src[0] << 24) |
+                    ((uint32_t)src[1] << 16) |
+                    ((uint32_t)src[2] << 8) |
+                    ((uint32_t)src[3]);
+    return bitsToFloat(bits);
+}
+
 class AeonLoRa {
 private:
     // Reservoir state (Q8.8 fixed-point)
@@ -159,15 +187,17 @@ public:
      *   Byte 0-2:   Magic "EON" (3 bytes)
      *   Byte 3:     Type (1=SYNC)
      *   Byte 4-7:   Seed (uint32)
-     *   Byte 8:     Count (uint8) - número de pesos
-     *   Byte 9+:    Bits empaquetados (ceil(count/8) bytes)
+     *   Byte 8-9:   Count (uint16) - número de pesos
+     *   Byte 10-13: Scale (float32) - magnitud fija para reconstrucción
+     *   Byte 14+:    Bits empaquetados (ceil(count/8) bytes)
      * 
      * @param buffer Buffer de salida
      * @param bufferSize Tamaño máximo del buffer
      * @return Tamaño del paquete en bytes
      */
     size_t exportWeights1Bit(uint8_t* buffer, size_t bufferSize) {
-        size_t headerSize = 9;  // Magic(3) + Type(1) + Seed(4) + Count(1)
+        const float scaleValue = 0.5f;
+        size_t headerSize = 14;  // Magic(3) + Type(1) + Seed(4) + Count(2) + Scale(4)
         size_t bitsSize = (RESERVOIR_SIZE + 7) / 8;
         size_t totalSize = headerSize + bitsSize;
         
@@ -185,14 +215,18 @@ public:
         buffer[6] = (seed >> 8) & 0xFF;
         buffer[7] = seed & 0xFF;
         
-        // Count
-        buffer[8] = RESERVOIR_SIZE;
+        // Count (big-endian uint16)
+        buffer[8] = (RESERVOIR_SIZE >> 8) & 0xFF;
+        buffer[9] = RESERVOIR_SIZE & 0xFF;
+        
+        // Scale (big-endian float32)
+        writeFloatBE(buffer + 10, scaleValue);
         
         // Bits empaquetados (signo de W_out)
-        memset(buffer + 9, 0, bitsSize);
+        memset(buffer + 14, 0, bitsSize);
         for (int i = 0; i < RESERVOIR_SIZE; i++) {
             if (W_out[i] >= 0) {
-                buffer[9 + i/8] |= (1 << (7 - (i % 8)));
+                buffer[14 + i / 8] |= (1 << (7 - (i % 8)));
             }
         }
         
@@ -213,7 +247,7 @@ public:
      */
     bool importWeights1Bit(const uint8_t* buffer, size_t length) {
         // Verificar tamaño mínimo
-        if (length < 10) return false;
+        if (length < 14) return false;
         
         // Verificar magic
         if (buffer[0] != 'E' || buffer[1] != 'O' || buffer[2] != 'N') {
@@ -230,22 +264,25 @@ public:
                               buffer[7];
         
         // Leer count
-        uint8_t count = buffer[8];
+        uint16_t count = ((uint16_t)buffer[8] << 8) |
+                         buffer[9];
         if (count != RESERVOIR_SIZE) {
-            Serial.printf("⚠ Tamaño incompatible: %d vs %d\n", count, RESERVOIR_SIZE);
+            Serial.printf("⚠ Tamaño incompatible: %u vs %u\n", count, (uint32_t)RESERVOIR_SIZE);
             return false;
         }
         
+        // Leer scale
+        float remoteScale = readFloatBE(buffer + 10);
+        int16_t scaleQ8 = floatToQ8(remoteScale);
+        
         // Desempaquetar bits
         int16_t remoteWeights[RESERVOIR_SIZE];
-        int16_t scale = 128;  // 0.5 en Q8.8
-        
         for (int i = 0; i < RESERVOIR_SIZE; i++) {
-            uint8_t byteIdx = 9 + i / 8;
+            uint8_t byteIdx = 14 + i / 8;
             uint8_t bitIdx = 7 - (i % 8);
             bool sign = (buffer[byteIdx] >> bitIdx) & 1;
             
-            remoteWeights[i] = sign ? scale : -scale;
+            remoteWeights[i] = sign ? scaleQ8 : -scaleQ8;
         }
         
         // Fusionar con pesos locales (promedio)

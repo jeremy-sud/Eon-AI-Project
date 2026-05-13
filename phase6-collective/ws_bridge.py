@@ -24,6 +24,8 @@ from pathlib import Path
 from datetime import datetime
 from typing import Set, Dict, Any, Optional
 
+from protocol_1bit import decode_1bit_packet, PACKET_TYPE_NAMES
+
 # Intentar importar dependencias
 try:
     import websockets
@@ -50,44 +52,7 @@ except ImportError:
 # PROTOCOLO 1-BIT - Decodificación
 # ============================================================
 
-PACKET_TYPE_NAMES = {
-    1: 'SYNC',
-    2: 'REQ',
-    3: 'ACK',
-    4: 'PING',
-    5: 'STATUS'
-}
-
-
-def decode_1bit_packet(data: bytes) -> Optional[Dict[str, Any]]:
-    """Decodifica paquete binario del Protocolo 1-Bit."""
-    if len(data) < 14:
-        return None
-        
-    try:
-        magic = data[0:3].decode()
-        if magic != "EON":
-            return None
-            
-        ptype = data[3]
-        seed = struct.unpack(">I", data[4:8])[0]
-        count = struct.unpack(">H", data[8:10])[0]
-        scale = struct.unpack(">f", data[10:14])[0]
-        
-        return {
-            "magic": magic,
-            "type": ptype,
-            "type_name": PACKET_TYPE_NAMES.get(ptype, "UNKNOWN"),
-            "seed": seed,
-            "count": count,
-            "scale": round(scale, 4),
-            "payload_size": len(data) - 14,
-            "total_size": len(data),
-            "original_size": count * 4,
-            "compression": round(count * 4 / len(data), 1),
-        }
-    except (struct.error, ValueError, ZeroDivisionError) as e:
-        return {"error": str(e)}
+# Reutiliza la implementación canónica de protocol_1bit.py
 
 
 # ============================================================

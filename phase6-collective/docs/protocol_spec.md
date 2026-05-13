@@ -6,7 +6,7 @@ This protocol enables ultra-low bandwidth exchange of learned weights ($W_{out}$
 
 ## Packet Structure
 
-Little-Endian byte order.
+Big-endian byte order for header fields.
 
 | Offset | Field     | Type        | Description                                    |
 | :----- | :-------- | :---------- | :--------------------------------------------- |
@@ -14,7 +14,8 @@ Little-Endian byte order.
 | 3      | `TYPE`    | `uint8_t`   | `0x01` (W_OUT_UPDATE), `0x02` (WILL_VECTOR)    |
 | 4      | `SEED`    | `uint32_t`  | Reservoir Seed ID (Must match receiver)        |
 | 8      | `COUNT`   | `uint16_t`  | Number of weights ($N$)                        |
-| 10     | `PAYLOAD` | `uint8_t[]` | Bit-packed weights ($\lceil N/8 \rceil$ bytes) |
+| 10     | `SCALE`   | `float32`   | Reconstruction magnitude for weights           |
+| 14     | `PAYLOAD` | `uint8_t[]` | Bit-packed weights ($\lceil N/8 \rceil$ bytes) |
 
 ### Extended Packet (with True Will) - TYPE 0x03
 
@@ -59,11 +60,13 @@ Each bit represents the sign of a weight:
 
 Packing:
 
-- Byte 0, Bit 0: Weight[0]
-- Byte 0, Bit 1: Weight[1]
+- Byte 0, Bit 7: Weight[0]
+- Byte 0, Bit 6: Weight[1]
 - ...
-- Byte 0, Bit 7: Weight[7]
-- Byte 1, Bit 0: Weight[8]
+- Byte 0, Bit 0: Weight[7]
+- Byte 1, Bit 7: Weight[8]
+
+This protocol uses MSB-first bit packing within each byte to preserve compatibility with the Python and ESP32 implementations.
 
 ## Compression Performance
 

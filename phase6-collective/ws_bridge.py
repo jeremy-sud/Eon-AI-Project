@@ -26,6 +26,19 @@ from typing import Set, Dict, Any, Optional
 
 from protocol_1bit import decode_1bit_packet, PACKET_TYPE_NAMES
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PYTHON_ROOT = PROJECT_ROOT / 'phase1-foundations' / 'python'
+
+# Importar circadian para métricas adaptativas
+try:
+    import sys
+    sys.path.insert(0, str(PYTHON_ROOT))
+    from core.circadian import CircadianClock
+    _CIRCADIAN_AVAILABLE = True
+except ImportError:
+    _CIRCADIAN_AVAILABLE = False
+    print("⚠️  Módulo core.circadian no disponible")
+
 # Intentar importar dependencias
 try:
     import websockets
@@ -77,6 +90,9 @@ class MQTTWebSocketBridge:
         self.mqtt_port = mqtt_port
         self.ws_host = ws_host
         self.ws_port = ws_port
+        
+        # Inicializar circadian clock para métricas
+        self.circadian_clock = CircadianClock(period_steps=1440) if _CIRCADIAN_AVAILABLE else None
         
         # Clientes WebSocket conectados
         self.ws_clients: Set = set()
@@ -243,12 +259,18 @@ class MQTTWebSocketBridge:
         print(f"📱 Cliente WebSocket conectado ({client_id})")
         
         try:
-            # Enviar estado inicial
-            await websocket.send(json.dumps({
+            # Enviar estado inicial con métricas dinámicas
+            init_data = {
                 "type": "init",
                 "nodes": self.nodes,
                 "stats": self.stats
-            }))
+            }
+            
+            # Agregar métricas circadian si disponible
+            if self.circadian_clock:
+                init_data["circadian"] = self.circadian_clock.state().to_dict()
+            
+            await websocket.send(json.dumps(init_data))
             
             # Mantener conexión abierta
             async for message in websocket:
@@ -281,6 +303,13 @@ class MQTTWebSocketBridge:
                 "data": self.nodes
             }))
             
+        elif cmd_type == "get_circadian":
+            if self.circadian_clock:
+                await websocket.send(json.dumps({
+                    "type": "circadian",
+                    "data": self.circadian_clock.state().to_dict()
+                }))
+                
         elif cmd_type == "broadcast_sync":
             # Publicar solicitud de sync a todos los nodos
             if self.mqtt_client:
@@ -301,6 +330,25 @@ class MQTTWebSocketBridge:
                 return False
         return False
         
+    async def _periodic_updates(self):
+        """Envía updates periódicos de métricas circadian."""
+        while True:
+            if self.ws_clients and self.circadian_clock:
+                try:
+                    # Tick circadian clock
+                    circadian_state = self.circadian_clock.tick()
+                    
+                    # Broadcast a todos los clientes
+                    await self._broadcast({
+                        "type": "circadian_update",
+                        "data": circadian_state.to_dict(),
+                        "timestamp": datetime.now().isoformat()
+                    })
+                except Exception as e:
+                    print(f"⚠️  Error en update circadian: {e}")
+            
+            await asyncio.sleep(10)  # Update cada 10 segundos
+            
     async def start_ws(self):
         """Inicia servidor WebSocket."""
         if not WS_AVAILABLE:
@@ -310,7 +358,12 @@ class MQTTWebSocketBridge:
         print(f"🌐 Servidor WebSocket en ws://{self.ws_host}:{self.ws_port}")
         
         async with serve(self.ws_handler, self.ws_host, self.ws_port):
-            await asyncio.Future()  # Correr indefinidamente
+            # Iniciar updates periódicos en background
+            update_task = asyncio.create_task(self._periodic_updates())
+            await asyncio.gather(
+                asyncio.Future(),  # Servidor WebSocket
+                update_task
+            )
             
     def stop(self):
         """Detiene el bridge."""

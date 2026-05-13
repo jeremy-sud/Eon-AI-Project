@@ -477,6 +477,26 @@
                     </div>
                 </div>
                 
+                <div class="metric-bar">
+                    <div class="metric-bar-header">
+                        <span>Fase Circadiana</span>
+                        <span id="circadian-phase">N/A</span>
+                    </div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-fill circadian" id="circadian-bar" style="width: 50%"></div>
+                    </div>
+                </div>
+                
+                <div class="metric-bar">
+                    <div class="metric-bar-header">
+                        <span>Noise Mod</span>
+                        <span id="noise-mod">0.00</span>
+                    </div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-fill bandwidth" id="noise-mod-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                
                 <div class="protocol-info">
                     <h4>📦 Formato del Paquete</h4>
                     <pre>
@@ -627,6 +647,16 @@ Ejemplo (50 neuronas):
                         };
                         renderNodeList();
                     }
+                    break;
+
+                case 'circadian':
+                    state.circadian = msg.data;
+                    updateCircadianPanel();
+                    break;
+
+                case 'circadian_update':
+                    state.circadian = msg.data;
+                    updateCircadianPanel();
                     break;
             }
         }
@@ -950,6 +980,17 @@ Ejemplo (50 neuronas):
                 ((Date.now() - state.startTime || 60000) / 60000));
             document.getElementById('sync-rate').textContent = 
                 syncsPerMin + ' sync/min';
+        }
+
+        function updateCircadianPanel() {
+            const phase = state.circadian?.phase || 'N/A';
+            const noise = state.circadian?.noise_mod ?? 0;
+            const fillPct = Math.round((noise || 0) * 100);
+
+            document.getElementById('circadian-phase').textContent = phase;
+            document.getElementById('noise-mod').textContent = noise.toFixed(2);
+            document.getElementById('noise-mod-bar').style.width = `${fillPct}%`;
+            document.getElementById('circadian-bar').style.width = `${fillPct}%`;
         }
         
         // ============================================================

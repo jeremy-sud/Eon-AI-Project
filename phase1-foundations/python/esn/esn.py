@@ -9,9 +9,16 @@ toda la computación necesaria. Solo entrenamos la capa de salida.
 import numpy as np
 import time
 import warnings
+import logging
 from typing import Optional, Tuple
 
 import os
+
+try:
+    from core.circadian import CircadianClock
+    _CIRCADIAN_AVAILABLE = True
+except ImportError:
+    _CIRCADIAN_AVAILABLE = False
 
 try:
     from utils.matrix_init import (
@@ -25,6 +32,8 @@ try:
     _UTILS_AVAILABLE = True
 except ImportError:
     _UTILS_AVAILABLE = False
+
+logger = logging.getLogger(__name__)
 
 class EchoStateNetwork:
     """
@@ -40,6 +49,7 @@ class EchoStateNetwork:
         spectral_radius: Radio espectral (controla estabilidad)
         sparsity: Proporción de conexiones cero en el reservoir
         noise: Ruido añadido para regularización
+        circadian_clock: Reloj circadiano opcional para modulación adaptativa
     """
     
     def __init__(
@@ -51,6 +61,7 @@ class EchoStateNetwork:
         sparsity: float = 0.9,
         noise: float = 0.001,
         leak_rate: float = 1.0,
+        circadian_clock: Optional['CircadianClock'] = None,
         random_state: Optional[int] = None
     ):
         # Validar parámetros
@@ -67,6 +78,7 @@ class EchoStateNetwork:
         self.sparsity = sparsity
         self.noise = noise
         self.leak_rate = leak_rate  # Nuevo: para leaky integration
+        self.circadian_clock = circadian_clock
         
         # Inicializar generador aleatorio (API moderno)
         self.rng = np.random.default_rng(random_state)
@@ -175,6 +187,10 @@ class EchoStateNetwork:
         el reservoir aleatorio ya contiene toda la representación necesaria,
         solo necesitamos aprender a leerla.
         
+        Si se proporciona circadian_clock, modula parámetros durante el entrenamiento:
+        - Noise según fase circadiana (más ruido en DAWN/REM para exploración)
+        - Logging de performance por fase
+        
         Args:
             inputs: Secuencia de entrada (T, n_inputs)
             outputs: Secuencia objetivo (T, n_outputs)
@@ -203,9 +219,37 @@ class EchoStateNetwork:
         # Reset estado inicial
         self.state = np.zeros(self.n_reservoir)
         
+        # Inicializar tracking circadian si está disponible
+        phase_performance = {}
+        base_noise = self.noise
+        
         # Pasar todos los inputs por el reservoir
         for t in range(T):
+            # Modulación circadiana si disponible
+            if self.circadian_clock and _CIRCADIAN_AVAILABLE:
+                circadian_state = self.circadian_clock.tick()
+                
+                # Ajustar noise según fase (más ruido en DAWN/REM)
+                self.noise = base_noise * circadian_state.noise_mod
+                
+                # Trackear performance por fase
+                phase = circadian_state.phase.value
+                if phase not in phase_performance:
+                    phase_performance[phase] = {'count': 0, 'states': []}
+                phase_performance[phase]['count'] += 1
+                phase_performance[phase]['states'].append(np.copy(self.state))
+            
             states[t] = self._update_state(inputs[t])
+            
+        # Logging de performance circadian
+        if self.circadian_clock and phase_performance:
+            logger.info("ESN Training - Performance por fase circadiana:")
+            for phase, data in phase_performance.items():
+                state_variance = np.var(np.array(data['states']))
+                logger.info(f"  {phase}: {data['count']} steps, state variance: {state_variance:.6f}")
+        
+        # Reset noise a valor base
+        self.noise = base_noise
             
         # Descartar período de "calentamiento" (washout)
         states_train = states[washout:]

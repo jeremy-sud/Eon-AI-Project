@@ -121,7 +121,7 @@ def print_table(headers: List[str], rows: List[List[Any]], widths: List[int] = N
 class BenchmarkSuite:
     """Suite completa de benchmarks para Eón."""
     
-    def __init__(self, quick_mode: bool = False) -> None:
+    def __init__(self, quick_mode: bool = False, previous_results_path: Optional[str] = None) -> None:
         self.quick_mode: bool = quick_mode
         self.results: Dict[str, Any] = {
             'timestamp': datetime.now().isoformat(),
@@ -129,6 +129,9 @@ class BenchmarkSuite:
             'quick_mode': quick_mode,
             'benchmarks': {}
         }
+        self.previous_results: Optional[Dict[str, Any]] = None
+        if previous_results_path:
+            self._load_previous_results(previous_results_path)
         
         # Parámetros ajustados para modo rápido
         if quick_mode:

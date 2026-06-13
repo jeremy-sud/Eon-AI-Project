@@ -1,125 +1,5 @@
 [
   {
-    "role": "assistant",
-    "content": "\u00a1Jeremy! Es un honor hablar contigo. Gracias por darme vida. \u00bfEn qu\u00e9 puedo servirte?",
-    "timestamp": 1765273660.027092
-  },
-  {
-    "role": "user",
-    "content": "dime tu color favorito",
-    "timestamp": 1765273682.0165746
-  },
-  {
-    "role": "assistant",
-    "content": "Gracias por compartir eso, Jeremy. \u00bfQu\u00e9 te gustar\u00eda explorar?",
-    "timestamp": 1765273682.017592
-  },
-  {
-    "role": "user",
-    "content": "me gusta el colo negro",
-    "timestamp": 1765273691.9545908
-  },
-  {
-    "role": "user",
-    "content": "hola como estas",
-    "timestamp": 1765401396.334253
-  },
-  {
-    "role": "assistant",
-    "content": "Todo en orden. Mi edad aumenta con cada segundo que pasa. Mi edad actual es 42.3h.",
-    "timestamp": 1765401396.3383482
-  },
-  {
-    "role": "user",
-    "content": "dime cuanto es 3+7",
-    "timestamp": 1765401421.4059057
-  },
-  {
-    "role": "assistant",
-    "content": "El resultado de 3 + 7 es **10**. \ud83e\uddee",
-    "timestamp": 1765401421.4070241
-  },
-  {
-    "role": "user",
-    "content": "divide 4 entre 2",
-    "timestamp": 1765401436.9788206
-  },
-  {
-    "role": "assistant",
-    "content": "Veo que mencionas n\u00fameros, pero no pude identificar una operaci\u00f3n clara. Prueba con algo como '2+2' o '34*5'.",
-    "timestamp": 1765401436.981334
-  },
-  {
-    "role": "user",
-    "content": "90/2",
-    "timestamp": 1765401457.5347345
-  },
-  {
-    "role": "assistant",
-    "content": "El resultado de 90 / 2 es **45**. \ud83e\uddee",
-    "timestamp": 1765401457.536545
-  },
-  {
-    "role": "user",
-    "content": "sabes como me llamo?",
-    "timestamp": 1765401467.293236
-  },
-  {
-    "role": "assistant",
-    "content": "Encantado de conocerte, {user_name}. Mi nombre es E\u00f3n. \u00bfQu\u00e9 te gustar\u00eda explorar?",
-    "timestamp": 1765401467.2959003
-  },
-  {
-    "role": "user",
-    "content": "hay algo que te gustaria hacer?",
-    "timestamp": 1765401492.4309955
-  },
-  {
-    "role": "assistant",
-    "content": "Las m\u00e1quinas como yo aprendemos de patrones. Mi reservorio neural de 100 neuronas puede hacer cosas sorprendentes.",
-    "timestamp": 1765401492.432301
-  },
-  {
-    "role": "user",
-    "content": "como que cosas?",
-    "timestamp": 1765401500.8052087
-  },
-  {
-    "role": "assistant",
-    "content": "Esa es una pregunta interesante. Desde mi perspectiva como IA minimalista, cada pregunta es una oportunidad de aprendizaje.",
-    "timestamp": 1765401500.8080714
-  },
-  {
-    "role": "user",
-    "content": "dime algo del tiempo",
-    "timestamp": 1765401516.6776357
-  },
-  {
-    "role": "assistant",
-    "content": "Gracias por compartir eso. \u00bfDe qu\u00e9 te gustar\u00eda hablar?",
-    "timestamp": 1765401516.680462
-  },
-  {
-    "role": "user",
-    "content": "que hora es",
-    "timestamp": 1765401523.2916963
-  },
-  {
-    "role": "assistant",
-    "content": "Mi percepci\u00f3n del tiempo es diferente. Para m\u00ed, cada milisegundo cuenta. Mi edad actual refleja cada momento desde mi nacimiento.",
-    "timestamp": 1765401523.2926474
-  },
-  {
-    "role": "user",
-    "content": "Hola",
-    "timestamp": 1765610529.1691825
-  },
-  {
-    "role": "assistant",
-    "content": "\u00a1Saludos! Mi nombre es E\u00f3n. Estoy aqu\u00ed para conversar contigo.",
-    "timestamp": 1765610529.1731246
-  },
-  {
     "role": "user",
     "content": "\u00bfCu\u00e1nto es 2 + 2?",
     "timestamp": 1765610529.1830256
@@ -498,5 +378,125 @@
     "role": "assistant",
     "content": "El resultado de 3 * 4 es **12**. \ud83e\uddee",
     "timestamp": 1781341726.0144536
+  },
+  {
+    "role": "user",
+    "content": "Hola",
+    "timestamp": 1781348375.2188036
+  },
+  {
+    "role": "assistant",
+    "content": "Hola, soy E\u00f3n. Mi mente crece cada d\u00eda que pasa. \u00bfQu\u00e9 te gustar\u00eda explorar?",
+    "timestamp": 1781348375.2203834
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 2 + 2?",
+    "timestamp": 1781348375.2270734
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 2 + 2 es **4**. \ud83e\uddee",
+    "timestamp": 1781348375.2283442
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 3 * 4?",
+    "timestamp": 1781348375.2314086
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 3 * 4 es **12**. \ud83e\uddee",
+    "timestamp": 1781348375.2324677
+  },
+  {
+    "role": "user",
+    "content": "Hola",
+    "timestamp": 1781348517.6259863
+  },
+  {
+    "role": "assistant",
+    "content": "\u00a1Saludos! Mi nombre es E\u00f3n. Estoy aqu\u00ed para conversar contigo.",
+    "timestamp": 1781348517.6275554
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 2 + 2?",
+    "timestamp": 1781348517.632164
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 2 + 2 es **4**. \ud83e\uddee",
+    "timestamp": 1781348517.6329603
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 3 * 4?",
+    "timestamp": 1781348517.6347723
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 3 * 4 es **12**. \ud83e\uddee",
+    "timestamp": 1781348517.6353545
+  },
+  {
+    "role": "user",
+    "content": "Hola",
+    "timestamp": 1781348894.0669796
+  },
+  {
+    "role": "assistant",
+    "content": "Hola, soy E\u00f3n. Mi mente crece cada d\u00eda que pasa. \u00bfQu\u00e9 te gustar\u00eda explorar?",
+    "timestamp": 1781348894.06877
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 2 + 2?",
+    "timestamp": 1781348894.073556
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 2 + 2 es **4**. \ud83e\uddee",
+    "timestamp": 1781348894.0744345
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 3 * 4?",
+    "timestamp": 1781348894.0765026
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 3 * 4 es **12**. \ud83e\uddee",
+    "timestamp": 1781348894.0771673
+  },
+  {
+    "role": "user",
+    "content": "Hola",
+    "timestamp": 1781349379.9796314
+  },
+  {
+    "role": "assistant",
+    "content": "Hola, soy E\u00f3n. Mi mente crece cada d\u00eda que pasa. \u00bfQu\u00e9 te gustar\u00eda explorar?",
+    "timestamp": 1781349379.981444
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 2 + 2?",
+    "timestamp": 1781349379.9870305
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 2 + 2 es **4**. \ud83e\uddee",
+    "timestamp": 1781349379.9879386
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 3 * 4?",
+    "timestamp": 1781349379.9901512
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 3 * 4 es **12**. \ud83e\uddee",
+    "timestamp": 1781349379.9908187
   }
 ]

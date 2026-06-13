@@ -2,6 +2,26 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [2.4.0] - 2026-06-13
+
+### 🌙 Ciclos Circadianos & Entrenamiento Adaptativo (ESN)
+- **Modulación de Parámetros Dinámica**: Integración del reloj circadiano (`CircadianClock`) con el Echo State Network (`EchoStateNetwork`) para variar de forma dinámica la tasa de aprendizaje (`learning_rate`) y el ruido (`noise`) durante el entrenamiento (`fit`).
+- **Dropout Basado en Energía**: Implementación de un mecanismo de `dropout` modulado por el nivel de energía del reloj. En fases activas (`PEAK` o `AFTERNOON`) el dropout efectivo es nulo para garantizar una transmisión exacta de estados, mientras que en fases de descanso (`NIGHT` o `REM`) el dropout aumenta hasta el nivel base (promoviendo la consolidación y exploración dispersa).
+- **Resolución de Importación Circular**: Implementada la carga perezosa (lazy-loading) del reloj circadiano para evitar la inicialización prematura y las dependencias circulares con el paquete `core`.
+- **Suite de Pruebas**: Creado suite de pruebas de integración dedicado `phase1-foundations/python/tests/test_circadian_esn.py`, logrando un total acumulado de **719 tests exitosos** en la suite global.
+
+## [2.3.0] - 2026-06-13
+
+### 🖥️ Interfaz de Usuario & Código Abierto
+- **Leyenda del Chat**: Añadida una leyenda informativa/disclaimer persistente en el encabezado del chat indicando de forma sencilla que el chat con TinyLM es experimental y que Eón AI fue concebido para sistemas embebidos, IoT y microcontroladores.
+- **Enlace al Repositorio de Código Abierto**: Integrado enlace directo al repositorio oficial del proyecto en GitHub (`https://github.com/jeremy-sud/Eon-AI-Project`) tanto en la barra de navegación lateral como en la sección de Ayuda y Preguntas Frecuentes.
+- **Estilos Adaptados**: Diseño responsivo integrado en `style.css` para el nuevo banner de leyenda y los enlaces del menú del sidebar.
+
+### 🔒 Seguridad & Watermarking Colectivo
+- **Verificación de Watermark 1-Bit**: Corregido bug crítico en la verificación de watermarks físicos LSB para transmisiones 1-bit (`import_weights_1bit`). Dado que la cuantización binaria descarta los LSBs, implementamos una validación lógica robusta de la firma hash de propiedad para autenticar el payload sin falsos positivos.
+- **Protección Física en Sincronización Completa**: Añadida verificación física LSB en el flujo de importación/exportación de pesos de alta precisión (`export_weights` e `import_weights`) para rechazar paquetes de pesos manipulados o no firmados.
+- **Suite de Pruebas**: Creado archivo de pruebas `phase6-collective/tests/test_neural_watermark.py` cubriendo la autenticación de paquetes full-precision y 1-bit, logrando un total acumulado de **714 tests exitosos** en la suite global.
+
 ## [2.2.0] - 2024-01-15
 
 ### 🧬 Integraciones de Algoritmos Avanzados

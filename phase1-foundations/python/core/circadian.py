@@ -98,6 +98,11 @@ class CircadianState:
     # Señal cruda del oscilador
     oscillator_value: float     # Valor sin normalizar del oscilador principal
 
+    @property
+    def energy(self) -> float:
+        """Alias del nivel de energía o actividad del estado circadiano (basado en learning_rate_mod)."""
+        return self.learning_rate_mod
+
     def to_dict(self) -> Dict:
         return {
             "phase": self.phase.value,
@@ -107,6 +112,7 @@ class CircadianState:
             "forgetting_mod": round(self.forgetting_mod, 4),
             "noise_mod": round(self.noise_mod, 4),
             "anomaly_threshold_mod": round(self.anomaly_threshold_mod, 4),
+            "energy": round(self.energy, 4),
         }
 
 

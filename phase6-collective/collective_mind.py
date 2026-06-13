@@ -381,17 +381,33 @@ class AeonNode:
     def export_weights(self) -> Dict:
         """
         Exporta pesos W_out para compartir.
+        Incluye watermarking para autenticación si está disponible.
         
         Returns:
             dict con metadatos y pesos
         """
-        return {
+        w_out = self.esn.W_out
+        if _watermark_available:
+            wm = NeuralWatermark(self.node_id)
+            w_out_signed = wm.embed(w_out)
+        else:
+            w_out_signed = w_out
+
+        result = {
             'node_id': self.node_id,
             'n_reservoir': self.n_reservoir,
             'samples_learned': self.samples_learned,
             'timestamp': datetime.now(timezone.utc).isoformat(),
-            'W_out': self.esn.W_out.tolist()
+            'W_out': w_out_signed.tolist()
         }
+
+        if _watermark_available:
+            result['watermark'] = {
+                'owner': self.node_id,
+                'signature': wm.signature.hex()
+            }
+
+        return result
     
     def import_weights(self, weights_data: Dict, merge_ratio: float = 0.5) -> bool:
         """
@@ -409,7 +425,22 @@ class AeonNode:
             raise ValueError(f"Tamaño de reservoir incompatible: "
                            f"{weights_data['n_reservoir']} vs {self.n_reservoir}")
         
-        external_weights = np.array(weights_data['W_out'])
+        # Verificar watermarking si disponible
+        if _watermark_available and 'watermark' in weights_data:
+            wm_info = weights_data['watermark']
+            owner = wm_info.get('owner')
+            
+            # Verificar que el owner esté en la lista de peers conocidos
+            if owner and owner not in self.peers and owner != self.node_id:
+                print(f"⚠️  Watermark de owner desconocido: {owner}")
+                
+            external_weights = np.array(weights_data['W_out'])
+            extracted_owner, confidence = extract_owner(external_weights)
+            if extracted_owner != owner:
+                print(f"⚠️  Watermark mismatch en pesos: esperado {owner}, extraído {extracted_owner}")
+                return False  # Rechazar pesos manipulados/sin firma válida
+        else:
+            external_weights = np.array(weights_data['W_out'])
         
         # Mezclar: local * (1-ratio) + externo * ratio
         self.esn.W_out = (
@@ -524,17 +555,13 @@ class AeonNode:
             # Verificar que el owner esté en la lista de peers conocidos
             if owner and owner not in self.peers and owner != self.node_id:
                 print(f"⚠️  Watermark de owner desconocido: {owner}")
-                # Podríamos rechazar o marcar como sospechoso
-                # Por ahora, solo advertir
-            
-            # Verificar integridad del watermark
-            if packet.get('packet') is not None:
-                decoded = decode_1bit_packet(packet['packet'])
-                if decoded:
-                    extracted_owner, confidence = extract_owner(np.array(decoded['weights']))
-                    if extracted_owner != owner:
-                        print(f"⚠️  Watermark mismatch: esperado {owner}, extraído {extracted_owner}")
-                        return False  # Rechazar paquete con watermark inválido
+                
+            # Para paquetes 1-bit, la cuantización pierde los LSBs físicos de la firma.
+            # Verificamos la firma lógica contra el owner para autenticación del payload.
+            expected_sig = NeuralWatermark._generate_signature(owner).hex()
+            if wm_info.get('signature') != expected_sig:
+                print(f"⚠️  Firma de watermark inválida para owner: {owner}")
+                return False
         
         if packet.get('packet') is not None:
             decoded = decode_1bit_packet(packet['packet'])

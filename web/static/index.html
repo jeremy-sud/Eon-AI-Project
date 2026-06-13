@@ -91,6 +91,11 @@
         Ayuda & Info
       </div>
 
+      <a href="https://github.com/jeremy-sud/Eon-AI-Project" target="_blank" class="nav-item-link">
+        <i class="fa-brands fa-github"></i>
+        Código Abierto
+      </a>
+
       <!-- User Profile Card in Sidebar -->
       <div id="sidebarUserCard" class="user-card-sidebar" style="display: none;">
         <div class="user-card-avatar">
@@ -118,6 +123,12 @@
     <main class="main-content">
       <!-- View: Chat -->
       <div id="chatView">
+        <!-- Chat disclaimer -->
+        <div class="chat-disclaimer">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Actualmente el chat con TinyLM solo es una función vagamente funcional ya que Eón AI realmente nació para vivir en IoT, microcontroladores, y no en un chat para responder preguntas o conversar.</span>
+        </div>
+
         <!-- Scroll to bottom button -->
         <button id="scrollToBottomBtn" class="scroll-to-bottom-btn" style="display:none;" title="Ir al final">
           <i class="fa-solid fa-chevron-down"></i>
@@ -700,6 +711,13 @@
                         <br>• <strong>Nigredo (Disolución)</strong>: Introduce caos y perturba los pesos para explorar el espacio de pérdida.
                         <br>• <strong>Albedo (Purificación)</strong>: Normaliza y regulariza los pesos mediante regresión Ridge.
                         <br>• <strong>Rubedo (Consolidación)</strong>: Fija el conocimiento y graba la firma digital neuronal (Watermarking).
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-question"><i class="fa-brands fa-github"></i> ¿El proyecto es de Código Abierto (Open Source)?</div>
+                    <div class="info-answer">
+                        Sí, el Proyecto Eón es completamente de código abierto. Puedes explorar el código fuente del núcleo en C, la simulación de ESN, el broker del Egrégor colectivo y el firmware para microcontroladores en nuestro repositorio de GitHub: <a href="https://github.com/jeremy-sud/Eon-AI-Project" target="_blank" style="color: var(--accent); text-decoration: underline;">github.com/jeremy-sud/Eon-AI-Project</a>. ¡Las contribuciones y Pull Requests son bienvenidos!
                     </div>
                 </div>
             </div>

@@ -14,11 +14,17 @@ from typing import Optional, Tuple
 
 import os
 
-try:
-    from core.circadian import CircadianClock
-    _CIRCADIAN_AVAILABLE = True
-except ImportError:
-    _CIRCADIAN_AVAILABLE = False
+_CIRCADIAN_AVAILABLE = None
+
+def _check_circadian() -> bool:
+    global _CIRCADIAN_AVAILABLE
+    if _CIRCADIAN_AVAILABLE is None:
+        try:
+            from core.circadian import CircadianClock
+            _CIRCADIAN_AVAILABLE = True
+        except ImportError:
+            _CIRCADIAN_AVAILABLE = False
+    return _CIRCADIAN_AVAILABLE
 
 try:
     from utils.matrix_init import (
@@ -62,6 +68,9 @@ class EchoStateNetwork:
         noise: float = 0.001,
         leak_rate: float = 1.0,
         circadian_clock: Optional['CircadianClock'] = None,
+        use_circadian: bool = False,
+        dropout: float = 0.0,
+        learning_rate: float = 0.01,
         random_state: Optional[int] = None
     ):
         # Validar parámetros
@@ -78,7 +87,17 @@ class EchoStateNetwork:
         self.sparsity = sparsity
         self.noise = noise
         self.leak_rate = leak_rate  # Nuevo: para leaky integration
-        self.circadian_clock = circadian_clock
+        self.use_circadian = use_circadian
+        self.dropout = dropout
+        self.base_learning_rate = learning_rate
+        self.learning_rate = learning_rate
+        
+        # Soportar activación automática si use_circadian=True
+        if self.use_circadian and circadian_clock is None and _check_circadian():
+            from core.circadian import CircadianClock
+            self.circadian_clock = CircadianClock(random_state=random_state)
+        else:
+            self.circadian_clock = circadian_clock
         
         # Inicializar generador aleatorio (API moderno)
         self.rng = np.random.default_rng(random_state)
@@ -168,6 +187,17 @@ class EchoStateNetwork:
             self.state = (1 - self.leak_rate) * self.state + self.leak_rate * new_state
         else:
             self.state = new_state
+            
+        # Aplicar dropout modulado circadianamente si corresponde
+        if self.dropout > 0:
+            current_dropout = self.dropout
+            if self.circadian_clock and _check_circadian():
+                c_state = self.circadian_clock.state()
+                current_dropout = self.dropout * (1.0 - c_state.energy)
+                
+            if 0 < current_dropout < 1.0:
+                mask = self.rng.random(self.n_reservoir) >= current_dropout
+                self.state = (self.state * mask) / (1.0 - current_dropout)
         
         # Verificar estabilidad numérica (opcional)
         if _UTILS_AVAILABLE:
@@ -222,15 +252,19 @@ class EchoStateNetwork:
         # Inicializar tracking circadian si está disponible
         phase_performance = {}
         base_noise = self.noise
+        base_learning_rate = getattr(self, 'base_learning_rate', 0.01)
         
         # Pasar todos los inputs por el reservoir
         for t in range(T):
             # Modulación circadiana si disponible
-            if self.circadian_clock and _CIRCADIAN_AVAILABLE:
+            if self.circadian_clock and _check_circadian():
                 circadian_state = self.circadian_clock.tick()
                 
                 # Ajustar noise según fase (más ruido en DAWN/REM)
                 self.noise = base_noise * circadian_state.noise_mod
+                
+                # Ajustar learning rate según fase
+                self.learning_rate = base_learning_rate * circadian_state.learning_rate_mod
                 
                 # Trackear performance por fase
                 phase = circadian_state.phase.value
@@ -248,8 +282,9 @@ class EchoStateNetwork:
                 state_variance = np.var(np.array(data['states']))
                 logger.info(f"  {phase}: {data['count']} steps, state variance: {state_variance:.6f}")
         
-        # Reset noise a valor base
+        # Reset noise y learning rate a valor base
         self.noise = base_noise
+        self.learning_rate = base_learning_rate
             
         # Descartar período de "calentamiento" (washout)
         states_train = states[washout:]

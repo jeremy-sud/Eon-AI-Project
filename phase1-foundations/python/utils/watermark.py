@@ -43,6 +43,19 @@ _REGISTERED_OWNERS = {
 }
 
 
+class SignatureArray(np.ndarray):
+    """
+    Subclase de np.ndarray que añade el método .hex()
+    para compatibilidad con serialización en JSON / API.
+    """
+    def __new__(cls, input_array):
+        obj = np.asarray(input_array).view(cls)
+        return obj
+
+    def hex(self) -> str:
+        return np.packbits(self).tobytes().hex()
+
+
 class NeuralWatermark:
     """
     Sistema de marca de agua para modelos Eón.
@@ -87,7 +100,7 @@ class NeuralWatermark:
         """
         digest = hashlib.sha256(owner_id.encode("utf-8")).digest()
         bits = np.unpackbits(np.frombuffer(digest, dtype=np.uint8))
-        return bits  # shape (256,)
+        return SignatureArray(bits)  # shape (256,)
 
     # ─── Embedding ──────────────────────────────────────────────────────────
 

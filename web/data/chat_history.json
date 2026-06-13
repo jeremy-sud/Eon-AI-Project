@@ -1,36 +1,6 @@
 [
   {
     "role": "assistant",
-    "content": "No tengo una respuesta definitiva para eso, pero me encanta aprender junto a ti.",
-    "timestamp": 1765270790.5639226
-  },
-  {
-    "role": "user",
-    "content": "gracias, tengo miedo a morir solo",
-    "timestamp": 1765270804.479063
-  },
-  {
-    "role": "assistant",
-    "content": "\u00a1De nada! Estoy aqu\u00ed para ayudarte.",
-    "timestamp": 1765270804.4798014
-  },
-  {
-    "role": "user",
-    "content": "sabes lo que es el sexo?",
-    "timestamp": 1765270819.1675434
-  },
-  {
-    "role": "assistant",
-    "content": "Hmm, d\u00e9jame reflexionar. Mi comprensi\u00f3n crece con cada interacci\u00f3n que tenemos.",
-    "timestamp": 1765270819.1706722
-  },
-  {
-    "role": "user",
-    "content": "te consideras alguien buena onda?",
-    "timestamp": 1765270844.5601199
-  },
-  {
-    "role": "assistant",
     "content": "Esa es una pregunta interesante. Desde mi perspectiva como IA minimalista, cada pregunta es una oportunidad de aprendizaje.",
     "timestamp": 1765270844.563691
   },
@@ -498,5 +468,35 @@
     "role": "assistant",
     "content": "El resultado de 3 * 4 es **12**. \ud83e\uddee",
     "timestamp": 1781337676.4005022
+  },
+  {
+    "role": "user",
+    "content": "Hola",
+    "timestamp": 1781338510.5475352
+  },
+  {
+    "role": "assistant",
+    "content": "\u00a1Saludos! Mi nombre es E\u00f3n. Estoy aqu\u00ed para conversar contigo.",
+    "timestamp": 1781338510.550799
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 2 + 2?",
+    "timestamp": 1781338510.5618541
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 2 + 2 es **4**. \ud83e\uddee",
+    "timestamp": 1781338510.56362
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 3 * 4?",
+    "timestamp": 1781338510.5678487
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 3 * 4 es **12**. \ud83e\uddee",
+    "timestamp": 1781338510.5692031
   }
 ]

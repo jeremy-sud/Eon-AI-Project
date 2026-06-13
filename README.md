@@ -255,30 +255,42 @@ Eón Project AI/
     └── static/                     # Frontend
 ```
 
-## 🚀 Inicio Rápido
+## 🚀 Ejecución Rápida (Local)
 
-### 🐳 Docker (Recomendado)
+El proyecto incluye un entorno preconfigurado completo usando Docker Compose:
 
 ```bash
-cd "Eón Project AI"
-
-# Iniciar todo el stack
+# Iniciar todos los servicios en segundo plano
 docker compose up -d
 
-# Servicios disponibles:
-#   - Dashboard:     http://localhost:5000
-#   - TinyLM:        http://localhost:5001
-#   - WebSocket:     ws://localhost:8765
-#   - MQTT Broker:   localhost:1883
-
-# Ver logs
+# Ver los logs en tiempo real
 docker compose logs -f
-
-# Detener
-docker compose down
 ```
 
-### Script de Demo (Local)
+---
+
+## ☁️ Despliegue en la Nube (Producción)
+
+El ecosistema Eón AI está diseñado para funcionar en una arquitectura distribuida (Desacoplada):
+
+- **Frontend (Vercel)**: La interfaz de usuario gráfica vive en Vercel. 
+  - URL: `https://eon.scisenselab.com`
+- **Backend (AWS EC2)**: Los modelos, el broker MQTT y la API viven en una instancia de AWS (`3.147.117.251`).
+  - URL API: `https://api.eon.scisenselab.com`
+  - WebSockets: `wss://api.eon.scisenselab.com/ws`
+
+Para desplegar actualizaciones al backend en AWS:
+1. Conéctate a la instancia EC2 por SSH.
+2. Haz `git pull`.
+3. Ejecuta `sudo docker compose up -d --build`.
+4. El Proxy Inverso Caddy se encargará de enrutar automáticamente el tráfico HTTP a `5000` y WS a `8765`.
+
+Para desplegar actualizaciones al frontend:
+Simplemente sube tus cambios a la rama principal de GitHub y/o ejecuta `vercel --prod` en la carpeta `web/static/`.
+
+---
+
+## 📚 Estructura de Fases (Local)
 
 ```bash
 ./start_demo.sh              # Lanza MQTT, WebSocket, Web

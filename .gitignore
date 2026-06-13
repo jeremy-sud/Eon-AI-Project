@@ -33,3 +33,8 @@ Thumbs.db
 
 # Node modules (si los hay)
 node_modules/
+
+# SSH Keys y Credenciales (¡CRÍTICO!)
+eon-pem-key-holder/
+*.pem
+*.key

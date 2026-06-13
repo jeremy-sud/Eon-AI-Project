@@ -338,6 +338,18 @@ body {
   flex-shrink: 0;
 }
 
+.chat-disclaimer a {
+  color: var(--warning);
+  text-decoration: underline;
+  margin-left: 0.25rem;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.chat-disclaimer a:hover {
+  opacity: 0.8;
+}
+
 .chat-container {
   flex: 1;
   overflow-y: auto;

@@ -117,7 +117,8 @@ python benchmark_full.py --export results.json
 | test_discovery_paradigm.py   | 30    | ✅     | Core ESN, Genesis, Quantizer       |
 | test_engine_improvements.py  | 34    | ✅     | Utils, validación, optimizaciones  |
 | test_mystical_modules.py     | 28    | ✅     | Tzimtzum, Alquimia, Fractal        |
-| **Total**                    | **92**| **✅** | **0.23s**                          |
+| **Subtotal Core Regresión**  | **92**| **✅** | **0.23s**                          |
+| **Total Ecosistema (v2.4.0)**| **719**| **✅** | **~6m (con excavación y sim.)**    |
 
 ## Metodología
 
@@ -136,8 +137,8 @@ Eón es la solución óptima cuando se requiere:
 3.  **Cuantización Efectiva** - 8-bit reduce 8x memoria manteniendo utilidad
 4.  **Motor Optimizado** (v1.9.2) - Ridge 3x más rápido, validación robusta
 5.  **Arquitecturas Místicas** - Tzimtzum, Alquimia, Fractal
-6.  **92 tests automatizados** garantizando calidad en 0.23s
+6.  **719 tests automatizados** garantizando calidad y estabilidad global
 
 ---
 
-*Última actualización: 2026-05-05 (v2.2)*
+*Última actualización: 2026-06-13 (v2.4.0)*

@@ -256,28 +256,20 @@ weight_count: 2 bytes  # Number of weights
 
 **Compression**: 21 bytes for 50 weights (vs 175 bytes JSON) = **8.3× reduction**
 
-## Test Coverage (v2.0.0)
+## Test Coverage (v2.4.0)
 
 ```bash
-pytest phase1-foundations/python/tests/ -v
-# 343 tests passing:
-# - ESN Core: 45 tests
-# - Plasticity: 28 tests
-# - Quantization: 20 tests
-# - Discovery Paradigm: 31 tests
-# - Mystical Modules: 25 tests
-# - Integration: 12 tests
-# - Learning System: 20 tests
-# - Server Web: 19 tests
-# - Portable RNG: 18 tests
-# - Anomaly Detector: 36 tests (NEW v2.0)
-# - I-Ching Oracle: 33 tests (NEW v2.0)
-# - Collaborative Chat: 44 tests (NEW v2.0)
+pytest -v
+# 719 tests passing:
+# - ESN Core & Foundations: 532 tests (Core ESN, Plasticidad, Cuantización, Anomaly Detector, RNG, I-Ching Oracle, etc.)
+# - Mente Colectiva (Collective Mind): 63 tests (Conexiones distribuidas, Quantum Sync, Marca de agua neural)
+# - Modelo de Lenguaje (TinyLMv2 & Attention): 54 tests
+# - Web & Dashboard: 70 tests
 ```
 
 ---
 
-*Updated: 2025-12-13 (v2.0.0)*
+*Updated: 2026-06-13 (v2.4.0)*
 
 ## 🔮 Mystical Architecture Extensions (v1.8.0)
 

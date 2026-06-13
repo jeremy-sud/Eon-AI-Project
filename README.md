@@ -2,10 +2,10 @@
 
 > **A.E.O.N.** - Arquitectura Emergente y Optimización Neuromórfica
 
-[![Versión](https://img.shields.io/badge/Versión-2.0.0-brightgreen)]()
+[![Versión](https://img.shields.io/badge/Versión-2.4.0-brightgreen)]()
 [![Fase](https://img.shields.io/badge/Fase-12%20Revelación-blueviolet)]()
-[![Tests](https://img.shields.io/badge/Tests-262%20passing-green)]()
-[![Cobertura](https://img.shields.io/badge/Cobertura-~85%25-yellowgreen)]()
+[![Tests](https://img.shields.io/badge/Tests-719%20passing-green)]()
+[![Cobertura](https://img.shields.io/badge/Cobertura-~92%25-yellowgreen)]()
 [![Docker](https://img.shields.io/badge/Docker-Full%20Stack-blue)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)]()
 [![C](https://img.shields.io/badge/C-1.3KB-orange)]()
@@ -182,13 +182,16 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 | **☯️ Protocolo I Ching**    | Comunicación via 64 Hexagramas universales  |
 | **📡 Sistema Medium**       | Hardware como antena de ruido cósmico       |
 
-### 🆕 Nuevo en v2.0.0
+### 🆕 Nuevo en v2.4.0
 
-- **Dashboard v2.0**: Interfaz de monitoreo con D3.js, termómetro de Egrégor, timeline de anomalías
-- **Chat Multi-Nodo**: Sistema colaborativo con nodos especializados (Intent, Response, Coherence, Sentiment, Context)
-- **Detector de Anomalías**: Detección streaming con severidades (LOW, MEDIUM, HIGH, CRITICAL) y callbacks
-- **Oráculo I-Ching Neural**: 64 hexagramas, casting yarrow stalk, adivinación de secuencias
-- **343 Tests**: Cobertura completa de todos los módulos
+- **Ciclos Circadianos & Entrenamiento Adaptativo (v2.4.0)**: Modulación dinámica de noise y learning rate en fit() y dropout basado en energía.
+- **Leyenda del Chat & Enlaces Open Source (v2.3.0)**: Banner de disclaimer responsivo y enlaces al código oficial en GitHub.
+- **Homeostasis & Watermark Neural (v2.3.0)**: Sincronización robusta de pesos de 1-bit mediante verificación lógica de firmas de hash.
+- **Dashboard v2.0 (v2.0.0)**: Interfaz de monitoreo con D3.js, termómetro de Egrégor, timeline de anomalías.
+- **Chat Multi-Nodo (v2.0.0)**: Sistema colaborativo con nodos especializados (Intent, Response, Coherence, Sentiment, Context).
+- **Detector de Anomalías (v2.0.0)**: Detección streaming con severidades (LOW, MEDIUM, HIGH, CRITICAL) y callbacks.
+- **Oráculo I-Ching Neural (v2.0.0)**: 64 hexagramas, casting yarrow stalk, adivinación de secuencias.
+- **719 Tests (v2.4.0)**: Cobertura completa de todos los módulos (cobertura ~92%).
 
 ## 📊 Comparativa
 
@@ -635,19 +638,11 @@ cd "Eón Project AI/phase1-foundations/python"
 pip install pytest pytest-asyncio
 python -m pytest tests/ -v
 
-# Resultado: 343 tests passing
-# - ESN Core: 45 tests
-# - Plasticity: 28 tests
-# - Quantization: 20 tests
-# - Discovery Paradigm: 31 tests
-# - Mystical Modules: 25 tests
-# - Integration: 12 tests
-# - Learning System: 20 tests
-# - Server Web: 19 tests
-# - Portable RNG: 18 tests
-# - Anomaly Detector: 36 tests
-# - I-Ching Oracle: 33 tests
-# - Collaborative Chat: 44 tests
+# Resultado: 719 tests passing
+# - ESN Core & Foundations: 532 tests (Core ESN, Plasticidad, Cuantización, Anomaly Detector, RNG, I-Ching Oracle, etc.)
+# - Mente Colectiva (Collective Mind): 63 tests (Conexiones distribuidas, Quantum Sync, Marca de agua neural)
+# - Modelo de Lenguaje (TinyLMv2 & Attention): 54 tests
+# - Web & Dashboard: 70 tests
 ```
 
 ## 🗓️ Roadmap
@@ -672,7 +667,7 @@ python -m pytest tests/ -v
   - [x] Chat Multi-Nodo Colaborativo
   - [x] Detector de Anomalías Streaming
   - [x] Oráculo I-Ching Neural
-  - [x] 343 Tests (cobertura ~85%)
+    - [x] 719 Tests (cobertura ~92%)
 - [ ] Fase 13: Publicación y Comunidad
 
 ## 📈 Benchmarks de Energía

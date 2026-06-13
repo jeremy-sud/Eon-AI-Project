@@ -137,19 +137,40 @@ esn.fit(X, y)
 
 ---
 
+### 5. API REST Completa (2026-03-15)
+
+**Descripción**: Acceso unificado a todas las funcionalidades del motor Eón y Mente Colectiva mediante endpoints HTTP REST.
+
+**Cambios Clave**:
+- ✅ Rutas para chat colaborativo, oráculo I-Ching, detección de anomalías y transmutación alquímica.
+- ✅ Endpoints de consulta y visualización de nodos ESN y termómetro de humor del Egrégor en el dashboard.
+- ✅ Integración de marcas de agua neurales, arqueología de semillas y minería genética.
+
+**Archivos Modificados**:
+- `web/server.py`:
+  - Rutas de Flask para `/api/chat`, `/api/oracle`, `/api/anomaly/detect`, `/api/nodes`, `/api/egregore`, `/api/watermark/...`, `/api/genetic-mine`, etc.
+
+**Compatibilidad**:
+- ✅ Totalmente compatible con clientes HTTP JSON y el dashboard frontend.
+- ✅ Tests: 19 pruebas de servidor en `web/tests/test_server.py`.
+
+**Ejemplo**:
+```python
+import requests
+response = requests.post("http://localhost:5000/api/anomaly/detect", json={"data": [0.1, 0.2, 0.3]})
+```
+
+---
+
 ## 🔄 Integraciones en Progreso
 
-### 5. Dashboard Dinámico (MEDIA PRIORIDAD)
+### 6. Dashboard Dinámico (MEDIA PRIORIDAD)
 **Estado**: 🔄 En Progreso  
 **Impacto**: MEDIA - Visualización del estado del sistema en tiempo real.
 
 ---
 
 ## 📋 Integraciones Planificadas
-
-### 6. API REST Completa (ALTA PRIORIDAD)
-**Estado**: 🔄 Pendiente  
-**Impacto**: ALTA - Acceso unificado a todas las funcionalidades
 
 ### 7. Hardware Integration (BAJA PRIORIDAD)
 **Estado**: 🔄 Pendiente  
@@ -173,7 +194,7 @@ esn.fit(X, y)
 
 | Métrica | v2.1.0 | v2.2.0 | v2.3.0 | v2.4.0 |
 |---------|--------|--------|--------|--------|
-| Integraciones Completadas | 0 | 2 | 3 | **4** |
+| Integraciones Completadas | 0 | 2 | 3 | **5** |
 | Tests Totales | 500+ | 527 | 714 | **719** |
 | Cobertura de Integración | 0% | ~15% | ~25% | **~35%** |
 | Componentes con Atención | 1 | 2 | 2 | **2** |
@@ -183,18 +204,17 @@ esn.fit(X, y)
 
 ## 🚀 Próximos Pasos
 
-1. **Corto Plazo (Semana 1)**:
-   - Diseñar e implementar Dashboard Dinámico
-   - Integrar visualizaciones en tiempo real del reloj circadiano y del Egrégor
-   - Documentar en ROADMAP_IDEAS.md
+1. **Corto Plazo**:
+   - Diseñar y extender el Dashboard Dinámico con visualización de ritmos circadianos y marcas de agua.
+   - Refactorizar `sys.path.insert()` para importaciones relativas más limpias en producción.
 
-2. **Medio Plazo (Semana 2-3)**:
-   - Crear API REST completa
+2. **Medio Plazo**:
+   - Crear perfiles de compilación/código portables en C/C++ para Microcontroladores reales (ESP32, STM32) sin depender de Python.
+   - Implementar la persistencia de estado binaria para nodos de la Mente Colectiva.
 
-3. **Largo Plazo (Mes 2)**:
-   - Integración hardware
-   - Multi-head attention
-   - Persistencia de estado
+3. **Largo Plazo**:
+   - Integración física con sensores IoT biomédicos y actuadores.
+   - Exploración de Multi-Head Attention adaptativo en TinyLMv2.
 
 ---
 

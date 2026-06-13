@@ -54,24 +54,24 @@ Con el objetivo de ampliar la adopción y robustez del Proyecto Eón, se propone
 - 🟡 Planificado para v2.1+ (no implementado, requiere recursos de hardware y validación cruzada)
 
 ---
-# Áreas de Mejora - Proyecto Eón v2.1.0
+# Áreas de Mejora - Proyecto Eón v2.4.0
 
-## Estado: ✅ MEJORAS CRÍTICAS COMPLETADAS - 343 TESTS PASSING
+## Estado: ✅ MEJORAS CRÍTICAS COMPLETADAS - 719 TESTS PASSING
 
 Este documento lista las áreas de mejora identificadas y su estado actual.
 
-**Última auditoría completa:** 2026-03-09
+**Última auditoría completa:** 2026-06-13
 
 ---
 
-## 🔴 DISCREPANCIAS ENCONTRADAS (Auditoría 2026-02-15)
+## 🔴 DISCREPANCIAS ENCONTRADAS Y CORREGIDAS (Auditoría 2026-06-13)
 
-Durante la auditoría de febrero 2026, se encontraron varias discrepancias entre lo documentado y el estado real del código:
+Durante la auditoría de junio 2026, se corroboraron los cambios del repositorio y la suite de pruebas:
 
-### 1. ❌ Número de Tests Incorrecto
-- **Documentado:** 262 tests
-- **Real:** 343 tests
-- **Acción:** Actualizado en este documento
+### 1. ❌ Número de Tests Actualizado
+- **Documentado:** 343 tests
+- **Real:** 719 tests
+- **Acción:** Sincronizado en la documentación global
 
 ### 2. ✅ print() vs Logging - COMPLETADO (v2.1.0)
 - **Documentado:** "50+ llamadas print()"
@@ -124,23 +124,15 @@ Durante la auditoría de febrero 2026, se encontraron varias discrepancias entre
 
 ---
 
-## 📊 Resumen de Tests v2.0.0
+## 📊 Resumen de Tests v2.4.0
 
-| Módulo | Tests | Estado |
-|--------|-------|--------|
-| ESN Core | 45 | ✅ |
-| Plasticity | 28 | ✅ |
-| Quantization | 20 | ✅ |
-| Discovery Paradigm | 31 | ✅ |
-| Mystical Modules | 25 | ✅ |
-| Integration | 12 | ✅ |
-| Learning System | 20 | ✅ |
-| Server Web | 19 | ✅ |
-| Portable RNG | 18 | ✅ |
-| **Anomaly Detector** | **36** | ✅ **NUEVO v2.0** |
-| **I-Ching Oracle** | **33** | ✅ **NUEVO v2.0** |
-| **Collaborative Chat** | **44** | ✅ **NUEVO v2.0** |
-| **Total** | **343** | ✅ |
+| Componente | Archivos de Prueba | Tests | Estado |
+|------------|--------------------|-------|--------|
+| **Phase 1 Foundations** | Core ESN, Plasticidad, Cuantización, Anomalías, RNG, I-Ching, etc. | 532 | ✅ |
+| **Phase 6 Collective** | Marca de Agua Neural, Sincronización Cuántica, WS Bridge | 63 | ✅ |
+| **Phase 7 Language** | TinyAttention, TinyLMv2 | 54 | ✅ |
+| **Web & Dashboard** | Visualización Arte, Sistema de Aprendizaje, Rutas Server | 70 | ✅ |
+| **Total** | **Todas las Suites** | **719** | ✅ |
 
 ---
 
@@ -1625,11 +1617,11 @@ Muchos archivos tienen bloques `if __name__ == "__main__":` extensos (50+ línea
 
 ---
 
-## 📊 Resumen de Verificación (2026-02-15)
+## 📊 Resumen de Verificación (2026-06-13)
 
 | Área | Documentado | Real | Estado |
 |------|-------------|------|--------|
-| Tests totales | 262 | 343 | ✅ Mejor |
+| Tests totales | 343 | 719 | ✅ Mejor |
 | print() en producción | 50+ | 500+ | 🔴 Peor |
 | CORS configurado | "Verificar" | No | 🔴 Falso |
 | sys.path.insert() | "Pendiente" | 20+ archivos | 🔴 Crítico |
@@ -1640,8 +1632,8 @@ Muchos archivos tienen bloques `if __name__ == "__main__":` extensos (50+ línea
 
 ---
 
-*Documento actualizado: 2026-02-15*
-*Próxima auditoría recomendada: 2026-03-15*
+*Documento actualizado: 2026-06-13*
+*Próxima auditoría recomendada: 2026-07-13*
 
 ---
 

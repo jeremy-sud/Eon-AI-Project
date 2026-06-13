@@ -97,40 +97,49 @@ class ChatNode:
     
     def __init__(
         self,
-        role: NodeRole,
-        n_reservoir: int = 50,
+        role: Any,
+        n_reservoir: Any = 50,
         spectral_radius: float = 0.9,
         seed: Optional[int] = None
     ):
         """
         Inicializa un nodo de chat.
         
-        Args:
-            role: Rol especializado del nodo
-            n_reservoir: Tamaño del reservorio
-            spectral_radius: Radio espectral de la matriz W
-            seed: Semilla para reproducibilidad
+        Soporta dos firmas:
+        1. ChatNode(role, n_reservoir=50, spectral_radius=0.9, seed=None)
+        2. ChatNode(name, role, esn) (firma de server.py)
         """
-        self.role = role
-        self.n_reservoir = n_reservoir
-        self.spectral_radius = spectral_radius
-        
-        # Generar ID único
-        self.node_id = f"{role.value}-{hashlib.md5(str(seed or time.time()).encode()).hexdigest()[:6]}"
-        
-        # RNG local
-        self.rng = np.random.default_rng(seed)
-        
-        # Inicializar reservorio
-        self._init_reservoir()
-        
-        # Estado interno
-        self.state = np.zeros(n_reservoir)
-        self.history: List[np.ndarray] = []
-        self.is_trained = False
-        
-        # Patrones aprendidos (específicos del rol)
-        self.learned_patterns: Dict[str, np.ndarray] = {}
+        if isinstance(role, str):
+            # server.py signature: ChatNode(name, role, esn)
+            self.name = role
+            self.role = n_reservoir
+            self.esn = spectral_radius
+            if hasattr(self.esn, 'n_reservoir'):
+                self.n_reservoir = self.esn.n_reservoir
+            else:
+                self.n_reservoir = 100
+            self.spectral_radius = getattr(self.esn, 'spectral_radius', 0.9)
+            self.node_id = f"{self.role.value}-{hashlib.md5(self.name.encode()).hexdigest()[:6]}"
+            self.state = np.zeros(self.n_reservoir)
+            self.history = []
+            self.is_trained = True
+            self.learned_patterns = {}
+            if hasattr(self.esn, 'leak_rate'):
+                self.leak_rate = self.esn.leak_rate
+            else:
+                self.leak_rate = 0.3
+        else:
+            # Original signature: ChatNode(role, n_reservoir, spectral_radius, seed)
+            self.role = role
+            self.n_reservoir = int(n_reservoir) if n_reservoir is not None else 50
+            self.spectral_radius = float(spectral_radius)
+            self.node_id = f"{self.role.value}-{hashlib.md5(str(seed or time.time()).encode()).hexdigest()[:6]}"
+            self.rng = np.random.default_rng(seed)
+            self._init_reservoir()
+            self.state = np.zeros(self.n_reservoir)
+            self.history = []
+            self.is_trained = False
+            self.learned_patterns = {}
     
     def _init_reservoir(self):
         """Inicializa las matrices del reservorio."""
@@ -214,14 +223,24 @@ class ChatNode:
         # Codificar mensaje
         input_vec = self._encode_text(message.content)
         
-        # Expandir Win si es necesario
-        if self.Win_base.shape[1] != len(input_vec):
-            self.Win_base = self.rng.uniform(-1, 1, (self.n_reservoir, len(input_vec)))
-        
-        # Actualizar estado del reservorio
-        pre_activation = np.dot(self.W, self.state) + np.dot(self.Win_base, input_vec)
-        new_state = np.tanh(pre_activation)
-        self.state = (1 - self.leak_rate) * self.state + self.leak_rate * new_state
+        if hasattr(self, 'esn') and self.esn is not None:
+            # Usar ESN para actualizar el estado del reservorio (firma de server.py)
+            if len(input_vec) < self.esn.n_inputs:
+                input_vec = np.pad(input_vec, (0, self.esn.n_inputs - len(input_vec)), 'constant')
+            elif len(input_vec) > self.esn.n_inputs:
+                input_vec = input_vec[:self.esn.n_inputs]
+            
+            # Actualizar estado usando el ESN
+            self.state = self.esn._update_state(input_vec)
+        else:
+            # Expandir Win si es necesario
+            if self.Win_base.shape[1] != len(input_vec):
+                self.Win_base = self.rng.uniform(-1, 1, (self.n_reservoir, len(input_vec)))
+            
+            # Actualizar estado del reservorio
+            pre_activation = np.dot(self.W, self.state) + np.dot(self.Win_base, input_vec)
+            new_state = np.tanh(pre_activation)
+            self.state = (1 - self.leak_rate) * self.state + self.leak_rate * new_state
         
         # Guardar en historial
         self.history.append(self.state.copy())
@@ -747,3 +766,18 @@ def create_collaborative_chat(
         chat.add_node(NodeRole.CONTEXT, int(rng.integers(0, 2**31)))
     
     return chat
+
+
+class CollaborativeChatOrchestrator(CollaborativeChat):
+    """
+    Orquestador de chat colaborativo multi-nodo (versión compatible con server.py).
+    """
+    def __init__(self, nodes: List[ChatNode], egregore: Any = None):
+        super().__init__()
+        # Sobrescribir los nodos por defecto con los suministrados
+        self.nodes = {node.role: node for node in nodes}
+        self.egregore = egregore
+
+    def respond(self, content: str, sender: str = "user") -> CollaborativeResponse:
+        """Procesa el mensaje y retorna la respuesta colaborativa."""
+        return self.process_message(content, sender)

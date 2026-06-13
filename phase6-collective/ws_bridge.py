@@ -467,11 +467,12 @@ async def simulation_mode(bridge: MQTTWebSocketBridge):
 # ============================================================
 
 async def main():
+    import os
     parser = argparse.ArgumentParser(description="Eón WebSocket Bridge")
-    parser.add_argument("--mqtt-broker", default="localhost", help="Broker MQTT")
-    parser.add_argument("--mqtt-port", type=int, default=1883, help="Puerto MQTT")
-    parser.add_argument("--ws-host", default="0.0.0.0", help="Host WebSocket")
-    parser.add_argument("--ws-port", type=int, default=8765, help="Puerto WebSocket")
+    parser.add_argument("--mqtt-broker", default=os.getenv("MQTT_HOST", "localhost"), help="Broker MQTT")
+    parser.add_argument("--mqtt-port", type=int, default=int(os.getenv("MQTT_PORT", 1883)), help="Puerto MQTT")
+    parser.add_argument("--ws-host", default=os.getenv("WS_HOST", "0.0.0.0"), help="Host WebSocket")
+    parser.add_argument("--ws-port", type=int, default=int(os.getenv("WS_PORT", 8765)), help="Puerto WebSocket")
     parser.add_argument("--simulate", action="store_true", help="Modo simulación")
     args = parser.parse_args()
     

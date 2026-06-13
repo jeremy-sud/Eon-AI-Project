@@ -14,20 +14,22 @@ let dreamPath = [];
 const MAX_DREAM_PATH = 500;
 let dreamLoopId = null;
 
-// Initialize Eón Core for Dream (Client-side simulation)
-// In a real scenario, this would ideally sync with backend,
-// but for 'Dream' visualizer we keep it responsive locally.
-const dreamAeon = new AeonCore({
-  reservoirSize: 100,
-  inputSize: 1,
-  outputSize: 1,
-  spectralRadius: 0.95,
-  sparsity: 0.8,
-});
+let dreamAeon = null;
 
 function initDream() {
   dreamCanvas = document.getElementById("dreamCanvas");
   if (!dreamCanvas) return;
+
+  // Lazily initialize dreamAeon if not done yet
+  if (!dreamAeon && typeof AeonCore !== "undefined") {
+    dreamAeon = new AeonCore({
+      reservoirSize: 100,
+      inputSize: 1,
+      outputSize: 1,
+      spectralRadius: 0.95,
+      sparsity: 0.8,
+    });
+  }
 
   dreamCtx = dreamCanvas.getContext("2d");
 
@@ -74,6 +76,7 @@ function animateDream() {
 
   // If view is hidden, skip rendering to save resources
   if (document.getElementById("dreamView").style.display === "none") return;
+  if (!dreamAeon) return; // Guard against uninitialized Aeon
 
   // 1. Update Physics
   if (dreamPulse) {

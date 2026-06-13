@@ -49,6 +49,21 @@
         Estado & Config
       </div>
 
+      <div class="nav-item" data-view="ecosystem">
+        <i class="fa-solid fa-network-wired"></i>
+        Ecosistema
+      </div>
+
+      <div class="nav-item" data-view="genesis">
+        <i class="fa-solid fa-timeline"></i>
+        Génesis & Comp.
+      </div>
+
+      <div class="nav-item" data-view="help">
+        <i class="fa-regular fa-circle-question"></i>
+        Ayuda & Info
+      </div>
+
       <div class="sidebar-footer">v0.2.0 - Phase 3 Integration</div>
     </nav>
 
@@ -322,6 +337,332 @@
                         <small style="color: var(--text-muted); font-size: 0.7rem;">Memoria temporal del sistema</small>
                     </div>
 
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Ecosystem -->
+        <div id="ecosystemView" style="display: none;">
+            <div class="panel">
+                <div class="panel-header">
+                    <span>SENSELAB CLOUD SUITE</span>
+                    <i class="fa-solid fa-network-wired text-accent"></i>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
+                    Eón AI está integrado orgánicamente dentro del ecosistema tecnológico de Senselab. Las credenciales, el estado de sesión y los planes se sincronizan a través de cookies wildcard y el protocolo de comunicación inter-pestañas.
+                </p>
+                
+                <div class="platform-grid">
+                    <a href="https://scisenselab.com" target="_blank" class="platform-card">
+                        <div class="platform-header-row">
+                            <div class="platform-icon"><i class="fa-solid fa-globe"></i></div>
+                            <div>
+                                <div class="platform-title">Portal Principal</div>
+                                <div class="platform-subdomain">scisenselab.com</div>
+                            </div>
+                        </div>
+                        <p class="platform-desc">Landing corporativa y portafolio de productos. Punto de inicio comercial de Senselab.</p>
+                    </a>
+
+                    <a href="https://app.scisenselab.com" target="_blank" class="platform-card">
+                        <div class="platform-header-row">
+                            <div class="platform-icon"><i class="fa-solid fa-gauge-high"></i></div>
+                            <div>
+                                <div class="platform-title">Consola ERP</div>
+                                <div class="platform-subdomain">app.scisenselab.com</div>
+                            </div>
+                        </div>
+                        <p class="platform-desc">Gestión empresarial multi-inquilino. Facturación electrónica, contabilidad y control operativo.</p>
+                    </a>
+
+                    <a href="https://portal.scisenselab.com" target="_blank" class="platform-card">
+                        <div class="platform-header-row">
+                            <div class="platform-icon"><i class="fa-solid fa-code"></i></div>
+                            <div>
+                                <div class="platform-title">Developer Portal</div>
+                                <div class="platform-subdomain">portal.scisenselab.com</div>
+                            </div>
+                        </div>
+                        <p class="platform-desc">Portal de autoservicio B2B para desarrolladores. Administración de API Keys, webhooks y facturación.</p>
+                    </a>
+
+                    <a href="https://blog.scisenselab.com" target="_blank" class="platform-card">
+                        <div class="platform-header-row">
+                            <div class="platform-icon"><i class="fa-solid fa-book-open"></i></div>
+                            <div>
+                                <div class="platform-title">Tech Blog</div>
+                                <div class="platform-subdomain">blog.scisenselab.com</div>
+                            </div>
+                        </div>
+                        <p class="platform-desc">Base de conocimiento, documentación de desarrollo y novedades de ingeniería.</p>
+                    </a>
+
+                    <a href="https://eon.scisenselab.com" target="_blank" class="platform-card">
+                        <div class="platform-header-row">
+                            <div class="platform-icon" style="color: var(--success); background: rgba(16,185,129,0.1);"><i class="fa-solid fa-circle-nodes"></i></div>
+                            <div>
+                                <div class="platform-title">Eón AI System</div>
+                                <div class="platform-subdomain">eon.scisenselab.com</div>
+                            </div>
+                        </div>
+                        <p class="platform-desc">Plataforma activa de inteligencia artificial basada en ESN y dinámica de sistemas colectivos.</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span>SIMULADOR DE SESIÓN Y SSO (SSO PROFILE)</span>
+                    <i class="fa-solid fa-id-card"></i>
+                </div>
+                
+                <div class="user-sync-panel">
+                    <div>
+                        <h4 style="font-family: var(--font-display); font-size: 0.8rem; margin-bottom: 1rem; color: var(--text-primary);">SELECCIONAR PERFIL SIMULADO</h4>
+                        <div class="tenant-list">
+                            <div class="tenant-option active" id="tenant-admin" data-role="admin">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.8rem;">admin@scisenselab.com</div>
+                                    <small style="color: var(--text-muted); font-size: 0.65rem;">sl_tenant_000001 • Super Administrador</small>
+                                </div>
+                                <span class="tenant-badge admin">Global</span>
+                            </div>
+                            <div class="tenant-option" id="tenant-pro" data-role="pro">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.8rem;">cliente@senselab.com</div>
+                                    <small style="color: var(--text-muted); font-size: 0.65rem;">sl_tenant_000003 • Cliente Estándar</small>
+                                </div>
+                                <span class="tenant-badge pro">Pro</span>
+                            </div>
+                            <div class="tenant-option" id="tenant-sandbox" data-role="sandbox">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.8rem;">dev@scisenselab.com</div>
+                                    <small style="color: var(--text-muted); font-size: 0.65rem;">sl_tenant_000004 • Desarrollador</small>
+                                </div>
+                                <span class="tenant-badge sandbox">Sandbox</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(0,0,0,0.15); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.75rem;">
+                        <h4 style="font-family: var(--font-display); font-size: 0.75rem; color: var(--color-sense-400); letter-spacing: 0.05em;">ESTADO SSO (localStorage)</h4>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.75rem;">
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Usuario:</span> <span id="sso-user-name" style="font-weight: 600;">Ing. Jeremy Arias Solano</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Email:</span> <span id="sso-user-email" style="font-family: var(--font-mono); font-size: 0.7rem;">admin@scisenselab.com</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Tenant ID:</span> <span id="sso-user-tenant" style="font-family: var(--font-mono); font-size: 0.7rem;">sl_tenant_000001</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Plan Contratado:</span> <span id="sso-user-plan" class="tenant-badge admin" style="display:inline-block;">Business</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Autenticación SSO:</span> <span style="color: var(--success); font-weight: 600;"><i class="fa-solid fa-shield-halved"></i> Activa (.scisenselab.com)</span></div>
+                        </div>
+                        
+                        <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                            <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.3;">
+                                Cambiar de inquilino actualizará la estructura JSON del usuario en el navegador y notificará por BroadcastChannel a las pestañas activas de Senselab.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Genesis & Components -->
+        <div id="genesisView" style="display: none;">
+            <div class="panel">
+                <div class="panel-header">
+                    <span>LÍNEA DE TIEMPO DEL PROYECTO EÓN</span>
+                    <i class="fa-solid fa-timeline text-accent"></i>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
+                    Desarrollo progresivo y sistemático del sistema Eón AI, desde sus cimientos matemáticos en Python hasta la arquitectura de modelos autorregresivos colaborativos.
+                </p>
+                
+                <div class="timeline">
+                    <div class="timeline-item completed">
+                        <div class="timeline-header">
+                            <span class="timeline-title">Fase 1: Foundations (Fundamentos)</span>
+                            <span class="timeline-badge">Completado</span>
+                        </div>
+                        <div class="timeline-content">Implementación matemática del Echo State Network (ESN) en Python. Definición de matrices recurrentes, inicializadores, radio espectral y regresión Ridge.</div>
+                    </div>
+
+                    <div class="timeline-item completed">
+                        <div class="timeline-header">
+                            <span class="timeline-title">Fase 2: C Core (libAeon C Library)</span>
+                            <span class="timeline-badge">Completado</span>
+                        </div>
+                        <div class="timeline-content">Reescritura de las rutinas de simulación matricial y activación neuronal en C puro para un rendimiento nativo. Construcción de extensiones de Python y bindings.</div>
+                    </div>
+
+                    <div class="timeline-item completed">
+                        <div class="timeline-header">
+                            <span class="timeline-title">Fase 3: Integration (Arquitectura Completa)</span>
+                            <span class="timeline-badge">Completado</span>
+                        </div>
+                        <div class="timeline-content">Acoplamiento del servidor web Flask, el broker MQTT (Mosquitto) y el puente WebSocket (ws-bridge) para telemetría bidireccional en tiempo real con el navegador.</div>
+                    </div>
+
+                    <div class="timeline-item completed">
+                        <div class="timeline-header">
+                            <span class="timeline-title">Fase 4: Hardware Integration (Edge Computing)</span>
+                            <span class="timeline-badge">Completado</span>
+                        </div>
+                        <div class="timeline-content">Algoritmos de procesamiento analógico a digital para señales físicas en microcontroladores periféricos, conectándose de forma distribuida a la red local.</div>
+                    </div>
+
+                    <div class="timeline-item completed">
+                        <div class="timeline-header">
+                            <span class="timeline-title">Fase 5: Applications (Oráculo & Alquimia)</span>
+                            <span class="timeline-badge">Completado</span>
+                        </div>
+                        <div class="timeline-content">Diseño de la consola de transmutación de elementos (Nigredo, Albedo, Rubedo) y del oráculo neuronal I-Ching que predice hexagramas usando el estado interno del reservorio.</div>
+                    </div>
+
+                    <div class="timeline-item completed">
+                        <div class="timeline-header">
+                            <span class="timeline-title">Fase 6: Collective Mind (Mente Colectiva)</span>
+                            <span class="timeline-badge">Completado</span>
+                        </div>
+                        <div class="timeline-content">Creación del protocolo de compresión de pesos 1-Bit (comprimiendo 17x) y el procesador homeostático de la mente grupal (Egrégor) para coordinación federada sin datos centralizados.</div>
+                    </div>
+
+                    <div class="timeline-item completed">
+                        <div class="timeline-header">
+                            <span class="timeline-title">Fase 7: Language (Modelos de Lenguaje TinyLM)</span>
+                            <span class="timeline-badge">Completado</span>
+                        </div>
+                        <div class="timeline-content">Diseño de TinyLMv2, un modelo autoregresivo basado en ESN para generación de texto, y el orquestador colaborativo multi-nodo para el chat interactivo de Eón.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span>COMPONENTES Y ARQUITECTURA DE EÓN</span>
+                    <i class="fa-solid fa-sitemap"></i>
+                </div>
+                
+                <div class="component-grid">
+                    <div class="component-card">
+                        <div class="component-icon-title">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <div class="component-name">Intent Analyzer</div>
+                        </div>
+                        <div class="component-role">Nodo ESN Especializado (Role: Intent)</div>
+                        <p class="component-desc">Analiza morfológica y estadísticamente el mensaje del usuario para detectar la intención (saludo, código, pregunta, etc.).</p>
+                        <div class="component-tech">Input: 32D Vector • Output: 5D Softmax</div>
+                    </div>
+
+                    <div class="component-card">
+                        <div class="component-icon-title">
+                            <i class="fa-solid fa-keyboard"></i>
+                            <div class="component-name">Response Generator</div>
+                        </div>
+                        <div class="component-role">Nodo ESN Especializado (Role: Response)</div>
+                        <p class="component-desc">A partir del estado recurrente, define la longitud, nivel de formalidad, tono y palabras clave recomendadas para la respuesta.</p>
+                        <div class="component-tech">Input: 32D Vector • Output: 16D State</div>
+                    </div>
+
+                    <div class="component-card">
+                        <div class="component-icon-title">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                            <div class="component-name">Coherence Validator</div>
+                        </div>
+                        <div class="component-role">Nodo ESN Especializado (Role: Coherence)</div>
+                        <p class="component-desc">Verifica la consistencia contextual comparando el estado actual con el historial dinámico de la conversación.</p>
+                        <div class="component-tech">Input: 32D Vector • Output: 1D Scalar</div>
+                    </div>
+
+                    <div class="component-card">
+                        <div class="component-icon-title">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <div class="component-name">TinyLMv2 Engine</div>
+                        </div>
+                        <div class="component-role">Model Server (Flask:5001)</div>
+                        <p class="component-desc">Servidor de inferencia autoregresiva. Almacena embeddings y predice probabilidades de tokens basándose en matrices ESN.</p>
+                        <div class="component-tech">Language Model • Python Slim</div>
+                    </div>
+
+                    <div class="component-card">
+                        <div class="component-icon-title">
+                            <i class="fa-solid fa-network-wired"></i>
+                            <div class="component-name">MQTT Broker & WS Bridge</div>
+                        </div>
+                        <div class="component-role">eon-mqtt (1883) & eon-ws-bridge (8765)</div>
+                        <p class="component-desc">Mosquitto se encarga del tránsito interno de pesos comprimidos LoRa/WiFi, y el bridge los retransmite a WebSockets.</p>
+                        <div class="component-tech">C Broker & Async Python Bridge</div>
+                    </div>
+
+                    <div class="component-card">
+                        <div class="component-icon-title">
+                            <i class="fa-solid fa-users-gear"></i>
+                            <div class="component-name">Collective Mind</div>
+                        </div>
+                        <div class="component-role">eon-collective (Federated Learning)</div>
+                        <p class="component-desc">Coordina la Mente Colectiva. Aplica marcas de agua digitales neuronales (NeuralWatermark) y ejecuta homeostasis del Egrégor.</p>
+                        <div class="component-tech">Watermarked 1-bit Weight Sync</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Ayuda & Info -->
+        <div id="helpView" style="display: none;">
+            <div class="panel">
+                <div class="panel-header">
+                    <span>GUÍA DE LA INTERFAZ DE EÓN AI</span>
+                    <i class="fa-regular fa-circle-question text-accent"></i>
+                </div>
+                
+                <div class="info-section">
+                    <div class="info-question"><i class="fa-solid fa-circle-chevron-right"></i> ¿Cómo funciona el Chat Colaborativo de Eón?</div>
+                    <div class="info-answer">
+                        Cuando escribes un mensaje, este se envía en paralelo a tres nodos especializados del reservorio (Intención, Respuesta y Coherencia). Cada nodo procesa el texto y modula el estado dinámico general. Luego, el motor TinyLMv2 genera los tokens de la respuesta final ajustándose a la personalidad y la retroalimentación del Egrégor colectivo.
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-question"><i class="fa-solid fa-circle-chevron-right"></i> ¿Qué representa el gráfico de "Eón Dream"?</div>
+                    <div class="info-answer">
+                        Eón Dream es una ventana directa a la "mente" del sistema. En el modo **Grid** ves el estado de activación analógico de las 100 neuronas del reservorio en tiempo real. En el modo **Path** puedes seguir la trayectoria caótica de las dos dimensiones principales en el espacio de fase. Si desactivas el **Pulse**, las neuronas responderán a ruido aleatorio de fondo en lugar de a ondas estructuradas.
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-question"><i class="fa-solid fa-circle-chevron-right"></i> ¿Qué es la "Transmutación Alquímica"?</div>
+                    <div class="info-answer">
+                        Es una analogía interactiva sobre las fases de optimización y consolidación de un sistema neuronal:
+                        <br>• <strong>Nigredo (Disolución)</strong>: Introduce caos y perturba los pesos para explorar el espacio de pérdida.
+                        <br>• <strong>Albedo (Purificación)</strong>: Normaliza y regulariza los pesos mediante regresión Ridge.
+                        <br>• <strong>Rubedo (Consolidación)</strong>: Fija el conocimiento y graba la firma digital neuronal (Watermarking).
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span>GUÍA DE HIPERPARÁMETROS</span>
+                    <i class="fa-solid fa-gears"></i>
+                </div>
+                
+                <div class="info-section">
+                    <div class="info-question"><i class="fa-solid fa-circle-info"></i> Radio Espectral (Spectral Radius)</div>
+                    <div class="info-answer">
+                        Controla el eigenvalor máximo del reservorio. Valores cercanos o mayores a 1.0 aumentan la "memoria" del sistema a largo plazo pero introducen dinámicas no lineales complejas y caos. Valores bajos (ej: 0.5) estabilizan el sistema pero limitan la memoria temporal.
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-question"><i class="fa-solid fa-circle-info"></i> Tasa de Fuga (Leak Rate)</div>
+                    <div class="info-answer">
+                        Define la velocidad de decaimiento del estado interno al asimilar un nuevo estímulo. Una tasa baja (ej: 0.1) mezcla fuertemente el pasado con el presente, ideal para secuencias largas y lentas. Una tasa alta (ej: 1.0) reacciona al instante, descartando la inercia temporal.
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-question"><i class="fa-solid fa-circle-info"></i> Temperatura y Top-P</div>
+                    <div class="info-answer">
+                        Hiperparámetros de muestreo de TinyLMv2. La <strong>Temperatura</strong> amplifica o mitiga las probabilidades de palabras menos comunes (mayor creatividad). El <strong>Top-P</strong> (Nucleus Sampling) delimita el conjunto de palabras candidatas acumuladas para evitar tokens incoherentes.
+                    </div>
                 </div>
             </div>
         </div>

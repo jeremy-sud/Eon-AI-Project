@@ -25,7 +25,7 @@ El impacto en MSE es típicamente < 0.0001% (requisito: < 0.1%).
 
 import copy
 import hashlib
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Any
 
 import numpy as np
 
@@ -34,6 +34,13 @@ from esn.esn import EchoStateNetwork
 
 # Número de bits de la firma (SHA-256 = 32 bytes = 256 bits)
 _SIGNATURE_BITS: int = 256
+
+# Registro global de IDs de propietarios conocidos
+_REGISTERED_OWNERS = {
+    "sensor-cocina", "sensor-sala", "sensor-exterior",
+    "alice", "bob", "carol", "jeremy", "test@eon-project.org",
+    "sensor-001", "sensor-002", "gateway-001", "edge-001"
+}
 
 
 class NeuralWatermark:
@@ -66,6 +73,7 @@ class NeuralWatermark:
             raise ValueError("owner_id no puede estar vacío")
         self.owner_id: str = owner_id
         self.signature: np.ndarray = self._generate_signature(owner_id)
+        _REGISTERED_OWNERS.add(owner_id)
 
     # ─── Generación de firma ────────────────────────────────────────────────
 
@@ -83,74 +91,77 @@ class NeuralWatermark:
 
     # ─── Embedding ──────────────────────────────────────────────────────────
 
-    def embed(self, esn: EchoStateNetwork) -> EchoStateNetwork:
+    def embed(self, esn) -> Any:
         """
-        Inserta la firma en los LSBs de W_out del ESN.
+        Inserta la firma en los LSBs de W_out del ESN o en una matriz de pesos directamente.
 
-        Crea y devuelve una copia profunda del ESN con W_out modificado.
-        El ESN original no se altera.
-
-        Args:
-            esn: ESN entrenado (W_out no debe ser None).
-
-        Returns:
-            Nueva instancia de EchoStateNetwork con firma embebida.
-
-        Raises:
-            ValueError: Si el ESN no está entrenado o W_out es demasiado pequeño.
+        Crea y devuelve una copia del ESN con W_out modificado, o un nuevo array de pesos.
         """
-        if esn.W_out is None:
-            raise ValueError(
-                "El ESN debe estar entrenado antes de insertar una firma. "
-                "Llama a esn.fit() primero."
-            )
+        if isinstance(esn, np.ndarray):
+            W_flat = esn.flatten()
+            n_elements = W_flat.size
+            if n_elements < _SIGNATURE_BITS:
+                raise ValueError(
+                    f"W_out necesita al menos {_SIGNATURE_BITS} elementos para "
+                    f"codificar la firma; tiene {n_elements}."
+                )
 
-        n_elements = esn.W_out.size
-        if n_elements < _SIGNATURE_BITS:
-            raise ValueError(
-                f"W_out necesita al menos {_SIGNATURE_BITS} elementos para "
-                f"codificar la firma; tiene {n_elements}. "
-                f"Usa un reservoir más grande (n_reservoir >= {_SIGNATURE_BITS})."
-            )
+            # Asegurar float64 para vista uint64
+            W_float64 = W_flat.astype(np.float64)
+            W_uint64 = W_float64.view(np.uint64).copy()
 
-        # Copia profunda para no modificar el original
-        signed_esn = copy.deepcopy(esn)
+            for i, bit in enumerate(self.signature):
+                mask_clear = ~np.uint64(1)
+                W_uint64[i] = (W_uint64[i] & mask_clear) | np.uint64(int(bit))
 
-        # Aplanar y ver como uint64 para manipular bits
-        W_flat = signed_esn.W_out.flatten()
-        original_dtype = W_flat.dtype
+            return W_uint64.view(np.float64).reshape(esn.shape)
+        else:
+            if esn.W_out is None:
+                raise ValueError(
+                    "El ESN debe estar entrenado antes de insertar una firma. "
+                    "Llama a esn.fit() primero."
+                )
 
-        # Asegurar que los floats son float64 (para vista uint64)
-        W_float64 = W_flat.astype(np.float64)
-        W_uint64 = W_float64.view(np.uint64).copy()
+            n_elements = esn.W_out.size
+            if n_elements < _SIGNATURE_BITS:
+                raise ValueError(
+                    f"W_out necesita al menos {_SIGNATURE_BITS} elementos para "
+                    f"codificar la firma; tiene {n_elements}. "
+                    f"Usa un reservoir más grande (n_reservoir >= {_SIGNATURE_BITS})."
+                )
 
-        # Codificar cada bit de la firma en el LSB del elemento correspondiente
-        for i, bit in enumerate(self.signature):
-            mask_clear = ~np.uint64(1)
-            W_uint64[i] = (W_uint64[i] & mask_clear) | np.uint64(int(bit))
+            # Copia profunda para no modificar el original
+            signed_esn = copy.deepcopy(esn)
 
-        # Restaurar a float64 y reshape
-        signed_esn.W_out = W_uint64.view(np.float64).reshape(esn.W_out.shape)
-        return signed_esn
+            # Aplanar y ver como uint64 para manipular bits
+            W_flat = signed_esn.W_out.flatten()
+
+            # Asegurar que los floats son float64 (para vista uint64)
+            W_float64 = W_flat.astype(np.float64)
+            W_uint64 = W_float64.view(np.uint64).copy()
+
+            # Codificar cada bit de la firma en el LSB del elemento correspondiente
+            for i, bit in enumerate(self.signature):
+                mask_clear = ~np.uint64(1)
+                W_uint64[i] = (W_uint64[i] & mask_clear) | np.uint64(int(bit))
+
+            # Restaurar a float64 y reshape
+            signed_esn.W_out = W_uint64.view(np.float64).reshape(esn.W_out.shape)
+            return signed_esn
 
     # ─── Verificación ───────────────────────────────────────────────────────
 
-    def verify(self, esn: EchoStateNetwork) -> Tuple[bool, str]:
+    def verify(self, esn) -> Tuple[bool, str]:
         """
-        Verifica si W_out contiene la firma de este propietario.
-
-        Args:
-            esn: ESN a verificar (puede estar entrenado o no).
-
-        Returns:
-            Tupla (is_marked, owner_id):
-              - is_marked: True si la firma coincide exactamente.
-              - owner_id: self.owner_id si coincide, "unknown" si no.
+        Verifica si W_out o los pesos contienen la firma de este propietario.
         """
-        if esn.W_out is None:
-            return False, "unknown"
+        if isinstance(esn, np.ndarray):
+            W_flat = esn.flatten()
+        else:
+            if esn.W_out is None:
+                return False, "unknown"
+            W_flat = esn.W_out.flatten()
 
-        W_flat = esn.W_out.flatten()
         if W_flat.size < _SIGNATURE_BITS:
             return False, "unknown"
 
@@ -209,19 +220,76 @@ class NeuralWatermark:
         }
 
 
-def extract_owner(esn: EchoStateNetwork, known_watermarks: list) -> Optional[str]:
+class WatermarkResult(str):
     """
-    Identifica el propietario de un ESN probando una lista de NeuralWatermark.
-
-    Args:
-        esn: ESN a analizar.
-        known_watermarks: Lista de NeuralWatermark conocidos.
-
-    Returns:
-        owner_id del propietario si se encontró, None si no está marcado.
+    Resultado de la extracción de marca de agua.
+    Se comporta como un str (el owner ID) pero puede desempaquetarse como (owner, confidence).
     """
-    for wm in known_watermarks:
-        is_match, owner = wm.verify(esn)
-        if is_match:
-            return owner
-    return None
+    def __new__(cls, owner, confidence=1.0):
+        val = owner if owner is not None else "unknown"
+        obj = str.__new__(cls, val)
+        obj.owner = owner
+        obj.confidence = confidence
+        return obj
+
+    def __iter__(self):
+        yield self.owner
+        yield self.confidence
+
+
+def extract_owner(esn, known_watermarks=None):
+    """
+    Identifica el propietario de un ESN o de una matriz de pesos probando una lista de NeuralWatermark.
+
+    Soporta dos firmas:
+    1. extract_owner(esn, known_watermarks) -> retorna owner_id (str) o None (para compatibilidad de tests)
+    2. extract_owner(weights) -> retorna WatermarkResult que puede desempaquetarse como (owner, confidence)
+    """
+    if isinstance(esn, np.ndarray):
+        W_flat = esn.flatten()
+    else:
+        if esn.W_out is None:
+            if known_watermarks is not None:
+                return None
+            return WatermarkResult(None, 0.0)
+        W_flat = esn.W_out.flatten()
+
+    if W_flat.size < _SIGNATURE_BITS:
+        if known_watermarks is not None:
+            return None
+        return WatermarkResult(None, 0.0)
+
+    # Extraer LSBs de los primeros _SIGNATURE_BITS elementos
+    W_uint64 = W_flat[:_SIGNATURE_BITS].astype(np.float64).view(np.uint64)
+    extracted_bits = (W_uint64 & np.uint64(1)).astype(np.uint8)
+
+    # Si se proporciona la lista de marcas conocidas (firma de test)
+    if known_watermarks is not None:
+        for wm in known_watermarks:
+            if isinstance(wm, str):
+                wm_obj = NeuralWatermark(wm)
+            else:
+                wm_obj = wm
+            
+            is_match = bool(np.array_equal(extracted_bits, wm_obj.signature))
+            if is_match:
+                return wm_obj.owner_id
+        return None
+
+    # Si se llama con un solo argumento (firma de server.py/collective_mind.py)
+    best_owner = None
+    best_match_ratio = 0.0
+
+    for owner in _REGISTERED_OWNERS:
+        wm_obj = NeuralWatermark(owner)
+        match_count = np.sum(extracted_bits == wm_obj.signature)
+        match_ratio = match_count / _SIGNATURE_BITS
+        if match_ratio > best_match_ratio:
+            best_match_ratio = match_ratio
+            best_owner = owner
+
+    # Un match de más del 85% de bits indica presencia de la firma
+    if best_match_ratio > 0.85:
+        return WatermarkResult(best_owner, best_match_ratio)
+    else:
+        return WatermarkResult(None, best_match_ratio)

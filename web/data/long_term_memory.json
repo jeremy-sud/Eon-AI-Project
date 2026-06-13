@@ -12,16 +12,7 @@
       "last_seen": 1765255302.3863878
     }
   },
-  "facts": [
-    {
-      "fact": "soy jeremy",
-      "hash": "271a0a4d",
-      "source": "conversation",
-      "confidence": 0.057596390256941195,
-      "learned_at": 1765255187.3528864,
-      "last_confirmed": 1765255302.3866065
-    }
-  ],
+  "facts": [],
   "summaries": [],
   "preferences": {},
   "interactions": {
@@ -63,5 +54,5 @@
   },
   "emotional_memory": [],
   "created_at": 1765255170.0615954,
-  "last_updated": 1765274293.8693697
+  "last_updated": 1781337674.3982193
 }

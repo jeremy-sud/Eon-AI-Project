@@ -297,6 +297,10 @@ class AeonCore {
     this.state.fill(0);
   }
 
+  get states() {
+    return this.state;
+  }
+
   /**
    * Edad en segundos
    */

@@ -257,6 +257,11 @@ except Exception as e:
     logger.warning(f"Error inicializando Oráculo I-Ching: {e}")
     _iching_oracle = None
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Endpoint de health check para Docker."""
+    return jsonify({'success': True, 'status': 'healthy'})
+
 @app.route('/api/config', methods=['GET', 'POST'])
 def config():
     """Endpoint para configuración de parámetros de IA."""

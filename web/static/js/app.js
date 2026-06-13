@@ -17,6 +17,7 @@ const App = {
     this.startStatusPolling();
     this.loadConfig();
     this.loadStats();
+    this.initSSOSimulator(); // Sync/setup user SSO simulation
     this.addSystemMessage("Eón está activo. ¿En qué puedo ayudarte?");
   },
 
@@ -106,13 +107,13 @@ const App = {
     document
       .querySelectorAll(".nav-item")
       .forEach((el) => el.classList.remove("active"));
-    document
-      .querySelector(`.nav-item[data-view="${viewName}"]`)
-      .classList.add("active");
+    const activeNav = document.querySelector(`.nav-item[data-view="${viewName}"]`);
+    if (activeNav) activeNav.classList.add("active");
 
     // Hide all views
-    ["chatView", "dreamView", "statusView"].forEach((id) => {
-      document.getElementById(id).style.display = "none";
+    ["chatView", "dreamView", "statusView", "ecosystemView", "genesisView", "helpView"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "none";
     });
 
     // Update state
@@ -668,6 +669,112 @@ const App = {
     } catch (e) {
       this.addSystemMessage("Error al cargar la memoria.");
     }
+  },
+
+  initSSOSimulator() {
+    // Define mock users profiles
+    this.ssoProfiles = {
+      admin: {
+        id: 1,
+        name: "Ing. Jeremy Arias Solano",
+        email: "admin@scisenselab.com",
+        company_name: "Fundación SenselabCR S.A.",
+        tenant_id: "sl_tenant_000001",
+        plan: "business",
+        twofa_enabled: true,
+        linked_platforms: { google: true, apple: false, github: true, microsoft: false }
+      },
+      pro: {
+        id: 3,
+        name: "Lic. Andrea Vargas Castro",
+        email: "cliente@senselab.com",
+        company_name: "Distribuidora del Norte",
+        tenant_id: "sl_tenant_000003",
+        plan: "pro",
+        twofa_enabled: true,
+        linked_platforms: { google: true, apple: true, github: false, microsoft: false }
+      },
+      sandbox: {
+        id: 4,
+        name: "Tec. Carlos Mendoza Rojas",
+        email: "dev@scisenselab.com",
+        company_name: "Mendoza Dev Studio",
+        tenant_id: "sl_tenant_000004",
+        plan: "free",
+        twofa_enabled: false,
+        linked_platforms: { google: false, apple: false, github: true, microsoft: false }
+      }
+    };
+
+    // Load active profile from localStorage or default to admin
+    let savedUser = null;
+    try {
+      savedUser = JSON.parse(localStorage.getItem("senselab_session_user"));
+    } catch (e) {}
+
+    // Find if the saved profile corresponds to one of our mocks
+    let activeRole = "admin";
+    if (savedUser) {
+      if (savedUser.email === "cliente@senselab.com") activeRole = "pro";
+      else if (savedUser.email === "dev@scisenselab.com") activeRole = "sandbox";
+    }
+
+    // Set/persist if nothing saved
+    if (!savedUser) {
+      localStorage.setItem("senselab_session_user", JSON.stringify(this.ssoProfiles.admin));
+      savedUser = this.ssoProfiles.admin;
+    }
+
+    this.updateSSOUI(activeRole, savedUser);
+
+    // Bind click events to tenant options
+    document.querySelectorAll(".tenant-option").forEach((option) => {
+      option.addEventListener("click", (e) => {
+        const role = e.currentTarget.dataset.role;
+        if (role && this.ssoProfiles[role]) {
+          const profile = this.ssoProfiles[role];
+          localStorage.setItem("senselab_session_user", JSON.stringify(profile));
+          
+          // Broadcast to other Senselab subdomains/tabs if open
+          try {
+            const syncChannel = new BroadcastChannel("senselab_session_sync");
+            syncChannel.postMessage({ type: "TENANT_CHANGE", user: profile });
+            syncChannel.close();
+          } catch (err) {}
+
+          // Update active option class
+          document.querySelectorAll(".tenant-option").forEach((opt) => opt.classList.remove("active"));
+          e.currentTarget.classList.add("active");
+
+          this.updateSSOUI(role, profile);
+        }
+      });
+    });
+  },
+
+  updateSSOUI(role, profile) {
+    // Update local storage display
+    const nameEl = document.getElementById("sso-user-name");
+    const emailEl = document.getElementById("sso-user-email");
+    const tenantEl = document.getElementById("sso-user-tenant");
+    const planEl = document.getElementById("sso-user-plan");
+
+    if (nameEl) nameEl.textContent = profile.name;
+    if (emailEl) emailEl.textContent = profile.email;
+    if (tenantEl) tenantEl.textContent = profile.tenant_id;
+    
+    if (planEl) {
+      planEl.textContent = profile.plan.toUpperCase();
+      planEl.className = "tenant-badge " + (role === "admin" ? "admin" : (role === "pro" ? "pro" : "sandbox"));
+    }
+
+    // Update active class on options
+    document.querySelectorAll(".tenant-option").forEach((opt) => {
+      opt.classList.remove("active");
+      if (opt.dataset.role === role) {
+        opt.classList.add("active");
+      }
+    });
   },
 };
 

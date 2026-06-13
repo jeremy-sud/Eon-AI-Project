@@ -45,8 +45,9 @@ function initDream() {
 
 function resizeDream() {
   if (!dreamCanvas) return;
-  dreamWidth = dreamCanvas.width = window.innerWidth;
-  dreamHeight = dreamCanvas.height = window.innerHeight;
+  const parent = dreamCanvas.parentElement;
+  dreamWidth = dreamCanvas.width = parent ? parent.clientWidth : window.innerWidth;
+  dreamHeight = dreamCanvas.height = parent ? parent.clientHeight : window.innerHeight;
 }
 
 function setDreamMode(mode) {

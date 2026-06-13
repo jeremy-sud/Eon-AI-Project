@@ -47,8 +47,13 @@
     <!-- Sidebar Navigation -->
     <nav class="sidebar">
       <div class="logo">
-        <i class="fa-solid fa-circle-nodes text-accent"></i>
-        <span>Eón<span class="logo-by">by Sense<span>lab</span><span class="logo-dot">.</span></span></span>
+        <div class="logo-text">
+          <i class="fa-solid fa-circle-nodes text-accent"></i>
+          <span>Eón<span class="logo-by">by Sense<span>lab</span><span class="logo-dot">.</span></span></span>
+        </div>
+        <button id="sidebarCloseBtn" class="sidebar-close-btn" title="Cerrar Menú">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
 
       <div class="nav-item active" data-view="chat">
@@ -729,24 +734,6 @@
               <i class="fa-solid fa-right-to-bracket"></i> Conectarse con SSO
             </button>
           </form>
-
-          <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
-            <div class="stat-label" style="text-align: center; margin-bottom: 0.8rem; font-size: 0.65rem;">ACCESO RÁPIDO CON PERFIL REAL</div>
-            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
-              <button class="quick-login-btn" data-role="admin" style="border: 1px solid var(--border); background: rgba(255,255,255,0.01);">
-                <span class="quick-login-email">admin@scisenselab.com</span>
-                <span class="tenant-badge admin" style="font-size: 0.55rem;">Global</span>
-              </button>
-              <button class="quick-login-btn" data-role="pro" style="border: 1px solid var(--border); background: rgba(255,255,255,0.01);">
-                <span class="quick-login-email">cliente@senselab.com</span>
-                <span class="tenant-badge pro" style="font-size: 0.55rem;">Pro</span>
-              </button>
-              <button class="quick-login-btn" data-role="sandbox" style="border: 1px solid var(--border); background: rgba(255,255,255,0.01);">
-                <span class="quick-login-email">dev@scisenselab.com</span>
-                <span class="tenant-badge sandbox" style="font-size: 0.55rem;">Sandbox</span>
-              </button>
-            </div>
-          </div>
         </div>
 
         <!-- Logged In Screen -->
@@ -757,7 +744,7 @@
               <i class="fa-solid fa-id-card text-accent"></i>
             </div>
             
-            <div style="display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; padding: 1.5rem; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--border);">
+            <div class="profile-user-card">
               <div style="width: 70px; height: 70px; border-radius: 50%; background: var(--accent-dim); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--accent);">
                 <i class="fa-solid fa-user-astronaut"></i>
               </div>
@@ -819,7 +806,7 @@
               </div>
             </div>
 
-            <div style="display: flex; gap: 1rem;">
+            <div class="profile-actions">
               <button id="profileLogoutBtn" class="action-btn" style="flex: 1; padding: 0.8rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); border-radius: 8px;">
                 <i class="fa-solid fa-right-from-bracket" style="margin-right: 0.5rem;"></i> Cerrar Sesión
               </button>

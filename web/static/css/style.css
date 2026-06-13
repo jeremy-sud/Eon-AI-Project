@@ -1164,6 +1164,27 @@ small {
   height: 100%;
   box-sizing: border-box;
   animation: fadeIn 0.35s ease;
+  -webkit-overflow-scrolling: touch;
+}
+
+.profile-user-card {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.profile-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.sidebar-close-btn {
+  display: none;
 }
 
 /* ==========================================================================
@@ -1200,6 +1221,22 @@ small {
 
 .mobile-menu-btn:hover, .mobile-profile-btn:hover {
   background: rgba(255, 255, 255, 0.05);
+}
+
+.mobile-profile-btn {
+  position: relative;
+}
+
+.mobile-profile-btn .active-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 9px;
+  height: 9px;
+  background-color: var(--success);
+  border-radius: 50%;
+  border: 2px solid var(--bg-secondary);
+  box-shadow: 0 0 8px var(--success);
 }
 
 .mobile-logo {
@@ -1260,20 +1297,56 @@ small {
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.7);
   }
 
+  .logo {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .logo-text {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .sidebar-close-btn {
+    display: flex;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.35rem;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .sidebar-close-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
   .main-content {
     width: 100%;
-    height: calc(100vh - 60px);
+    flex: 1;
+    min-height: 0;
   }
 
   /* Compress views padding */
   #statusView, #ecosystemView, #genesisView, #helpView, #profileView {
     padding: 1.5rem;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Chat modifications for mobile */
   .chat-container {
     padding: 1.2rem;
     gap: 1.2rem;
+    -webkit-overflow-scrolling: touch;
   }
 
   .message {
@@ -1329,5 +1402,41 @@ small {
   .component-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+
+  .timeline-header {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* Responsive range inputs */
+  input[type="range"] {
+    height: 10px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    height: 20px;
+    width: 20px;
+    margin-top: -5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-user-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.25rem;
+    padding: 1.25rem;
+  }
+
+  .profile-user-card div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+    gap: 0.75rem;
   }
 }

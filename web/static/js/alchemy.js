@@ -333,6 +333,36 @@ const Alchemy = {
         0%, 100% { box-shadow: 0 0 5px #ffd700; }
         50% { box-shadow: 0 0 20px #ffd700, 0 0 30px #ff6b6b; }
       }
+
+      @media (max-width: 520px) {
+        .alchemy-panel {
+          padding: 1rem;
+        }
+        .alchemy-phases {
+          gap: 4px;
+        }
+        .phase-connector {
+          width: 15px;
+          margin: 0 4px;
+        }
+        .phase-icon {
+          font-size: 1.4rem;
+        }
+        .phase-name {
+          font-size: 0.55rem;
+        }
+        .alchemy-status {
+          flex-direction: column;
+          gap: 1rem;
+          align-items: flex-start;
+          padding: 0.75rem;
+        }
+        .status-metrics {
+          width: 100%;
+          justify-content: space-between;
+          gap: 0.5rem;
+        }
+      }
     `;
     
     document.head.appendChild(style);

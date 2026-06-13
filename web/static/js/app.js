@@ -40,19 +40,45 @@ const App = {
 
     // Mobile Menu Toggle bindings
     const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const sidebarCloseBtn = document.getElementById("sidebarCloseBtn");
     const sidebar = document.querySelector(".sidebar");
     const backdrop = document.getElementById("sidebarBackdrop");
     
-    if (mobileMenuBtn && sidebar && backdrop) {
-      mobileMenuBtn.addEventListener("click", () => {
-        sidebar.classList.toggle("open");
-        backdrop.classList.toggle("active");
-      });
+    if (sidebar && backdrop) {
+      if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener("click", () => {
+          sidebar.classList.toggle("open");
+          backdrop.classList.toggle("active");
+        });
+      }
+
+      if (sidebarCloseBtn) {
+        sidebarCloseBtn.addEventListener("click", () => {
+          sidebar.classList.remove("open");
+          backdrop.classList.remove("active");
+        });
+      }
 
       backdrop.addEventListener("click", () => {
         sidebar.classList.remove("open");
         backdrop.classList.remove("active");
       });
+
+      // Swipe gestures on sidebar to close it
+      let touchStartX = 0;
+      let touchEndX = 0;
+      
+      sidebar.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      
+      sidebar.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 50) { // Swiped left at least 50px
+          sidebar.classList.remove("open");
+          backdrop.classList.remove("active");
+        }
+      }, { passive: true });
     }
 
     const mobileProfileBtn = document.getElementById("mobileProfileBtn");
@@ -797,17 +823,7 @@ const App = {
       });
     }
 
-    // Quick login buttons
-    document.querySelectorAll(".quick-login-btn").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const role = e.currentTarget.dataset.role;
-        if (role && this.ssoProfiles[role]) {
-          const profile = this.ssoProfiles[role];
-          const mockToken = "sl_mock_session_token_123456";
-          this.login(profile, mockToken);
-        }
-      });
-    });
+    // Quick login buttons removed
 
     // Bind click events to tenant options in ecosystem view
     document.querySelectorAll(".tenant-option").forEach((option) => {
@@ -935,6 +951,13 @@ const App = {
     const userCard = document.getElementById("sidebarUserCard");
     if (userCard) userCard.style.display = "none";
 
+    // Update mobile profile button
+    const mobileProfileBtn = document.getElementById("mobileProfileBtn");
+    if (mobileProfileBtn) {
+      mobileProfileBtn.innerHTML = '<i class="fa-regular fa-user"></i>';
+      mobileProfileBtn.classList.remove("logged-in");
+    }
+
     // Toggle screens
     const loginScreen = document.getElementById("ssoLoginScreen");
     const profileScreen = document.getElementById("ssoProfileScreen");
@@ -961,6 +984,13 @@ const App = {
       userCard.style.display = "flex";
       document.getElementById("sidebarUserName").textContent = profile.name;
       document.getElementById("sidebarUserPlan").textContent = `Plan ${profile.plan.toUpperCase()}`;
+    }
+
+    // Update mobile profile button
+    const mobileProfileBtn = document.getElementById("mobileProfileBtn");
+    if (mobileProfileBtn) {
+      mobileProfileBtn.innerHTML = '<i class="fa-solid fa-user-astronaut text-accent"></i><span class="active-dot"></span>';
+      mobileProfileBtn.classList.add("logged-in");
     }
 
     // Update profile view screen

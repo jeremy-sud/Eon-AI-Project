@@ -3,11 +3,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://api.eon.scisenselab.com/api/:path*"
+      "destination": "http://3.147.117.251/api/:path*"
     },
     {
       "source": "/ws",
-      "destination": "https://api.eon.scisenselab.com/ws"
+      "destination": "http://3.147.117.251/ws"
     }
   ],
   "headers": [

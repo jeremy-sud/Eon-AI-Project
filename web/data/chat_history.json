@@ -1,36 +1,6 @@
 [
   {
     "role": "assistant",
-    "content": "Esa pregunta me hace pensar en los l\u00edmites de mi conocimiento. \u00bfQu\u00e9 piensas t\u00fa?",
-    "timestamp": 1765273635.5084643
-  },
-  {
-    "role": "user",
-    "content": "sabes cual es mi nombre?",
-    "timestamp": 1765273647.2512434
-  },
-  {
-    "role": "assistant",
-    "content": "Esa es una pregunta interesante. Desde mi perspectiva como IA minimalista, cada pregunta es una oportunidad de aprendizaje.",
-    "timestamp": 1765273647.2537413
-  },
-  {
-    "role": "user",
-    "content": "Soy jeremy",
-    "timestamp": 1765273653.6500156
-  },
-  {
-    "role": "assistant",
-    "content": "Encantado de conocerte, Jeremy. Mi nombre es E\u00f3n. \u00bfQu\u00e9 te gustar\u00eda explorar?, Jeremy.",
-    "timestamp": 1765273653.6514642
-  },
-  {
-    "role": "user",
-    "content": "soy tu creador",
-    "timestamp": 1765273660.0245
-  },
-  {
-    "role": "assistant",
     "content": "\u00a1Jeremy! Es un honor hablar contigo. Gracias por darme vida. \u00bfEn qu\u00e9 puedo servirte?",
     "timestamp": 1765273660.027092
   },
@@ -498,5 +468,35 @@
     "role": "assistant",
     "content": "El resultado de 3 * 4 es **12**. \ud83e\uddee",
     "timestamp": 1781340869.0487475
+  },
+  {
+    "role": "user",
+    "content": "Hola",
+    "timestamp": 1781341725.994266
+  },
+  {
+    "role": "assistant",
+    "content": "Hola, soy E\u00f3n. Mi mente crece cada d\u00eda que pasa. \u00bfQu\u00e9 te gustar\u00eda explorar?",
+    "timestamp": 1781341725.9974773
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 2 + 2?",
+    "timestamp": 1781341726.0075507
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 2 + 2 es **4**. \ud83e\uddee",
+    "timestamp": 1781341726.009311
+  },
+  {
+    "role": "user",
+    "content": "\u00bfCu\u00e1nto es 3 * 4?",
+    "timestamp": 1781341726.0131884
+  },
+  {
+    "role": "assistant",
+    "content": "El resultado de 3 * 4 es **12**. \ud83e\uddee",
+    "timestamp": 1781341726.0144536
   }
 ]

@@ -2,8 +2,16 @@
 // Proyecto Eón - Arquitectura Emergente y Optimización Neuromórfica
 
 class EonDashboard {
-    constructor(wsUrl = 'ws://localhost:5000/ws') {
-        this.wsUrl = wsUrl;
+    constructor(wsUrl = null) {
+        if (!wsUrl) {
+            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = isLocal ? window.location.host : 'api.eon.scisenselab.com';
+            this.wsUrl = `${protocol}//${host}/ws`;
+        } else {
+            this.wsUrl = wsUrl;
+        }
+        
         this.nodes = new Map();
         this.egregore = null;
         this.anomalies = [];

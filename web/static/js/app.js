@@ -27,8 +27,40 @@ const App = {
       item.addEventListener("click", (e) => {
         const view = e.currentTarget.dataset.view;
         if (view) this.switchView(view);
+
+        // Auto-close sidebar drawer on mobile after clicking
+        const sidebar = document.querySelector(".sidebar");
+        const backdrop = document.getElementById("sidebarBackdrop");
+        if (sidebar && sidebar.classList.contains("open")) {
+          sidebar.classList.remove("open");
+          if (backdrop) backdrop.classList.remove("active");
+        }
       });
     });
+
+    // Mobile Menu Toggle bindings
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const sidebar = document.querySelector(".sidebar");
+    const backdrop = document.getElementById("sidebarBackdrop");
+    
+    if (mobileMenuBtn && sidebar && backdrop) {
+      mobileMenuBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+        backdrop.classList.toggle("active");
+      });
+
+      backdrop.addEventListener("click", () => {
+        sidebar.classList.remove("open");
+        backdrop.classList.remove("active");
+      });
+    }
+
+    const mobileProfileBtn = document.getElementById("mobileProfileBtn");
+    if (mobileProfileBtn) {
+      mobileProfileBtn.addEventListener("click", () => {
+        this.switchView("profile");
+      });
+    }
 
     // Chat
     const chatInput = document.getElementById("chatInput");

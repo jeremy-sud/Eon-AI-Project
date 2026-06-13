@@ -39,6 +39,11 @@
         Chat
       </div>
 
+      <div class="nav-item" data-view="profile" id="nav-profile">
+        <i class="fa-regular fa-user"></i>
+        Senselab ID
+      </div>
+
       <div class="nav-item" data-view="dream">
         <i class="fa-solid fa-brain"></i>
         Eón Dream
@@ -62,6 +67,20 @@
       <div class="nav-item" data-view="help">
         <i class="fa-regular fa-circle-question"></i>
         Ayuda & Info
+      </div>
+
+      <!-- User Profile Card in Sidebar -->
+      <div id="sidebarUserCard" class="user-card-sidebar" style="display: none;">
+        <div class="user-card-avatar">
+          <i class="fa-solid fa-user-astronaut"></i>
+        </div>
+        <div class="user-card-info">
+          <div class="user-card-name" id="sidebarUserName">Invitado</div>
+          <div class="user-card-plan" id="sidebarUserPlan">Plan Libre</div>
+        </div>
+        <button id="sidebarLogoutBtn" class="logout-icon-btn" title="Cerrar Sesión">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
       </div>
 
       <div class="sidebar-footer">v0.2.0 - Phase 3 Integration</div>
@@ -115,7 +134,7 @@
       </div>
 
         <!-- View: Status & Config -->
-        <div id="statusView">
+        <div id="statusView" style="display: none;">
             
             <div class="panel">
                 <div class="panel-header">
@@ -665,6 +684,133 @@
                     </div>
                 </div>
             </div>
+        </div>
+      </div>
+
+      <!-- View: Profile (Senselab ID) -->
+      <div id="profileView" style="display: none;">
+        <!-- Logged Out Screen -->
+        <div id="ssoLoginScreen" class="panel" style="max-width: 480px; margin: 4rem auto;">
+          <div class="panel-header" style="justify-content: center; border-bottom: none; margin-bottom: 1rem;">
+            <div style="text-align: center;">
+              <i class="fa-solid fa-shield-halved text-accent" style="font-size: 2.5rem; margin-bottom: 1rem; text-shadow: 0 0 15px rgba(89, 159, 255, 0.4);"></i>
+              <h2 style="font-family: var(--font-display); font-size: 1.3rem; color: #fff;">SENSELAB ID</h2>
+              <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">Inicio de Sesión Centralizado</p>
+            </div>
+          </div>
+          
+          <form id="ssoLoginForm" style="display: flex; flex-direction: column; gap: 1.2rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+              <label class="stat-label" style="font-size: 0.7rem;">Correo Electrónico</label>
+              <input type="email" id="sso-email" required placeholder="tu@empresa.com" style="width: 100%; padding: 0.75rem; background: rgba(10, 14, 26, 0.6); color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; outline: none; font-size: 0.85rem; transition: border-color 0.2s;">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+              <label class="stat-label" style="font-size: 0.7rem;">Contraseña</label>
+              <input type="password" id="sso-password" required placeholder="••••••••" style="width: 100%; padding: 0.75rem; background: rgba(10, 14, 26, 0.6); color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; outline: none; font-size: 0.85rem; transition: border-color 0.2s;">
+            </div>
+            <button type="submit" class="send-btn" style="width: 100%; padding: 0.85rem; margin-top: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border: none;">
+              <i class="fa-solid fa-right-to-bracket"></i> Conectarse con SSO
+            </button>
+          </form>
+
+          <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            <div class="stat-label" style="text-align: center; margin-bottom: 0.8rem; font-size: 0.65rem;">ACCESO RÁPIDO CON PERFIL REAL</div>
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <button class="quick-login-btn" data-role="admin" style="border: 1px solid var(--border); background: rgba(255,255,255,0.01);">
+                <span class="quick-login-email">admin@scisenselab.com</span>
+                <span class="tenant-badge admin" style="font-size: 0.55rem;">Global</span>
+              </button>
+              <button class="quick-login-btn" data-role="pro" style="border: 1px solid var(--border); background: rgba(255,255,255,0.01);">
+                <span class="quick-login-email">cliente@senselab.com</span>
+                <span class="tenant-badge pro" style="font-size: 0.55rem;">Pro</span>
+              </button>
+              <button class="quick-login-btn" data-role="sandbox" style="border: 1px solid var(--border); background: rgba(255,255,255,0.01);">
+                <span class="quick-login-email">dev@scisenselab.com</span>
+                <span class="tenant-badge sandbox" style="font-size: 0.55rem;">Sandbox</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logged In Screen -->
+        <div id="ssoProfileScreen" style="display: none;">
+          <div class="panel">
+            <div class="panel-header">
+              <span>TU PERFIL UNIFICADO SENSELAB ID</span>
+              <i class="fa-solid fa-id-card text-accent"></i>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; padding: 1.5rem; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--border);">
+              <div style="width: 70px; height: 70px; border-radius: 50%; background: var(--accent-dim); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--accent);">
+                <i class="fa-solid fa-user-astronaut"></i>
+              </div>
+              <div style="flex: 1;">
+                <h3 id="profile-name" style="font-family: var(--font-sans); font-size: 1.15rem; font-weight: 700; color: #fff;">...</h3>
+                <p id="profile-email" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">...</p>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                  <span id="profile-plan-badge" class="tenant-badge">...</span>
+                  <span id="profile-tenant-badge" class="tenant-badge" style="background: rgba(255,255,255,0.05); color: var(--text-secondary);">...</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-grid" style="margin-bottom: 2rem;">
+              <div class="stat-card">
+                <div class="stat-label">Compañía</div>
+                <div class="stat-value" id="profile-company" style="font-size: 0.95rem; font-family: var(--font-sans); font-weight: 600;">...</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Estado de Cuenta</div>
+                <div class="stat-value text-success" style="font-size: 0.95rem; font-family: var(--font-sans); font-weight: 600;">
+                  <i class="fa-solid fa-circle-check"></i> Activo
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">MFA / 2FA</div>
+                <div class="stat-value highlight" id="profile-mfa" style="font-size: 0.95rem; font-family: var(--font-sans); font-weight: 600;">...</div>
+              </div>
+            </div>
+
+            <!-- Token Usage Section -->
+            <div style="margin-bottom: 2rem;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span class="stat-label" style="margin-bottom: 0;">Consumo de Tokens IA Mensual</span>
+                <span class="stat-value" id="profile-token-usage-txt" style="font-size: 0.8rem;">0 / 0</span>
+              </div>
+              <div class="alchemy-progress" style="height: 8px; margin-bottom: 0.25rem;">
+                <div class="alchemy-progress-bar" id="profile-token-progress" style="width: 0%;"></div>
+              </div>
+              <small id="profile-token-desc">Uso de tokens en la consola Eón</small>
+            </div>
+
+            <!-- SSO Integration Log -->
+            <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 2rem;">
+              <div class="stat-label" style="margin-bottom: 0.75rem;">Sincronización del Ecosistema (.scisenselab.com)</div>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.72rem; font-family: var(--font-mono); color: var(--text-secondary);">
+                <div style="display: flex; justify-content: space-between;">
+                  <span>Cookie senselab_session_token:</span>
+                  <span id="profile-cookie-token" style="color: var(--success);">Presente</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span>Single Sign-On (Wildcard):</span>
+                  <span style="color: var(--success); font-weight: 600;"><i class="fa-solid fa-shield-halved"></i> Activo</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span>BroadcastChannel Sync:</span>
+                  <span style="color: var(--accent);">Escuchando en puerto 80/443</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+              <button id="profileLogoutBtn" class="action-btn" style="flex: 1; padding: 0.8rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); border-radius: 8px;">
+                <i class="fa-solid fa-right-from-bracket" style="margin-right: 0.5rem;"></i> Cerrar Sesión
+              </button>
+              <button id="ssoSyncBtn" class="send-btn" style="flex: 1; padding: 0.8rem; border: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <i class="fa-solid fa-rotate"></i> Sincronizar Ahora
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

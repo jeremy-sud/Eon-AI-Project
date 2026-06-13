@@ -1050,3 +1050,118 @@ small {
   line-height: 1.5;
   padding-left: 1.25rem;
 }
+
+/* User & Profile SSO Styles */
+.user-card-sidebar {
+  margin-top: auto;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.25s ease;
+}
+
+.user-card-sidebar:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(51, 124, 252, 0.2);
+}
+
+.user-card-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  border: 1px solid rgba(51, 124, 252, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+.user-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-card-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-card-plan {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.logout-icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-icon-btn:hover {
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.quick-login-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: rgba(255, 255, 255, 0.01) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px;
+  color: var(--text-primary) !important;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.quick-login-btn:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: var(--color-sense-400) !important;
+  transform: translateX(3px);
+  box-shadow: 0 4px 12px rgba(51, 124, 252, 0.05);
+}
+
+.quick-login-email {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+#ssoLoginForm input {
+  transition: all 0.25s ease;
+}
+
+#ssoLoginForm input:focus {
+  border-color: var(--color-sense-400) !important;
+  box-shadow: 0 0 10px rgba(51, 124, 252, 0.15);
+  background: rgba(10, 14, 26, 0.8) !important;
+}
+
+#profileView {
+  padding: 3rem;
+  overflow-y: auto;
+  height: 100%;
+  box-sizing: border-box;
+  animation: fadeIn 0.35s ease;
+}

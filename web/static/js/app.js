@@ -17,7 +17,7 @@ const App = {
     this.startStatusPolling();
     this.loadConfig();
     this.loadStats();
-    this.initSSOSimulator(); // Sync/setup user SSO simulation
+    this.initSSO(); // Real SSO initialization & cookie sync
     this.addSystemMessage("Eón está activo. ¿En qué puedo ayudarte?");
   },
 
@@ -103,6 +103,14 @@ const App = {
   },
 
   switchView(viewName) {
+    // Check authentication
+    const userStr = localStorage.getItem("senselab_session_user");
+    if (!userStr && viewName !== "profile" && viewName !== "help") {
+      this.addSystemMessage("Acceso Denegado. Por favor, inicia sesión con tu Senselab ID primero.");
+      this.switchView("profile");
+      return;
+    }
+
     // Update nav
     document
       .querySelectorAll(".nav-item")
@@ -111,7 +119,7 @@ const App = {
     if (activeNav) activeNav.classList.add("active");
 
     // Hide all views
-    ["chatView", "dreamView", "statusView", "ecosystemView", "genesisView", "helpView"].forEach((id) => {
+    ["chatView", "dreamView", "statusView", "ecosystemView", "genesisView", "helpView", "profileView"].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.style.display = "none";
     });
@@ -671,8 +679,7 @@ const App = {
     }
   },
 
-  initSSOSimulator() {
-    // Define mock users profiles
+  initSSO() {
     this.ssoProfiles = {
       admin: {
         id: 1,
@@ -681,8 +688,7 @@ const App = {
         company_name: "Fundación SenselabCR S.A.",
         tenant_id: "sl_tenant_000001",
         plan: "business",
-        twofa_enabled: true,
-        linked_platforms: { google: true, apple: false, github: true, microsoft: false }
+        twofa_enabled: true
       },
       pro: {
         id: 3,
@@ -691,8 +697,7 @@ const App = {
         company_name: "Distribuidora del Norte",
         tenant_id: "sl_tenant_000003",
         plan: "pro",
-        twofa_enabled: true,
-        linked_platforms: { google: true, apple: true, github: false, microsoft: false }
+        twofa_enabled: true
       },
       sandbox: {
         id: 4,
@@ -701,80 +706,342 @@ const App = {
         company_name: "Mendoza Dev Studio",
         tenant_id: "sl_tenant_000004",
         plan: "free",
-        twofa_enabled: false,
-        linked_platforms: { google: false, apple: false, github: true, microsoft: false }
+        twofa_enabled: false
       }
     };
 
-    // Load active profile from localStorage or default to admin
-    let savedUser = null;
-    try {
-      savedUser = JSON.parse(localStorage.getItem("senselab_session_user"));
-    } catch (e) {}
-
-    // Find if the saved profile corresponds to one of our mocks
-    let activeRole = "admin";
-    if (savedUser) {
-      if (savedUser.email === "cliente@senselab.com") activeRole = "pro";
-      else if (savedUser.email === "dev@scisenselab.com") activeRole = "sandbox";
+    // Bind events for authentication UI elements
+    const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
+    if (sidebarLogoutBtn) {
+      sidebarLogoutBtn.addEventListener("click", () => this.logout(true));
     }
 
-    // Set/persist if nothing saved
-    if (!savedUser) {
-      localStorage.setItem("senselab_session_user", JSON.stringify(this.ssoProfiles.admin));
-      savedUser = this.ssoProfiles.admin;
+    const profileLogoutBtn = document.getElementById("profileLogoutBtn");
+    if (profileLogoutBtn) {
+      profileLogoutBtn.addEventListener("click", () => this.logout(true));
     }
 
-    this.updateSSOUI(activeRole, savedUser);
+    const ssoSyncBtn = document.getElementById("ssoSyncBtn");
+    if (ssoSyncBtn) {
+      ssoSyncBtn.addEventListener("click", () => {
+        this.addSystemMessage("Sincronizando estado SSO con los subdominios...");
+        this.syncSessionFromCookies();
+      });
+    }
 
-    // Bind click events to tenant options
+    const loginForm = document.getElementById("ssoLoginForm");
+    if (loginForm) {
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = document.getElementById("sso-email").value.trim();
+        const password = document.getElementById("sso-password").value.trim();
+        
+        let matchedRole = null;
+        for (const [role, profile] of Object.entries(this.ssoProfiles)) {
+          if (profile.email === email) {
+            matchedRole = role;
+            break;
+          }
+        }
+
+        if (matchedRole) {
+          const profile = this.ssoProfiles[matchedRole];
+          const mockToken = "sl_mock_session_token_" + Math.random().toString(36).substring(2);
+          this.login(profile, mockToken);
+        } else {
+          // Allow custom user
+          const customProfile = {
+            id: Math.floor(1000 + Math.random() * 9000),
+            name: email.split('@')[0].toUpperCase(),
+            email: email,
+            company_name: "Empresa Personal",
+            tenant_id: "sl_tenant_" + Math.floor(100000 + Math.random() * 900000),
+            plan: "free",
+            twofa_enabled: false
+          };
+          const mockToken = "sl_mock_session_token_" + Math.random().toString(36).substring(2);
+          this.login(customProfile, mockToken);
+        }
+      });
+    }
+
+    // Quick login buttons
+    document.querySelectorAll(".quick-login-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const role = e.currentTarget.dataset.role;
+        if (role && this.ssoProfiles[role]) {
+          const profile = this.ssoProfiles[role];
+          const mockToken = "sl_mock_session_token_123456";
+          this.login(profile, mockToken);
+        }
+      });
+    });
+
+    // Bind click events to tenant options in ecosystem view
     document.querySelectorAll(".tenant-option").forEach((option) => {
       option.addEventListener("click", (e) => {
         const role = e.currentTarget.dataset.role;
         if (role && this.ssoProfiles[role]) {
           const profile = this.ssoProfiles[role];
-          localStorage.setItem("senselab_session_user", JSON.stringify(profile));
-          
-          // Broadcast to other Senselab subdomains/tabs if open
-          try {
-            const syncChannel = new BroadcastChannel("senselab_session_sync");
-            syncChannel.postMessage({ type: "TENANT_CHANGE", user: profile });
-            syncChannel.close();
-          } catch (err) {}
-
-          // Update active option class
-          document.querySelectorAll(".tenant-option").forEach((opt) => opt.classList.remove("active"));
-          e.currentTarget.classList.add("active");
-
-          this.updateSSOUI(role, profile);
+          const mockToken = "sl_mock_session_token_123456";
+          this.login(profile, mockToken);
         }
       });
     });
-  },
 
-  updateSSOUI(role, profile) {
-    // Update local storage display
-    const nameEl = document.getElementById("sso-user-name");
-    const emailEl = document.getElementById("sso-user-email");
-    const tenantEl = document.getElementById("sso-user-tenant");
-    const planEl = document.getElementById("sso-user-plan");
-
-    if (nameEl) nameEl.textContent = profile.name;
-    if (emailEl) emailEl.textContent = profile.email;
-    if (tenantEl) tenantEl.textContent = profile.tenant_id;
-    
-    if (planEl) {
-      planEl.textContent = profile.plan.toUpperCase();
-      planEl.className = "tenant-badge " + (role === "admin" ? "admin" : (role === "pro" ? "pro" : "sandbox"));
+    // Set up BroadcastChannel
+    try {
+      this.authChannel = new BroadcastChannel('senselab_session_sync');
+      this.authChannel.onmessage = (event) => {
+        if (!event.data) return;
+        if (event.data.type === 'LOGOUT') {
+          this.logout(false);
+        } else if (event.data.type === 'LOGIN' || event.data.type === 'TENANT_CHANGE') {
+          const userObj = typeof event.data.user === 'string' ? JSON.parse(event.data.user) : event.data.user;
+          const userToken = event.data.token || "sl_mock_session_token_123456";
+          
+          this.state.user = userObj;
+          localStorage.setItem('senselab_session_token', userToken);
+          localStorage.setItem('senselab_session_user', JSON.stringify(userObj));
+          
+          this.updateAuthUI(userObj);
+          this.switchView('chat');
+        }
+      };
+    } catch (err) {
+      console.error("BroadcastChannel sync disabled", err);
     }
 
-    // Update active class on options
+    // Load initial session
+    this.syncSessionFromCookies();
+  },
+
+  syncSessionFromCookies() {
+    let token = this.getCookie('senselab_session_token');
+    let userStr = this.getCookie('senselab_session_user');
+
+    if (token && userStr) {
+      localStorage.setItem('senselab_session_token', token);
+      localStorage.setItem('senselab_session_user', userStr);
+    } else {
+      token = localStorage.getItem('senselab_session_token');
+      userStr = localStorage.getItem('senselab_session_user');
+      
+      if (token && userStr) {
+        this.setCookie('senselab_session_token', token);
+        this.setCookie('senselab_session_user', userStr);
+      }
+    }
+
+    if (token && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        this.state.user = user;
+        this.updateAuthUI(user);
+        
+        // Only redirect to chat if currently on profile page
+        if (this.state.currentView === 'profile') {
+          this.switchView('chat');
+        }
+      } catch (e) {
+        console.error("Error loading user session", e);
+        this.logout(false);
+      }
+    } else {
+      this.logout(false);
+    }
+  },
+
+  login(profile, token) {
+    this.state.user = profile;
+    localStorage.setItem('senselab_session_token', token);
+    localStorage.setItem('senselab_session_user', JSON.stringify(profile));
+    
+    // Set wildcard cookies for *.scisenselab.com SSO compatibility
+    this.setCookie('senselab_session_token', token);
+    this.setCookie('senselab_session_user', JSON.stringify(profile));
+    this.setCookie('senselab_tenant_id', profile.tenant_id);
+
+    // Broadcast to other tabs
+    try {
+      if (this.authChannel) {
+        this.authChannel.postMessage({
+          type: 'LOGIN',
+          token: token,
+          user: profile
+        });
+      }
+    } catch (e) {}
+
+    this.updateAuthUI(profile);
+    this.addSystemMessage(`✓ Acceso concedido como ${profile.name}. Bienvenido a Eón.`);
+    
+    // Switch to chat if login is triggered from profile page
+    if (this.state.currentView === 'profile') {
+      this.switchView('chat');
+    }
+  },
+
+  logout(postBroadcast = true) {
+    this.state.user = null;
+    localStorage.removeItem('senselab_session_token');
+    localStorage.removeItem('senselab_session_user');
+    
+    this.eraseCookie('senselab_session_token');
+    this.eraseCookie('senselab_session_user');
+    this.eraseCookie('senselab_tenant_id');
+
+    if (postBroadcast) {
+      try {
+        if (this.authChannel) {
+          this.authChannel.postMessage({ type: 'LOGOUT' });
+        }
+      } catch (e) {}
+    }
+
+    // Hide sidebar user card
+    const userCard = document.getElementById("sidebarUserCard");
+    if (userCard) userCard.style.display = "none";
+
+    // Toggle screens
+    const loginScreen = document.getElementById("ssoLoginScreen");
+    const profileScreen = document.getElementById("ssoProfileScreen");
+    if (loginScreen) loginScreen.style.display = "block";
+    if (profileScreen) profileScreen.style.display = "none";
+
+    // Lock navigation items visually
+    document.querySelectorAll(".nav-item").forEach(item => {
+      const view = item.dataset.view;
+      if (view !== 'profile' && view !== 'help') {
+        item.style.opacity = "0.5";
+      } else {
+        item.style.opacity = "1";
+      }
+    });
+
+    this.switchView('profile');
+  },
+
+  updateAuthUI(profile) {
+    // Show user card in sidebar
+    const userCard = document.getElementById("sidebarUserCard");
+    if (userCard) {
+      userCard.style.display = "flex";
+      document.getElementById("sidebarUserName").textContent = profile.name;
+      document.getElementById("sidebarUserPlan").textContent = `Plan ${profile.plan.toUpperCase()}`;
+    }
+
+    // Update profile view screen
+    const loginScreen = document.getElementById("ssoLoginScreen");
+    const profileScreen = document.getElementById("ssoProfileScreen");
+    if (loginScreen) loginScreen.style.display = "none";
+    if (profileScreen) {
+      profileScreen.style.display = "block";
+      
+      document.getElementById("profile-name").textContent = profile.name;
+      document.getElementById("profile-email").textContent = profile.email;
+      document.getElementById("profile-company").textContent = profile.company_name;
+      
+      const mfaEl = document.getElementById("profile-mfa");
+      if (mfaEl) {
+        mfaEl.textContent = profile.twofa_enabled ? "Activo" : "Inactivo";
+        mfaEl.className = "stat-value " + (profile.twofa_enabled ? "highlight" : "text-muted");
+      }
+      
+      const planBadge = document.getElementById("profile-plan-badge");
+      if (planBadge) {
+        planBadge.textContent = profile.plan.toUpperCase();
+        planBadge.className = "tenant-badge " + (profile.plan === 'business' ? 'admin' : (profile.plan === 'pro' ? 'pro' : 'sandbox'));
+      }
+      
+      const tenantBadge = document.getElementById("profile-tenant-badge");
+      if (tenantBadge) tenantBadge.textContent = profile.tenant_id;
+      
+      // Simulated token usage based on plan
+      let currentTokens = 1250;
+      let maxTokens = 5000;
+      if (profile.plan === 'business') {
+        currentTokens = 4528;
+        maxTokens = 50000;
+      } else if (profile.plan === 'pro') {
+        currentTokens = 8412;
+        maxTokens = 15000;
+      }
+      
+      const tokenUsageEl = document.getElementById("profile-token-usage-txt");
+      if (tokenUsageEl) tokenUsageEl.textContent = `${currentTokens.toLocaleString()} / ${maxTokens.toLocaleString()}`;
+      
+      const progressEl = document.getElementById("profile-token-progress");
+      if (progressEl) progressEl.style.width = `${(currentTokens / maxTokens * 100).toFixed(1)}%`;
+      
+      const cookieTokenEl = document.getElementById("profile-cookie-token");
+      if (cookieTokenEl) cookieTokenEl.textContent = this.getCookie('senselab_session_token') ? "Sincronizado" : "No Encontrado";
+    }
+
+    // Unlock navbar items
+    document.querySelectorAll(".nav-item").forEach(item => {
+      item.style.opacity = "1";
+    });
+
+    // Update ecosystem view UI
+    const ssoUserName = document.getElementById("sso-user-name");
+    const ssoUserEmail = document.getElementById("sso-user-email");
+    const ssoUserTenant = document.getElementById("sso-user-tenant");
+    const ssoUserPlan = document.getElementById("sso-user-plan");
+
+    if (ssoUserName) ssoUserName.textContent = profile.name;
+    if (ssoUserEmail) ssoUserEmail.textContent = profile.email;
+    if (ssoUserTenant) ssoUserTenant.textContent = profile.tenant_id;
+    if (ssoUserPlan) {
+      ssoUserPlan.textContent = profile.plan.toUpperCase();
+      ssoUserPlan.className = "tenant-badge " + (profile.plan === 'business' ? 'admin' : (profile.plan === 'pro' ? 'pro' : 'sandbox'));
+    }
+
+    let role = "admin";
+    if (profile.email === "cliente@senselab.com") role = "pro";
+    else if (profile.email === "dev@scisenselab.com") role = "sandbox";
+
     document.querySelectorAll(".tenant-option").forEach((opt) => {
       opt.classList.remove("active");
       if (opt.dataset.role === role) {
         opt.classList.add("active");
       }
     });
+  },
+
+  getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+    return null;
+  },
+
+  setCookie(name, value, days = 30) {
+    let expires = "";
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    const hostname = window.location.hostname;
+    let domain = "";
+    if (hostname.includes("scisenselab.com")) {
+      domain = "; domain=.scisenselab.com";
+    } else if (hostname.includes("scisenselab.local")) {
+      domain = "; domain=.scisenselab.local";
+    }
+    document.cookie = `${name}=${encodeURIComponent(value)}${expires}; path=/; Secure; SameSite=Lax${domain}`;
+  },
+
+  eraseCookie(name) {
+    const hostname = window.location.hostname;
+    let domain = "";
+    if (hostname.includes("scisenselab.com")) {
+      domain = "; domain=.scisenselab.com";
+    } else if (hostname.includes("scisenselab.local")) {
+      domain = "; domain=.scisenselab.local";
+    }
+    document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Secure; SameSite=Lax${domain}`;
   },
 };
 

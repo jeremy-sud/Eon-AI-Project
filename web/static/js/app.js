@@ -805,7 +805,7 @@ const App = {
       admin: {
         id: 1,
         name: "Ing. Jeremy Arias Solano",
-        email: "admin@scisenselab.com",
+        email: "admin@senselab.com",
         company_name: "Fundación SenselabCR S.A.",
         tenant_id: "sl_tenant_000001",
         plan: "business",
@@ -815,7 +815,7 @@ const App = {
         id: 3,
         name: "Lic. Andrea Vargas Castro",
         email: "cliente@senselab.com",
-        company_name: "Distribuidora del Norte",
+        company_name: "Cafetalera El Bosque",
         tenant_id: "sl_tenant_000003",
         plan: "pro",
         twofa_enabled: true
@@ -824,7 +824,7 @@ const App = {
         id: 4,
         name: "Tec. Carlos Mendoza Rojas",
         email: "dev@scisenselab.com",
-        company_name: "Mendoza Dev Studio",
+        company_name: "Distribuidora del Sur S.A.",
         tenant_id: "sl_tenant_000004",
         plan: "free",
         twofa_enabled: false
@@ -858,15 +858,18 @@ const App = {
         const password = document.getElementById("sso-password").value.trim();
         
         let matchedRole = null;
-        for (const [role, profile] of Object.entries(this.ssoProfiles)) {
-          if (profile.email === email) {
-            matchedRole = role;
-            break;
-          }
+        const cleanEmail = email.toLowerCase().trim();
+        
+        if (cleanEmail === 'admin@senselab.com' || cleanEmail === 'admin@scisenselab.com' || cleanEmail === 'jeremy@senselab.com' || cleanEmail === 'jeremy@scisenselab.com') {
+          matchedRole = 'admin';
+        } else if (cleanEmail === 'cliente@senselab.com' || cleanEmail === 'cliente@scisenselab.com') {
+          matchedRole = 'pro';
+        } else if (cleanEmail === 'dev@scisenselab.com' || cleanEmail === 'dev@senselab.com') {
+          matchedRole = 'sandbox';
         }
 
         if (matchedRole) {
-          const profile = this.ssoProfiles[matchedRole];
+          const profile = { ...this.ssoProfiles[matchedRole], email: cleanEmail };
           const mockToken = "sl_mock_session_token_" + Math.random().toString(36).substring(2);
           this.login(profile, mockToken);
         } else {
@@ -1123,8 +1126,9 @@ const App = {
     }
 
     let role = "admin";
-    if (profile.email === "cliente@senselab.com") role = "pro";
-    else if (profile.email === "dev@scisenselab.com") role = "sandbox";
+    const emailLower = (profile.email || "").toLowerCase();
+    if (emailLower.startsWith("cliente")) role = "pro";
+    else if (emailLower.startsWith("dev")) role = "sandbox";
 
     document.querySelectorAll(".tenant-option").forEach((opt) => {
       opt.classList.remove("active");

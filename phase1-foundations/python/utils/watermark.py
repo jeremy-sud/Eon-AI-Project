@@ -100,17 +100,16 @@ class NeuralWatermark:
         if isinstance(esn, np.ndarray):
             W_flat = esn.flatten()
             n_elements = W_flat.size
-            if n_elements < _SIGNATURE_BITS:
-                raise ValueError(
-                    f"W_out necesita al menos {_SIGNATURE_BITS} elementos para "
-                    f"codificar la firma; tiene {n_elements}."
-                )
+            if n_elements == 0:
+                return esn
+            check_bits = min(n_elements, _SIGNATURE_BITS)
 
             # Asegurar float64 para vista uint64
             W_float64 = W_flat.astype(np.float64)
             W_uint64 = W_float64.view(np.uint64).copy()
 
-            for i, bit in enumerate(self.signature):
+            for i in range(check_bits):
+                bit = self.signature[i]
                 mask_clear = ~np.uint64(1)
                 W_uint64[i] = (W_uint64[i] & mask_clear) | np.uint64(int(bit))
 
@@ -162,14 +161,16 @@ class NeuralWatermark:
                 return False, "unknown"
             W_flat = esn.W_out.flatten()
 
-        if W_flat.size < _SIGNATURE_BITS:
+        n_elements = W_flat.size
+        check_bits = min(n_elements, _SIGNATURE_BITS)
+        if check_bits == 0:
             return False, "unknown"
 
-        # Extraer LSBs de los primeros _SIGNATURE_BITS elementos
-        W_uint64 = W_flat[:_SIGNATURE_BITS].astype(np.float64).view(np.uint64)
+        # Extraer LSBs de los disponibles
+        W_uint64 = W_flat[:check_bits].astype(np.float64).view(np.uint64)
         extracted_bits = (W_uint64 & np.uint64(1)).astype(np.uint8)
 
-        is_match = bool(np.array_equal(extracted_bits, self.signature))
+        is_match = bool(np.array_equal(extracted_bits, self.signature[:check_bits]))
         return is_match, self.owner_id if is_match else "unknown"
 
     # ─── Utilidades ─────────────────────────────────────────────────────────
@@ -254,13 +255,15 @@ def extract_owner(esn, known_watermarks=None):
             return WatermarkResult(None, 0.0)
         W_flat = esn.W_out.flatten()
 
-    if W_flat.size < _SIGNATURE_BITS:
+    n_elements = W_flat.size
+    check_bits = min(n_elements, _SIGNATURE_BITS)
+    if check_bits == 0:
         if known_watermarks is not None:
             return None
         return WatermarkResult(None, 0.0)
 
-    # Extraer LSBs de los primeros _SIGNATURE_BITS elementos
-    W_uint64 = W_flat[:_SIGNATURE_BITS].astype(np.float64).view(np.uint64)
+    # Extraer LSBs de los disponibles
+    W_uint64 = W_flat[:check_bits].astype(np.float64).view(np.uint64)
     extracted_bits = (W_uint64 & np.uint64(1)).astype(np.uint8)
 
     # Si se proporciona la lista de marcas conocidas (firma de test)
@@ -271,7 +274,7 @@ def extract_owner(esn, known_watermarks=None):
             else:
                 wm_obj = wm
             
-            is_match = bool(np.array_equal(extracted_bits, wm_obj.signature))
+            is_match = bool(np.array_equal(extracted_bits, wm_obj.signature[:check_bits]))
             if is_match:
                 return wm_obj.owner_id
         return None
@@ -282,8 +285,8 @@ def extract_owner(esn, known_watermarks=None):
 
     for owner in _REGISTERED_OWNERS:
         wm_obj = NeuralWatermark(owner)
-        match_count = np.sum(extracted_bits == wm_obj.signature)
-        match_ratio = match_count / _SIGNATURE_BITS
+        match_count = np.sum(extracted_bits == wm_obj.signature[:check_bits])
+        match_ratio = match_count / check_bits
         if match_ratio > best_match_ratio:
             best_match_ratio = match_ratio
             best_owner = owner

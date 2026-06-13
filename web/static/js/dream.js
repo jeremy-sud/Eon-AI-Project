@@ -17,7 +17,7 @@ let dreamLoopId = null;
 // Initialize Eón Core for Dream (Client-side simulation)
 // In a real scenario, this would ideally sync with backend,
 // but for 'Dream' visualizer we keep it responsive locally.
-const dreamAeon = new Aeon({
+const dreamAeon = new AeonCore({
   reservoirSize: 100,
   inputSize: 1,
   outputSize: 1,

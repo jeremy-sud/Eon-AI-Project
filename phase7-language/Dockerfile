@@ -1,5 +1,5 @@
 # TinyLM v2 Dockerfile
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 

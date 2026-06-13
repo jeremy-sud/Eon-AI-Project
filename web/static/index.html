@@ -4,8 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Eón - Emerging Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Orbitron:wght@400;700;900&display=swap"
       rel="stylesheet"
     />
     <!-- Load FontAwesome for icons -->
@@ -16,11 +18,20 @@
     <link rel="stylesheet" href="static/css/style.css" />
   </head>
   <body>
+    <!-- Aurora Background Blobs -->
+    <div class="aurora-container">
+      <div class="aurora-blob aurora-1 animate-aurora-1"></div>
+      <div class="aurora-blob aurora-2 animate-aurora-2"></div>
+      <div class="aurora-blob aurora-3 animate-aurora-3"></div>
+      <div class="aurora-blob aurora-4 animate-aurora-4"></div>
+      <div class="aurora-overlay"></div>
+    </div>
+
     <!-- Sidebar Navigation -->
     <nav class="sidebar">
       <div class="logo">
-        <i class="fa-solid fa-circle-nodes"></i>
-        EÓN
+        <i class="fa-solid fa-circle-nodes text-accent"></i>
+        <span>Eón<span class="logo-by">by Sense<span>lab</span><span class="logo-dot">.</span></span></span>
       </div>
 
       <div class="nav-item active" data-view="chat">
@@ -317,7 +328,7 @@
       </div>
 
         <footer class="app-footer">
-            <a href="https://senselab.dev" target="_blank">SenseLab S.A.</a>
+            <a href="https://scisenselab.com" target="_blank">SciSenselab.com</a>
         </footer>
 
     </main>

@@ -301,18 +301,17 @@ const App = {
     if (type === "ai" && showFeedback) {
       const feedbackDiv = document.createElement("div");
       feedbackDiv.className = "message-feedback";
-      feedbackDiv.style.cssText = "margin-top: 8px; display: flex; gap: 8px; opacity: 0.7;";
       
       const thumbsUp = document.createElement("button");
+      thumbsUp.className = "feedback-btn";
       thumbsUp.innerHTML = "👍";
       thumbsUp.title = "Buena respuesta";
-      thumbsUp.style.cssText = "background: none; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px;";
       thumbsUp.onclick = () => this.sendFeedback(text, true, feedbackDiv);
       
       const thumbsDown = document.createElement("button");
+      thumbsDown.className = "feedback-btn";
       thumbsDown.innerHTML = "👎";
       thumbsDown.title = "Respuesta mejorable";
-      thumbsDown.style.cssText = "background: none; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px;";
       thumbsDown.onclick = () => this.sendFeedback(text, false, feedbackDiv);
       
       feedbackDiv.appendChild(thumbsUp);

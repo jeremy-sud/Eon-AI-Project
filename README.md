@@ -2,7 +2,7 @@
 
 > **A.E.O.N.** - Arquitectura Emergente y Optimización Neuromórfica
 
-[![Versión](https://img.shields.io/badge/Versión-2.4.0-brightgreen)]()
+[![Versión](https://img.shields.io/badge/Versión-2.4.1-brightgreen)]()
 [![Fase](https://img.shields.io/badge/Fase-12%20Revelación-blueviolet)]()
 [![Tests](https://img.shields.io/badge/Tests-720%20passing-green)]()
 [![Cobertura](https://img.shields.io/badge/Cobertura-~92%25-yellowgreen)]()
@@ -182,8 +182,9 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 | **☯️ Protocolo I Ching**    | Comunicación via 64 Hexagramas universales  |
 | **📡 Sistema Medium**       | Hardware como antena de ruido cósmico       |
 
-### 🆕 Nuevo en v2.4.0
+### 🆕 Nuevo en v2.4.1
 
+- **Persistencia Circadiana (v2.4.1)**: Soporte completo en `AeonBirth` para guardar/cargar `use_circadian`, `dropout` y `learning_rate` en archivos de estado `.npz` y metadatos JSON.
 - **Ciclos Circadianos & Entrenamiento Adaptativo (v2.4.0)**: Modulación dinámica de noise y learning rate en fit() y dropout basado en energía.
 - **Leyenda del Chat & Enlaces Open Source (v2.3.0)**: Banner de disclaimer responsivo y enlaces al código oficial en GitHub.
 - **Homeostasis & Watermark Neural (v2.3.0)**: Sincronización robusta de pesos de 1-bit mediante verificación lógica de firmas de hash.
@@ -191,7 +192,7 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 - **Chat Multi-Nodo (v2.0.0)**: Sistema colaborativo con nodos especializados (Intent, Response, Coherence, Sentiment, Context).
 - **Detector de Anomalías (v2.0.0)**: Detección streaming con severidades (LOW, MEDIUM, HIGH, CRITICAL) y callbacks.
 - **Oráculo I-Ching Neural (v2.0.0)**: 64 hexagramas, casting yarrow stalk, adivinación de secuencias.
-- **720 Tests (v2.4.0)**: Cobertura completa de todos los módulos (cobertura ~92%).
+- **720 Tests (v2.4.1)**: Cobertura completa de todos los módulos (cobertura ~92%).
 
 ## 📊 Comparativa
 

@@ -19,6 +19,7 @@ const App = {
     this.loadStats();
     this.initSSO(); // Real SSO initialization & cookie sync
     this.addSystemMessage("Eón está activo. ¿En qué puedo ayudarte?");
+    this._isProcessing = false;
   },
 
   bindEvents() {
@@ -90,12 +91,40 @@ const App = {
 
     // Chat
     const chatInput = document.getElementById("chatInput");
+    const charCounter = document.getElementById("charCounter");
+
     chatInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         this.sendMessage();
       }
     });
+
+    // Auto-resize textarea
+    chatInput.addEventListener("input", () => {
+      chatInput.style.height = "auto";
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 150) + "px";
+
+      // Char counter
+      const len = chatInput.value.length;
+      if (charCounter) {
+        charCounter.textContent = `${len} / 2000`;
+        charCounter.className = "char-counter" + (len > 0 ? " visible" : "") + (len > 1800 ? " danger" : len > 1500 ? " warn" : "");
+      }
+    });
+
+    // Scroll-to-bottom button
+    const chatContainer = document.getElementById("chatContainer");
+    const scrollBtn = document.getElementById("scrollToBottomBtn");
+    if (chatContainer && scrollBtn) {
+      chatContainer.addEventListener("scroll", () => {
+        const isNearBottom = chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight < 80;
+        scrollBtn.style.display = isNearBottom ? "none" : "flex";
+      });
+      scrollBtn.addEventListener("click", () => {
+        chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: "smooth" });
+      });
+    }
 
     document
       .getElementById("sendBtn")
@@ -274,14 +303,20 @@ const App = {
   },
 
   async checkStatus() {
+    const dot = document.getElementById("connDot");
+    const label = document.getElementById("connLabel");
     try {
       const res = await fetch(`${this.API_BASE}/api/status`);
       const data = await res.json();
       if (data.success) {
         this.updateStatusUI(data.status);
+        if (dot) { dot.className = "conn-dot online"; }
+        if (label) label.textContent = "Backend activo";
       }
     } catch (e) {
       console.error("Status check failed", e);
+      if (dot) { dot.className = "conn-dot offline"; }
+      if (label) label.textContent = "Sin conexión";
     }
   },
 
@@ -298,6 +333,7 @@ const App = {
   },
 
   sendMessage() {
+    if (this._isProcessing) return;
     const input = document.getElementById("chatInput");
     const text = input.value.trim();
     if (!text) return;
@@ -305,6 +341,11 @@ const App = {
     // Add user message
     this.addMessage(text, "user");
     input.value = "";
+    input.style.height = "auto";
+
+    // Reset char counter
+    const charCounter = document.getElementById("charCounter");
+    if (charCounter) charCounter.className = "char-counter";
 
     // Process logic
     this.processMessage(text);
@@ -313,7 +354,6 @@ const App = {
   async processMessage(text) {
     // Detectar si es una solicitud de imagen
     if (this.detectImageRequest(text)) {
-      // Extraer el tema de la imagen del texto
       const prompt = text.replace(/^(crea|genera|dibuja|haz|dame|quiero)\s*(una?\s*)?(imagen|foto|dibujo|arte|ilustraci[oó]n)?\s*(de\s*)?/i, '').trim() || text;
       await this.generateImage(prompt);
       return;
@@ -322,8 +362,14 @@ const App = {
     // Guardar mensaje del usuario para feedback
     this._lastUserMessage = text;
 
+    // Disable send & show typing indicator
+    this._isProcessing = true;
+    const sendBtn = document.getElementById("sendBtn");
+    const typingIndicator = document.getElementById("typingIndicator");
+    if (sendBtn) sendBtn.disabled = true;
+    if (typingIndicator) typingIndicator.style.display = "flex";
+
     try {
-      // Usar el endpoint de chat para conversación
       const res = await fetch(`${this.API_BASE}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -333,24 +379,29 @@ const App = {
 
       if (data.success) {
         setTimeout(() => {
-          this.addMessage(data.reply, "ai", true); // true = mostrar feedback
-          
-          // Actualizar indicadores de aprendizaje si están visibles
+          if (typingIndicator) typingIndicator.style.display = "none";
+          this.addMessage(data.reply, "ai", true);
+
           if (data.learned) {
             this.loadLearningStats();
           }
-        }, 300 + Math.random() * 500); // Delay natural
+        }, 300 + Math.random() * 500);
       } else {
+        if (typingIndicator) typingIndicator.style.display = "none";
         this.addMessage("Error procesando la solicitud.", "ai");
       }
     } catch (e) {
       console.error(e);
+      if (typingIndicator) typingIndicator.style.display = "none";
       this.addMessage("Error de conexión con el núcleo.", "ai");
+    } finally {
+      this._isProcessing = false;
+      if (sendBtn) sendBtn.disabled = false;
     }
   },
 
   addMessage(text, type, showFeedback = false) {
-    const container = document.querySelector(".chat-container");
+    const container = document.getElementById("chatContainer") || document.querySelector(".chat-container");
     const msgDiv = document.createElement("div");
     msgDiv.className = `message ${type}`;
 
@@ -361,8 +412,15 @@ const App = {
     const content = document.createElement("div");
     content.textContent = text;
 
+    // Timestamp
+    const timeEl = document.createElement("span");
+    timeEl.className = "message-time";
+    const now = new Date();
+    timeEl.textContent = now.toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
+
     msgDiv.appendChild(header);
     msgDiv.appendChild(content);
+    msgDiv.appendChild(timeEl);
 
     // Añadir botones de feedback para mensajes de Eón
     if (type === "ai" && showFeedback) {
@@ -387,7 +445,12 @@ const App = {
     }
 
     container.appendChild(msgDiv);
-    container.scrollTop = container.scrollHeight;
+
+    // Auto-scroll only if already near bottom
+    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 120;
+    if (isNearBottom) {
+      container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+    }
   },
 
   async sendFeedback(botResponse, isPositive, feedbackDiv) {

@@ -105,15 +105,36 @@
         </button>
       </div>
 
-      <div class="sidebar-footer">v0.2.0 - Phase 3 Integration</div>
+      <!-- Connection Status -->
+      <div class="connection-status" id="connectionStatus">
+        <div class="conn-dot" id="connDot"></div>
+        <span id="connLabel">Conectando...</span>
+      </div>
+
+      <div class="sidebar-footer">v0.3.0 · Phase 3 · <span style="color:var(--color-sense-400);">Senselab</span></div>
     </nav>
 
     <!-- Main Content Area -->
     <main class="main-content">
       <!-- View: Chat -->
       <div id="chatView">
-        <div class="chat-container">
+        <!-- Scroll to bottom button -->
+        <button id="scrollToBottomBtn" class="scroll-to-bottom-btn" style="display:none;" title="Ir al final">
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+
+        <div class="chat-container" id="chatContainer">
           <!-- Messages will appear here -->
+        </div>
+
+        <!-- Typing indicator -->
+        <div class="typing-indicator" id="typingIndicator" style="display:none;">
+          <div class="typing-bubble">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
+          <span class="typing-label">Eón está pensando...</span>
         </div>
 
         <div class="input-area">
@@ -128,6 +149,7 @@
             <textarea
               id="chatInput"
               placeholder="Escribe un mensaje a Eón..."
+              maxlength="2000"
             ></textarea>
           </div>
 
@@ -135,6 +157,9 @@
             <i class="fa-solid fa-paper-plane"></i>
           </button>
         </div>
+
+        <!-- Char counter -->
+        <div class="char-counter" id="charCounter">0 / 2000</div>
       </div>
 
       <!-- View: Dream -->

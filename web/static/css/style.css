@@ -246,12 +246,52 @@ body {
 }
 
 .sidebar-footer {
-  margin-top: auto;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
   font-size: 0.75rem;
   color: var(--text-muted);
   font-family: var(--font-mono);
+}
+
+/* Connection Status */
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.conn-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.conn-dot.online {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  animation: pulse-conn 2.5s ease-in-out infinite;
+}
+
+.conn-dot.offline {
+  background: var(--danger);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+}
+
+@keyframes pulse-conn {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 /* Main Content Area */
@@ -274,6 +314,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
 }
 
 .chat-container {
@@ -404,6 +445,118 @@ textarea {
   box-shadow: 0 0 20px rgba(51, 124, 252, 0.35);
   transform: translateY(-1px);
   border-color: rgba(51, 124, 252, 0.5);
+}
+
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 2.5rem;
+  animation: fadeIn 0.25s ease;
+}
+
+.typing-bubble {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(51, 124, 252, 0.05);
+  border: 1px solid rgba(51, 124, 252, 0.14);
+  border-radius: 12px;
+  border-bottom-left-radius: 2px;
+  padding: 0.65rem 0.9rem;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-sense-400);
+  animation: typing-bounce 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
+
+.typing-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Scroll to Bottom Button */
+.scroll-to-bottom-btn {
+  position: absolute;
+  bottom: 110px;
+  right: 1.5rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(15, 22, 41, 0.9);
+  border: 1px solid var(--border);
+  color: var(--color-sense-400);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.25s ease;
+  z-index: 15;
+  animation: fadeIn 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.scroll-to-bottom-btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--color-sense-400);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(51, 124, 252, 0.2);
+}
+
+/* Character Counter */
+.char-counter {
+  text-align: right;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  padding: 0.25rem 2.5rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.char-counter.visible {
+  opacity: 1;
+}
+
+.char-counter.warn {
+  color: var(--warning);
+}
+
+.char-counter.danger {
+  color: var(--danger);
+}
+
+/* Message Timestamps */
+.message-time {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  display: block;
+  opacity: 0.6;
+  font-family: var(--font-mono);
 }
 
 /* Dream View */
@@ -1404,10 +1557,17 @@ small {
     gap: 1rem;
   }
 
-  .timeline-header {
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 0.5rem;
+  .typing-indicator {
+    padding: 0.4rem 1.2rem;
+  }
+
+  .scroll-to-bottom-btn {
+    bottom: 130px;
+    right: 1rem;
+  }
+
+  .char-counter {
+    padding: 0.2rem 1.2rem;
   }
 
   /* Responsive range inputs */

@@ -805,7 +805,7 @@ const App = {
       admin: {
         id: 1,
         name: "Ing. Jeremy Arias Solano",
-        email: "admin@senselab.com",
+        email: "admin@scisenselab.com",
         company_name: "Fundación SenselabCR S.A.",
         tenant_id: "sl_tenant_000001",
         plan: "business",
@@ -860,11 +860,11 @@ const App = {
         let matchedRole = null;
         const cleanEmail = email.toLowerCase().trim();
         
-        if (cleanEmail === 'admin@senselab.com' || cleanEmail === 'admin@scisenselab.com' || cleanEmail === 'jeremy@senselab.com' || cleanEmail === 'jeremy@scisenselab.com') {
+        if (cleanEmail === 'admin@scisenselab.com' || cleanEmail === 'jeremy@scisenselab.com') {
           matchedRole = 'admin';
         } else if (cleanEmail === 'cliente@senselab.com' || cleanEmail === 'cliente@scisenselab.com') {
           matchedRole = 'pro';
-        } else if (cleanEmail === 'dev@scisenselab.com' || cleanEmail === 'dev@senselab.com') {
+        } else if (cleanEmail === 'dev@scisenselab.com') {
           matchedRole = 'sandbox';
         }
 

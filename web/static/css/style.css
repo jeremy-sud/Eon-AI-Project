@@ -475,11 +475,12 @@ textarea {
   box-shadow: 0 0 15px rgba(51, 124, 252, 0.3);
 }
 
-/* Status & Config View */
-#statusView {
+/* Status & Config, Ecosystem, Genesis, and Help Views */
+#statusView, #ecosystemView, #genesisView, #helpView {
   padding: 3rem;
   overflow-y: auto;
-  display: none;
+  height: 100%;
+  box-sizing: border-box;
   animation: fadeIn 0.35s ease;
 }
 

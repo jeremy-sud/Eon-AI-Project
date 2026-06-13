@@ -2,6 +2,12 @@
 
 Todos los cambios notables del Proyecto Eón.
 
+## [2.4.1] - 2026-06-13
+
+### 🌙 Persistencia del Ciclo de Vida en AeonBirth
+- **Soporte de Parámetros Circadianos**: Se modificó `AeonBirth` (`__init__`, `save` y `load`) para propagar, serializar y restaurar de forma persistente las propiedades `use_circadian`, `dropout` y `learning_rate` en archivos de estado `.npz` y metadatos JSON.
+- **Suite de Pruebas**: Añadido test unitario `test_aeon_birth_circadian_persistence`, logrando un total acumulado de **720 tests exitosos** en la suite global.
+
 ## [2.4.0] - 2026-06-13
 
 ### 🌙 Ciclos Circadianos & Entrenamiento Adaptativo (ESN)

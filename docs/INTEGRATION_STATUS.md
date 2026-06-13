@@ -195,7 +195,7 @@ response = requests.post("http://localhost:5000/api/anomaly/detect", json={"data
 | Métrica | v2.1.0 | v2.2.0 | v2.3.0 | v2.4.0 |
 |---------|--------|--------|--------|--------|
 | Integraciones Completadas | 0 | 2 | 3 | **5** |
-| Tests Totales | 500+ | 527 | 714 | **719** |
+| Tests Totales | 500+ | 527 | 714 | **720** |
 | Cobertura de Integración | 0% | ~15% | ~25% | **~35%** |
 | Componentes con Atención | 1 | 2 | 2 | **2** |
 | Algoritmos Genéticos Mejorados | ❌ | ✅ | ✅ | **✅** |

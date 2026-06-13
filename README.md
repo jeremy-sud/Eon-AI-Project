@@ -4,7 +4,7 @@
 
 [![Versión](https://img.shields.io/badge/Versión-2.4.0-brightgreen)]()
 [![Fase](https://img.shields.io/badge/Fase-12%20Revelación-blueviolet)]()
-[![Tests](https://img.shields.io/badge/Tests-719%20passing-green)]()
+[![Tests](https://img.shields.io/badge/Tests-720%20passing-green)]()
 [![Cobertura](https://img.shields.io/badge/Cobertura-~92%25-yellowgreen)]()
 [![Docker](https://img.shields.io/badge/Docker-Full%20Stack-blue)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)]()
@@ -191,7 +191,7 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 - **Chat Multi-Nodo (v2.0.0)**: Sistema colaborativo con nodos especializados (Intent, Response, Coherence, Sentiment, Context).
 - **Detector de Anomalías (v2.0.0)**: Detección streaming con severidades (LOW, MEDIUM, HIGH, CRITICAL) y callbacks.
 - **Oráculo I-Ching Neural (v2.0.0)**: 64 hexagramas, casting yarrow stalk, adivinación de secuencias.
-- **719 Tests (v2.4.0)**: Cobertura completa de todos los módulos (cobertura ~92%).
+- **720 Tests (v2.4.0)**: Cobertura completa de todos los módulos (cobertura ~92%).
 
 ## 📊 Comparativa
 
@@ -638,8 +638,8 @@ cd "Eón Project AI/phase1-foundations/python"
 pip install pytest pytest-asyncio
 python -m pytest tests/ -v
 
-# Resultado: 719 tests passing
-# - ESN Core & Foundations: 532 tests (Core ESN, Plasticidad, Cuantización, Anomaly Detector, RNG, I-Ching Oracle, etc.)
+# Resultado: 720 tests passing
+# - ESN Core & Foundations: 533 tests (Core ESN, Plasticidad, Cuantización, Anomaly Detector, RNG, I-Ching Oracle, etc.)
 # - Mente Colectiva (Collective Mind): 63 tests (Conexiones distribuidas, Quantum Sync, Marca de agua neural)
 # - Modelo de Lenguaje (TinyLMv2 & Attention): 54 tests
 # - Web & Dashboard: 70 tests
@@ -667,7 +667,7 @@ python -m pytest tests/ -v
   - [x] Chat Multi-Nodo Colaborativo
   - [x] Detector de Anomalías Streaming
   - [x] Oráculo I-Ching Neural
-    - [x] 719 Tests (cobertura ~92%)
+    - [x] 720 Tests (cobertura ~92%)
 - [ ] Fase 13: Publicación y Comunidad
 
 ## 📈 Benchmarks de Energía

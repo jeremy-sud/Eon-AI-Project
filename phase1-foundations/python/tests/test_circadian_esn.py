@@ -171,3 +171,29 @@ class TestCircadianESNIntegration:
         assert np.all(np.isfinite(predictions))
         mse = np.mean((predictions - y_test)**2)
         assert mse < 0.5
+
+    def test_aeon_birth_circadian_persistence(self, tmp_path):
+        """Verifica que los parámetros circadianos se guarden y restauren en AeonBirth."""
+        from core.aeon_birth import AeonBirth
+        
+        # Crear una instancia con parámetros circadianos activos
+        eon = AeonBirth(
+            n_reservoir=50,
+            name="Eon-Test-Circadian",
+            data_dir=str(tmp_path),
+            use_circadian=True,
+            dropout=0.25,
+            learning_rate=0.03
+        )
+        assert eon.esn.use_circadian is True
+        assert eon.esn.dropout == 0.25
+        assert eon.esn.base_learning_rate == 0.03
+        
+        # Guardar se llama automáticamente en __init__, pero lo llamamos explícitamente para estar seguros
+        eon.save()
+        
+        # Cargar en una nueva instancia
+        loaded = AeonBirth.load("Eon-Test-Circadian", str(tmp_path))
+        assert loaded.esn.use_circadian is True
+        assert loaded.esn.dropout == 0.25
+        assert loaded.esn.base_learning_rate == 0.03

@@ -45,7 +45,10 @@ class AeonBirth:
         data_dir: str = "data",
         sacred_seed: Optional[int] = None,
         auto_excavate: bool = False,
-        target_resonance: tuple = (0.95, 1.0)
+        target_resonance: tuple = (0.95, 1.0),
+        use_circadian: bool = False,
+        dropout: float = 0.0,
+        learning_rate: float = 0.01
     ):
         """
         Inicializa una instancia de Eón.
@@ -91,6 +94,9 @@ class AeonBirth:
         # Crear instancia de ESN con la semilla determinada
         self.esn = EchoStateNetwork(
             n_reservoir=n_reservoir,
+            use_circadian=use_circadian,
+            dropout=dropout,
+            learning_rate=learning_rate,
             random_state=seed
         )
         
@@ -209,6 +215,9 @@ class AeonBirth:
             'noise': np.array([self.esn.noise]),
             'leak_rate': np.array([getattr(self.esn, 'leak_rate', 1.0)]),  # Compatibilidad con ESN antiguos
             'birth_time': np.array([self.esn.birth_time]),
+            'use_circadian': np.array([1 if getattr(self.esn, 'use_circadian', False) else 0]),
+            'dropout': np.array([getattr(self.esn, 'dropout', 0.0)]),
+            'learning_rate': np.array([getattr(self.esn, 'base_learning_rate', 0.01)]),
         }
         
         # W_out puede ser None si no está entrenado
@@ -231,7 +240,10 @@ class AeonBirth:
             'sacred_seed': self._sacred_seed,
             'birth_hash': self.esn.birth_hash,
             'state_checksum': checksum,
-            'format_version': '2.0'  # Versión del formato de guardado
+            'format_version': '2.4',  # Versión del formato de guardado
+            'use_circadian': bool(getattr(self.esn, 'use_circadian', False)),
+            'dropout': float(getattr(self.esn, 'dropout', 0.0)),
+            'learning_rate': float(getattr(self.esn, 'base_learning_rate', 0.01))
         }
         
         # Añadir info de excavación si existe
@@ -330,6 +342,9 @@ class AeonBirth:
                 sparsity=float(data['sparsity'][0]),
                 noise=float(data['noise'][0]),
                 leak_rate=float(data['leak_rate'][0]),
+                use_circadian=bool(data['use_circadian'][0]) if 'use_circadian' in data else False,
+                dropout=float(data['dropout'][0]) if 'dropout' in data else 0.0,
+                learning_rate=float(data['learning_rate'][0]) if 'learning_rate' in data else 0.01,
                 random_state=instance._sacred_seed
             )
             

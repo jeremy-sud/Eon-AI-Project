@@ -260,8 +260,8 @@ weight_count: 2 bytes  # Number of weights
 
 ```bash
 pytest -v
-# 719 tests passing:
-# - ESN Core & Foundations: 532 tests (Core ESN, Plasticidad, Cuantización, Anomaly Detector, RNG, I-Ching Oracle, etc.)
+# 720 tests passing:
+# - ESN Core & Foundations: 533 tests (Core ESN, Plasticidad, Cuantización, Anomaly Detector, RNG, I-Ching Oracle, etc.)
 # - Mente Colectiva (Collective Mind): 63 tests (Conexiones distribuidas, Quantum Sync, Marca de agua neural)
 # - Modelo de Lenguaje (TinyLMv2 & Attention): 54 tests
 # - Web & Dashboard: 70 tests

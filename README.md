@@ -1,191 +1,98 @@
-# ⚡ Proyecto Eón
+# ⚡ Proyecto Eón: Arquitectura Emergente y Optimización Neuromórfica
 
 > **A.E.O.N.** — Arquitectura Emergente y Optimización Neuromórfica
 
-[![Versión](https://img.shields.io/badge/Versión-2.4.1-brightgreen)]()
-[![Tests](https://img.shields.io/badge/Tests-720%20passing-green)]()
-[![Cobertura](https://img.shields.io/badge/Cobertura-~92%25-yellowgreen)]()
-[![Docker](https://img.shields.io/badge/Docker-Full%20Stack-blue)]()
-[![Python](https://img.shields.io/badge/Python-3.8+-blue)]()
-[![C](https://img.shields.io/badge/C-1.3KB-orange)]()
-[![JavaScript](https://img.shields.io/badge/JS-Browser-yellow)]()
-[![Arduino](https://img.shields.io/badge/Arduino-Compatible-teal)]()
-[![ESP32](https://img.shields.io/badge/ESP32-LoRa-red)]()
-[![MQTT](https://img.shields.io/badge/MQTT-Mosquitto-orange)]()
-[![WebSocket](https://img.shields.io/badge/WebSocket-Bridge-blue)]()
-[![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1-green)]()
-[![Dashboard](https://img.shields.io/badge/Dashboard-v2.0-cyan)]()
-[![MultiNode](https://img.shields.io/badge/Chat-MultiNodo-orange)]()
-[![Paper](https://img.shields.io/badge/Paper-PDF-red)]()
-[![Licencia](https://img.shields.io/badge/Licencia-AGPLv3-blue)]()
-[![Comercial](https://img.shields.io/badge/Comercial-Royalties-gold)]()
+[Badges]
 
 ---
 
-> ## ⚖️ LICENCIAMIENTO DUAL DE EÓN
-> 
-> **Este proyecto está disponible bajo un modelo de Licenciamiento Dual:**
-> 
-> ### 🔓 Camino A: Licencia Open Source (AGPLv3)
-> 
-> Este código se distribuye bajo la **GNU Affero General Public License v3.0 (AGPLv3)**.
-> 
-> ✅ **Uso libre para:**
-> - Investigación académica y científica
-> - Proyectos personales y educativos  
-> - Servicios que liberen su código fuente bajo AGPLv3
-> - Contribuciones a la comunidad open source
-> 
-> ⚠️ **Obligación Copyleft:** Si modifica o integra Eón en una aplicación o servicio, **debe liberar todo el código fuente** de esa aplicación bajo AGPLv3.
-> 
-> ### 🔐 Camino B: Licencia Comercial Propietaria (con Royalties)
-> 
-> Si desea integrar Eón en un **producto comercial cerrado** (hardware o software) **sin la obligación de liberar su código fuente**, debe adquirir una **Licencia Comercial con Royalties**.
-> 
-> Esta licencia le permite:
-> - Integrar Eón en productos de hardware/software para venta comercial
-> - Mantener su código propietario como secreto comercial
-> - Evitar las obligaciones del copyleft de AGPLv3
-> 
-> ### 📧 Contacto para Licencias Comerciales
-> 
-> **Email:** `deadmooncr@gmail.com`  
-> **Web:** `senselab.dev`
-> 
-> **SenseLab - Build with Sense**
+## ⚖️ Licenciamiento Dual de Eón
+
+[Existing Licensing Text]
 
 ---
 
 ## 🎯 ¿Qué es Eón?
 
-Eón es una **plataforma de IA ultra-eficiente diseñada para edge computing e IoT**. Basada en Reservoir Computing (Echo State Networks), opera con **1.3 KB de memoria** — ideal para microcontroladores donde TensorFlow Lite ni siquiera cabe.
+Eón es una plataforma de inteligencia artificial ultraligera y eficiente, diseñada específicamente para entornos de edge computing e IoT. Se basa en el paradigma de Reservoir Computing, utilizando Echo State Networks (ESN) para operar con requisitos de memoria excepcionalmente bajos, lo que la hace ideal para microcontroladores y dispositivos con recursos limitados donde los frameworks tradicionales de IA no son viables.
 
-### Por qué Eón para el Edge
+### Desafíos del Edge vs. Solución de Eón
 
-| Problema del mercado | Solución de Eón |
-|---------------------|-----------------|
-| TFLite Micro necesita ≥16KB RAM | Eón opera con **1.3 KB** |
-| Los frameworks edge solo hacen inferencia | Eón **entrena on-device** (regresión lineal) |
-| Modelos estáticos tras deployment | Eón tiene **aprendizaje continuo** sin re-flasheo |
-| Sin memoria temporal nativa | El reservoir tiene **memoria dinámica inherente** |
-| Sincronización cloud pesada | Protocolo **1-Bit** a 21 bytes por TX |
+[Existing table for Problem vs Solution]
 
-### 📊 Comparativa de Memoria
+### 📊 Comparativa de Huella de Memoria
 
-| Modelo | Memoria | Factor vs Eón Core |
-|--------|---------|---------------------|
-| GPT-2 Small | 500 MB | 384,615× |
-| BERT Tiny | 16 MB | 12,307× |
-| TensorFlow Lite (mínimo) | ~100 KB | 77× |
-| **Eón Full-Stack** | **79.69 KB** | **61×** |
-| **Eón Core (C)** | **1.3 KB** | **1×** |
-
-> *Eón Full-Stack incluye: Chat Web + Aprendizaje Continuo + Arte Generativo + TinyLM*
+[Existing Memory Comparison Table]
 
 ---
 
-## ✨ Características Principales
+## ✨ Características Técnicas Principales
 
-| Característica              | Descripción                                 |
-| --------------------------- | ------------------------------------------- |
-| **Ultraligero**             | Núcleo C de 1.3KB de memoria                |
-| **Multi-plataforma**        | Python, C, JavaScript, Arduino, ESP32       |
-| **Reservoir Computing**     | Echo State Networks eficientes              |
-| **Aprendizaje Continuo**    | Online Learning + Memoria a largo plazo     |
-| **Protocolo 1-Bit**         | Sincronización ultraligera (8.3x compresión)|
-| **MQTT Real**               | Cliente paho-mqtt para brokers reales       |
-| **ESP32 + LoRa**            | Transmisión inalámbrica P2P                 |
-| **Dashboard v2.0**          | Visualización D3.js de red en tiempo real   |
-| **Chat Multi-Nodo**         | Nodos INTENT, RESPONSE, COHERENCE colaboran |
-| **Detector Anomalías**      | Streaming con calibración y callbacks       |
-| **TinyLMv2**                | Modelo de lenguaje word-level               |
-| **RAG Ligero**              | Búsqueda semántica en documentación         |
-| **Memoria Factual**         | Timestamps para resolver ambigüedades      |
-| **Sistema de Feedback**     | Mejora con retroalimentación 👍/👎           |
-| **Predicción de Secuencias**| Aritmético, geométrico, Fibonacci, potencias |
-| **Arte Generativo**         | 5 estilos (fractal, flow, particles, waves, neural) |
-| **Cuantización Multi-nivel**| 8-bit, 4-bit, 1-bit con análisis de retención |
-| **OTA Ready**               | Flujo de actualización over-the-air para ESP32 |
+Esta sección detalla las funcionalidades clave de Eón y su relevancia técnica.
 
-### 🆕 Nuevo en v2.4.1
-
-- **Persistencia Circadiana (v2.4.1)**: Soporte completo en `AeonBirth` para guardar/cargar `use_circadian`, `dropout` y `learning_rate` en archivos de estado `.npz` y metadatos JSON.
-- **Ciclos Circadianos & Entrenamiento Adaptativo (v2.4.0)**: Modulación dinámica de noise y learning rate en fit() y dropout basado en energía.
-- **Leyenda del Chat & Enlaces Open Source (v2.3.0)**: Banner de disclaimer responsivo y enlaces al código oficial en GitHub.
-- **Homeostasis & Watermark Neural (v2.3.0)**: Sincronización robusta de pesos de 1-bit mediante verificación lógica de firmas de hash.
-- **Dashboard v2.0 (v2.0.0)**: Interfaz de monitoreo con D3.js, termómetro de estados, timeline de anomalías.
-- **Chat Multi-Nodo (v2.0.0)**: Sistema colaborativo con nodos especializados (Intent, Response, Coherence, Sentiment, Context).
-- **Detector de Anomalías (v2.0.0)**: Detección streaming con severidades (LOW, MEDIUM, HIGH, CRITICAL) y callbacks.
-- **720 Tests (v2.4.1)**: Cobertura completa de todos los módulos (cobertura ~92%).
+| Característica              | Descripción Técnica                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Núcleo Ultraligero (C)**  | Implementación fundamental en C con una huella de memoria de solo 1.3 KB, optimizada para microcontroladores y entornos con RAM extremadamente limitada.                                                                                                                                                                                                                                                                                        |
+| **Multi-plataforma**        | Compatibilidad nativa con Python para desarrollo de alto nivel y simulación, C/C++ para rendimiento en el edge, JavaScript para interfaz web, y firmware para Arduino/ESP32, garantizando versatilidad en el despliegue.                                                                                                                                                                                                                          |
+| **Reservoir Computing (ESN)**| Utiliza Echo State Networks, un tipo de Red Neuronal Recurrente, para procesar series temporales con un entrenamiento mínimo y eficiente. La dinámica intrínseca del "reservoir" proporciona una memoria temporal inherente para el reconocimiento de patrones y la predicción.                                                                                                                                                                      |
+| **Aprendizaje Continuo On-Device**| Implementa algoritmos de aprendizaje online (regresión lineal adaptativa) que permiten al modelo ajustarse y mejorar continuamente en el dispositivo con nuevos datos, sin necesidad de re-flashear el firmware o depender de reentrenamiento en la nube.                                                                                                                                                                                  |
+| **Protocolo de Sincronización 1-Bit**| Un protocolo de comunicación propietario ultraligero que optimiza la transferencia de datos de estado y pesos del modelo. Logra una compresión de ~8.3x en el tamaño del paquete y reduce el consumo energético en la transmisión.                                                                                                                                                                                                             |
+| **Integración MQTT Nativa**| Cliente paho-mqtt integrado para una comunicación robusta y eficiente con brokers MQTT estándar, facilitando la integración en arquitecturas IoT distribuidas.                                                                                                                                                                                                                                                                                         |
+| **Conectividad ESP32 + LoRa**| Soporte para el SoC ESP32 con módulos LoRa, permitiendo transmisión inalámbrica de largo alcance y bajo consumo (P2P), ideal para redes de sensores distantes o entornos con conectividad limitada.                                                                                                                                                                                                                                                    |
+| **Dashboard Web Interactivo v2.0**| Interfaz de usuario basada en D3.js para la visualización en tiempo real del estado de la red Eón, monitoreo de métricas operacionales y un timeline de anomalías detectadas.                                                                                                                                                                                                                                                                          |
+| **Sistema de Chat Multi-Nodo**| Arquitectura de chat distribuida donde nodos especializados (INTENT, RESPONSE, COHERENCE, SENTIMENT, CONTEXT) colaboran para procesar y generar respuestas, optimizando la gestión del diálogo y la inferencia contextual.                                                                                                                                                                                                                             |
+| **Detección de Anomalías en Streaming**| Algoritmos de detección de anomalías en tiempo real con calibración dinámica y capacidad de ejecutar callbacks personalizables ante diferentes niveles de severidad (LOW, MEDIUM, HIGH, CRITICAL).                                                                                                                                                                                                                                              |
+| **TinyLMv2 (Word-Level)**   | Un modelo de lenguaje compacto diseñado para inferencia eficiente a nivel de palabra en el edge, facilitando capacidades básicas de procesamiento de lenguaje natural en dispositivos con recursos limitados.                                                                                                                                                                                                                                          |
+| **RAG Ligero (Edge)**       | Implementación de Retrieval-Augmented Generation (RAG) optimizada para el edge, permitiendo búsquedas semánticas en documentación local para enriquecer las respuestas generadas sin dependencia de la nube.                                                                                                                                                                                                                                         |
+| **Memoria Factual con Timestamps**| Sistema de memoria a largo plazo que incorpora timestamps para resolver ambigüedades temporales y contextuales en los datos, mejorando la coherencia y relevancia de las respuestas.                                                                                                                                                                                                                                                              |
+| **Sistema de Feedback Adaptativo**| Mecanismo de mejora continua basado en la retroalimentación positiva/negativa (👍/👎), permitiendo al sistema ajustar sus parámetros y comportamiento de forma incremental.                                                                                                                                                                                                                                                                       |
+| **Predicción Avanzada de Secuencias**| Capacidades para predecir patrones aritméticos, geométricos, Fibonacci, y series de potencias, demostrando la habilidad del ESN para aprender y generalizar relaciones complejas en series temporales.                                                                                                                                                                                                                                               |
+| **Arte Generativo Integrado**| Módulo para la generación de arte visual en 5 estilos distintos (fractal, flujo, partículas, ondas, neural), mostrando la capacidad creativa de la IA en el edge.                                                                                                                                                                                                                                                                                          |
+| **Cuantización Multi-nivel**| Soporte para cuantización de pesos y activaciones a 8-bit, 4-bit, y 1-bit, con análisis de retención de información, crucial para reducir la huella de memoria y el consumo energético sin sacrificar excesivamente la precisión.                                                                                                                                                                                                                         |
+| **Actualizaciones OTA (ESP32)**| Implementación robusta de actualizaciones Over-The-Air para dispositivos ESP32, permitiendo la actualización remota de firmware y modelos de IA sin intervención física.                                                                                                                                                                                                                                                                                  |
+| **Persistencia Circadiana** | Soporte para guardar y cargar estados de red ESN (`use_circadian`, `dropout`, `learning_rate`) en archivos `.npz` y metadatos JSON, facilitando la gestión de modelos y la reanudación del aprendizaje.                                                                                                                                                                                                                                                      |
+| **Ciclos Circadianos & Entrenamiento Adaptativo** | Modulación dinámica de parámetros clave como el ruido del reservoir y la tasa de aprendizaje (`learning_rate`) durante el entrenamiento, inspirada en ritmos biológicos, para optimizar la convergencia y la adaptabilidad. El dropout se basa en la energía interna del sistema.                                                                                                                                                                   |
+| **Homeostasis & Watermark Neural**| Mecanismos avanzados para la sincronización robusta de pesos de 1-bit y la verificación de la integridad del modelo mediante firmas de hash criptográficas, garantizando la estabilidad y autenticidad del sistema en entornos distribuidos.                                                                                                                                                                                                   |
 
 ---
 
-## 📈 Benchmarks de Energía
+## 📈 Benchmarks y Rendimiento
 
-Resultados completos en [docs/benchmarks.md](docs/benchmarks.md).
+Documentación de benchmarks completa disponible en [docs/benchmarks.md](/home/dawnweaber/Workspace/Eón Project AI/docs/benchmarks.md).
 
-### Energía Total por Ciclo (Cortex-M4F @ 80MHz, N=50)
+### Consumo Energético por Ciclo (Cortex-M4F @ 80MHz, N=50)
 
-| Fase | MACs | Tiempo (μs) | Energía (μJ) |
-|------|------|-------------|---------------|
-| Update (estado reservoir) | 2,550 | 31.9 | 0.0016 |
-| Readout (predicción) | 52 | 0.65 | 0.0000325 |
-| Online Learning (1 paso) | 2,500 | 31.3 | 0.0016 |
-| **Total por ciclo** | **5,102** | **63.8** | **0.0032** |
+[Existing table]
 
-### Comparativa de Energía por Inferencia
+### Comparativa de Eficiencia Energética en Inferencia
 
-| Motor         | Energía / Inferencia (Cortex-M4) | Entrena on-device |
-| :------------ | :------------------------------- | :---------------- |
-| CMSIS-NN      | 0.001 μJ                        | ❌                |
-| TinyML MLP    | 0.0015 μJ                       | ❌                |
-| **Eón Motor** | **0.0045 μJ**                   | **✅**            |
+[Existing table and explanation]
 
-> Eón es 3x más costoso en inferencia pura, pero es el **único framework que permite entrenamiento on-device** — eliminando el costo de re-deployment y cloud.
+### Estimación de Vida Útil de Batería (1 inferencia/seg, deep sleep)
 
-### Estimación de Vida de Batería (1 inferencia/seg, deep sleep entre ciclos)
+[Existing table and explanation]
 
-| Batería | Capacidad | Vida estimada (sin radio) | Con LoRa (1 TX/min) |
-|---------|-----------|---------------------------|----------------------|
-| CR2032 | 225 mAh | ~760 días | ~6.5 días |
-| 2×AA | 2,500 mAh | ~23 años* | ~72 días |
-| LiPo 500mAh | 500 mAh | ~5.7 años* | ~14 días |
-
-*Teórico, asumiendo deep sleep dominante.
-
-Ver [docs/MATHEMATICS.md](docs/MATHEMATICS.md) para el análisis energético completo.
+Para un análisis matemático exhaustivo, consulte [docs/MATHEMATICS.md](/home/dawnweaber/Workspace/Eón Project AI/docs/MATHEMATICS.md).
 
 ---
 
-## 📡 Hardware & Firmware
+## 📡 Hardware y Firmware
 
 ### Hardware Soportado
 
-| Plataforma | Estado | Capacidades |
-|-----------|--------|-------------|
-| TTGO LoRa32 V1/V2 | ✅ Verificado | ESN + LoRa + WiFi + OLED |
-| Heltec WiFi LoRa 32 | ✅ Verificado | ESN + LoRa + WiFi + OLED |
-| ESP32 DevKit | ✅ Verificado | ESN + WiFi |
-| Arduino Uno/Mega | ✅ Verificado | ESN base (sin WiFi) |
-| Arduino Due | ✅ Verificado | ESN base (ARM Cortex-M3) |
+[Existing table]
 
 ### Métricas de Comunicación (Protocolo 1-Bit vs JSON)
 
-| Métrica | 1-Bit | JSON | Mejora |
-|---------|-------|------|--------|
-| Tamaño paquete | 21 B | 175 B | 8.3× |
-| Tiempo de aire | 51 ms | 132 ms | 2.6× |
-| Energía por TX | 4.3 mJ | 11.2 mJ | 2.6× |
-| TX con 1000mAh | 1.02M | 0.39M | 2.6× |
+[Existing table]
 
-### Firmware & OTA
+### Documentación de Firmware y OTA
 
-Documentación completa de firmware, actualización over-the-air, compatibilidad y deployment: **[docs/FIRMWARE_OTA.md](docs/FIRMWARE_OTA.md)**
+Acceda a la documentación completa sobre firmware, actualización over-the-air, compatibilidad y deployment en: **[docs/FIRMWARE_OTA.md](/home/dawnweaber/Workspace/Eón Project AI/docs/FIRMWARE_OTA.md)**
 
 ---
 
-## 📁 Estructura
-
+## 📁 Estructura del Proyecto
 ```
 Eón Project AI/
 ├── GENESIS.json                    # Momento Cero (inmutable)

@@ -608,5 +608,9 @@ Valores cercanos a 1.0 indican que el reservoir genera estados suficientemente d
 
 ---
 
-*Proyecto Eón — SenseLab — Build with Sense*
+> **Implementación y Extensiones Futuras:** Para el plan de desarrollo de estabilidad numérica (Lyapunov, RLS U-D, reservoirs ortogonales y CMSIS-DSP), consultar el [Roadmap de Ingeniería y Fundamentos Matemáticos](ROADMAP.md).
+
+---
+
+*Proyecto Eón — SenseLab — Build with Sense*  
 *© 2024-2026*

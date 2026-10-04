@@ -539,6 +539,48 @@ int aeon_prune(aeon_core_t *core, float threshold) {
   return pruned_count;
 }
 
+bool aeon_check_stability(const aeon_core_t *core, uint8_t max_saturation_pct) {
+  if (core == NULL)
+    return false;
+
+  int saturated_count = 0;
+#if AEON_USE_FIXED_POINT
+  /* En Q8.8, 1.0 = 256. Umbral de saturacion: 254 (0xFE) */
+  const aeon_state_t sat_thresh = 254;
+#else
+  const aeon_state_t sat_thresh = 0.995f;
+#endif
+
+  for (int i = 0; i < AEON_RESERVOIR_SIZE; i++) {
+    aeon_state_t val = core->state[i];
+#if AEON_USE_FIXED_POINT
+    if (abs(val) >= sat_thresh) {
+      saturated_count++;
+    }
+#else
+    if (fabs(val) >= sat_thresh) {
+      saturated_count++;
+    }
+#endif
+  }
+
+  uint8_t current_pct = (uint8_t)((saturated_count * 100) / AEON_RESERVOIR_SIZE);
+  return (current_pct <= max_saturation_pct);
+}
+
+void aeon_stabilize_state(aeon_core_t *core, int16_t damping_factor_q8) {
+  if (core == NULL)
+    return;
+
+  for (int i = 0; i < AEON_RESERVOIR_SIZE; i++) {
+#if AEON_USE_FIXED_POINT
+    core->state[i] = ((int32_t)core->state[i] * damping_factor_q8) >> AEON_SCALE_BITS;
+#else
+    core->state[i] = core->state[i] * ((float)damping_factor_q8 / 256.0f);
+#endif
+  }
+}
+
 /* ============================================================
  * UTILIDADES
  * ============================================================ */

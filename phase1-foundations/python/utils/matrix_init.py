@@ -132,6 +132,53 @@ def create_reservoir_matrix(
     return W
 
 
+def create_orthogonal_reservoir(
+    size: int,
+    spectral_radius: float = 0.9,
+    rng: Optional[np.random.Generator] = None,
+    method: str = 'cayley'
+) -> np.ndarray:
+    """
+    Crea una matriz de reservoir ortogonal escalada al radio espectral deseado.
+    
+    Usa la transformada de Cayley sobre una matriz antisimétrica A = -A^T:
+        W_orth = (I - A) @ (I + A)^{-1}
+    Donde W_orth es estrictamente ortogonal (W_orth @ W_orth.T = I) y todos sus
+    autovalores se sitúan exactamente sobre el círculo unitario (|λ_i| = 1).
+    
+    Al escalar W = spectral_radius * W_orth, absolutamente todos los modos
+    dinámicos decaen uniformemente como rho^t, eliminando modos resonantes espurios
+    y maximizando la capacidad de memoria lineal (MC).
+    
+    Args:
+        size: Dimensión de la matriz cuadrada (size x size)
+        spectral_radius: Radio espectral objetivo (rho)
+        rng: Generador aleatorio NumPy
+        method: 'cayley' (transformada analítica de Cayley) o 'qr' (vía descomposición QR)
+        
+    Returns:
+        Matriz ortogonal escalada (size x size)
+    """
+    if rng is None:
+        rng = np.random.default_rng()
+        
+    if method == 'qr':
+        H = rng.standard_normal((size, size))
+        Q, R = np.linalg.qr(H)
+        d = np.diagonal(R)
+        ph = d / np.abs(d)
+        W_orth = Q * ph
+    else:
+        # Método Cayley (determinista, analítico y simétrico)
+        M = rng.standard_normal((size, size))
+        A = 0.5 * (M - M.T)  # Matriz antisimétrica pura: A^T = -A
+        I = np.eye(size)
+        # W_orth = (I - A)(I + A)^(-1)
+        W_orth = np.linalg.solve(I + A, I - A)
+        
+    return spectral_radius * W_orth
+
+
 def validate_esn_parameters(
     n_inputs: int,
     n_reservoir: int,

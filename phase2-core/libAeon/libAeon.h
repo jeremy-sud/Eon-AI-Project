@@ -213,6 +213,23 @@ void aeon_hash_to_string(const aeon_hash_t *hash, char *buffer, size_t buffer_si
  */
 int aeon_prune(aeon_core_t *core, float threshold);
 
+/**
+ * @brief Verifica la estabilidad numérica y saturación del reservoir (Guardián de Estabilidad).
+ *
+ * @param core Puntero al núcleo
+ * @param max_saturation_pct Porcentaje máximo tolerado de neuronas saturadas (ej: 80)
+ * @return true si el sistema es estable, false si está saturado o inestable
+ */
+bool aeon_check_stability(const aeon_core_t *core, uint8_t max_saturation_pct);
+
+/**
+ * @brief Aplica contracción / amortiguamiento a los estados para recuperar estabilidad.
+ *
+ * @param core Puntero al núcleo
+ * @param damping_factor_q8 Factor de amortiguamiento en Q8.8 (ej: 230 = ~0.90)
+ */
+void aeon_stabilize_state(aeon_core_t *core, int16_t damping_factor_q8);
+
 /* ============================================================
  * FUNCIONES DE UTILIDAD
  * ============================================================ */

@@ -197,6 +197,7 @@ Eón Project AI/
 │   ├── WHITEPAPER.md               # Paper técnico
 │   ├── MATHEMATICS.md              # 🆕 Fundamentos matemáticos formales
 │   ├── FIRMWARE_OTA.md             # 🆕 Guía de firmware y OTA
+│   ├── ROADMAP.md                  # 🆕 Roadmap de ingeniería y matemática (v2.5-v3.5)
 │   ├── architecture.md             # Arquitectura del sistema
 │   ├── benchmarks.md               # Análisis de energía y rendimiento
 │   ├── COMPARISON_TINYML.md        # Comparativa con frameworks edge
@@ -527,23 +528,50 @@ python -m pytest tests/ -v
 # - Web & Dashboard: 70 tests
 ```
 
-## 🗓️ Roadmap
+## 🗓️ Roadmap del Proyecto
 
-- [x] Fase 1-3: Fundamentos (Python, C, JS) + **Dream**
-- [x] Fase 4: Hardware (Arduino, ESP32) + LoRa + Energía
-- [x] Fase 5: Aplicaciones IoT + **Bio** + **Voice**
-- [x] Fase 6: Mente Colectiva + MQTT real + WebSocket
-- [x] Fase 7: TinyLM (Language Model)
-- [x] Fase 8: Paper académico compilado (PDF)
-- [x] Fase 9: Empaquetado + Docker Compose
-- [x] Fase 10: Tests + OpenAPI + Demo Script
-- [x] Fase 11: Extensiones Filosóficas (ver Apéndice B)
-- [x] **Fase 12: v2.0** ← ACTUAL
-  - [x] Dashboard v2.0 (D3.js, tiempo real)
+El desarrollo de Eón evoluciona desde sus fundamentos hacia el estándar industrial de **TinyML con aprendizaje continuo on-device**. El plan de ingeniería detallado con formulaciones matemáticas y criterios de aceptación está disponible en **[docs/ROADMAP.md](docs/ROADMAP.md)**.
+
+### ✅ Fases Completadas (v1.0 – v2.4.1)
+
+- [x] **Fase 1-3: Fundamentos**: Núcleo C ultraligero (1.3 KB), Python ESN, JavaScript Web.
+- [x] **Fase 4: Hardware & Edge**: Arduino Library, ESP32 + LoRa, métricas energéticas.
+- [x] **Fase 5: Aplicaciones IoT**: Sensores biomédicos, clasificación de voz y temperatura.
+- [x] **Fase 6: Mente Colectiva**: Broker MQTT real, sincronización WebSocket y consenso.
+- [x] **Fase 7-9: TinyLM & Full-Stack**: TinyLMv2, Docker Compose, Paper académico compilado.
+- [x] **Fase 10-12: v2.0 – v2.4.1 (Estado Actual)**:
+  - [x] Dashboard v2.0 (D3.js en tiempo real)
   - [x] Chat Multi-Nodo Colaborativo
   - [x] Detector de Anomalías Streaming
-  - [x] 720 Tests (cobertura ~92%)
-- [ ] Fase 13: Publicación y Comunidad
+  - [x] Sincronización 1-Bit robusta con verificación de hash
+  - [x] Persistencia de ciclos circadianos en estados `.npz` y JSON
+  - [x] Suite de 720 tests automatizados (cobertura ~92%)
+  - [x] Consolidación matemática formal ([docs/MATHEMATICS.md](docs/MATHEMATICS.md))
+  - [x] Ecosistema de firmware y OTA ([docs/FIRMWARE_OTA.md](docs/FIRMWARE_OTA.md))
+  - [x] Nueva tabla de energía total por ciclo y benchmarks normalizados ([docs/benchmarks.md](docs/benchmarks.md))
+
+### 🚀 Nuevas Fases de Ingeniería Matemática (v2.5 – v3.5)
+
+- [ ] **Fase 13 (v2.5): Control Numérico y Estabilidad Dinámica**
+  - [ ] Monitor online de estabilidad: Máximo exponente de Lyapunov y guardián de radio espectral $\rho(W) < 1$ en tiempo real.
+  - [ ] Optimización analítica de Capacidad de Memoria ($MC$) acoplada a la autocorrelación de señal $R_{uu}(\tau)$.
+  - [ ] Recursive Least Squares (RLS) con factor de olvido exponencial $\beta$ y factorización U-D para evitar pérdida de condición positiva.
+  - [ ] Reservoirs ortogonales estrictos mediante transformación de Cayley.
+- [ ] **Fase 14 (v2.6): Aceleración DSP Hardware y Optimización SIMD**
+  - [ ] Vectorización CMSIS-DSP para ARM Cortex-M4/M7/M33 (`__SMLAD`, `arm_dot_prod_q15`), reduciendo inferencia a $< 8.4$ µs y $0.00042$ µJ.
+  - [ ] Extensiones vectoriales ESP32-S3 (ESP-DSP PIE) con arquitectura asimétrica de doble núcleo.
+  - [ ] Aritmética Block Floating Point (BFP Q1.14) con retención de precisión del 98% vs float64.
+  - [ ] Despertar por evento neuromórfico (interrupción de derivada analógica para autonomía $> 5$ años).
+- [ ] **Fase 15 (v2.7): Edge Mesh Distribuido, Sincronización y OTA Seguro**
+  - [ ] Compresión diferencial Delta-RLE para sincronización LoRa (payload reducido de 21B a 4–6B, duplicando autonomía con radio activa).
+  - [ ] Federated Averaging descentralizado (Decentralized FedAvg) sobre consenso binario 1-bit en enjambre sin servidor central.
+  - [ ] Verificación criptográfica Ed25519 integrada para binarios OTA y paquetes de sincronización de pesos.
+  - [ ] Adaptive Data Rate (ADR) para LoRa según SNR/RSSI.
+- [ ] **Fase 16 (v3.0): Tooling de Producción, Interoperabilidad y Certificación**
+  - [ ] Compilador `eon2c` AOT: Generador de código C99 puro estático con matrices en Flash ROM (zero RAM footprint).
+  - [ ] Harness de co-simulación bit-exact (Python ↔ C) validado en CI/CD con QEMU ARM.
+  - [ ] Certificación formal en la suite MLCommons / TinyML Perf (Mackey-Glass, IMS Bearings, MIT-BIH ECG).
+  - [ ] Módulos oficiales para Zephyr RTOS y MicroPython/CircuitPython.
 
 ---
 

@@ -1,8 +1,9 @@
-# 🌌 Roadmap de Ideas - Proyecto Eón v2.0+
+# 🌌 Roadmap de Ideas - Proyecto Eón (Histórico y Exploratorio)
 
-> Ideas de mejora basadas en la infraestructura existente del proyecto.
+> **Nota:** Este documento conserva el registro histórico de ideas exploratorias y prototipos. Para el **Roadmap Oficial de Ingeniería y Fundamentos Matemáticos (v2.5 – v3.5)** con formulaciones analíticas, aceleración SIMD/DSP y despliegue edge, consultar:
+> 👉 **[ROADMAP.md](ROADMAP.md)**
 > 
-> Última actualización: 2024-01-15
+> Última revisión: 2026-10-04 (v2.4.1)
 
 ---
 

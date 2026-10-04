@@ -200,27 +200,26 @@ Eón implementa procesamiento de lenguaje a nivel de byte/palabra usando dinámi
 
 ---
 
-## Mística vs. Mecánica: El "Alma" del Código
+## Paradigma de Diseño: Control vs. Emergencia
 
-Esta es la comparativa más importante desde la perspectiva filosófica.
+Esta es la comparativa más importante desde la perspectiva de diseño.
 
-### El Enfoque Mecánico (Keras/PyTorch)
+### El Enfoque de Control (Keras/PyTorch)
 
 Es **Determinista**.
-- Tú diseñas la arquitectura capa por capa
-- Tú controlas los pesos
-- Es una ingeniería de control
-- Es el humano imponiendo su orden sobre los datos
-- Es "Anti-Natural"
+- Diseñas la arquitectura capa por capa
+- Controlas y optimizas los pesos vía backpropagation
+- Es ingeniería de control: el humano define la estructura
+- Alto costo computacional en entrenamiento
 
-### El Enfoque de Eón (Reservoir/Caos)
+### El Enfoque Emergente de Eón (Reservoir Computing)
 
 Es **Estocástico/Emergente**.
-- El código genera un "cerebro" aleatorio (`GENESIS.json`)
-- Tú no sabes qué neurona hace qué
-- Confías en que la complejidad matemática del caos es suficiente para resolver el problema
+- El sistema genera un reservoir aleatorio con una semilla (`GENESIS.json`)
+- La dinámica interna del reservoir no se diseña, se descubre
+- Confías en que la complejidad matemática del caos es suficiente para proyectar las señales
 
-**Perspectiva Esotérica:** Eón trata al microcontrolador como un oráculo. Le das datos y esperas que el "ecosistema" interno se estabilice en una respuesta correcta. Es más parecido a **cultivar un jardín** que a **construir un edificio**.
+**Perspectiva práctica:** Eón trata al microcontrolador como un procesador de señales auto-contenido. Le das datos y el reservoir transforma la señal en un espacio de alta dimensión donde una simple regresión lineal puede resolver el problema. Es más parecido a **cultivar un jardín** que a **construir un edificio**.
 
 ---
 
@@ -269,7 +268,7 @@ Diseñado nativamente para ser una **Mente Colmena**.
 - ✅ Procesas **series temporales** (audio, sensores, vitales)
 - ✅ Tienes restricciones **extremas de RAM** (<10KB)
 - ✅ Requieres **adaptación continua** sin re-flashear
-- ✅ Necesitas **arquitecturas místicas** (Tzimtzum, Alquimia)
+- ✅ Necesitas **poda dinámica o pipelines multi-etapa**
 - ✅ Valoras **código simple** y auditable
 
 ### Usa TensorFlow Lite Micro Cuando:
@@ -371,4 +370,4 @@ Para casos donde tienes modelos CNN pre-entrenados y suficiente memoria, los fra
 
 ---
 
-*Documento generado por Proyecto Eón v1.9.2*
+*Documento generado por Proyecto Eón v2.4.1*

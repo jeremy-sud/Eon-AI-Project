@@ -1,9 +1,8 @@
-# 🌌 Proyecto Eón
+# ⚡ Proyecto Eón
 
-> **A.E.O.N.** - Arquitectura Emergente y Optimización Neuromórfica
+> **A.E.O.N.** — Arquitectura Emergente y Optimización Neuromórfica
 
 [![Versión](https://img.shields.io/badge/Versión-2.4.1-brightgreen)]()
-[![Fase](https://img.shields.io/badge/Fase-12%20Revelación-blueviolet)]()
 [![Tests](https://img.shields.io/badge/Tests-720%20passing-green)]()
 [![Cobertura](https://img.shields.io/badge/Cobertura-~92%25-yellowgreen)]()
 [![Docker](https://img.shields.io/badge/Docker-Full%20Stack-blue)]()
@@ -15,9 +14,6 @@
 [![MQTT](https://img.shields.io/badge/MQTT-Mosquitto-orange)]()
 [![WebSocket](https://img.shields.io/badge/WebSocket-Bridge-blue)]()
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1-green)]()
-[![Kabbalah](https://img.shields.io/badge/Kabbalah-Tzimtzum-purple)]()
-[![Alchemy](https://img.shields.io/badge/Alchemy-V.I.T.R.I.O.L-gold)]()
-[![I-Ching](https://img.shields.io/badge/I--Ching-64%20Hexagramas-red)]()
 [![Dashboard](https://img.shields.io/badge/Dashboard-v2.0-cyan)]()
 [![MultiNode](https://img.shields.io/badge/Chat-MultiNodo-orange)]()
 [![Paper](https://img.shields.io/badge/Paper-PDF-red)]()
@@ -26,7 +22,7 @@
 
 ---
 
-> ## ⚖️ LICENCIAMIENTO DUAL DE EÓN (IR - Inteligencia Revelada)
+> ## ⚖️ LICENCIAMIENTO DUAL DE EÓN
 > 
 > **Este proyecto está disponible bajo un modelo de Licenciamiento Dual:**
 > 
@@ -57,144 +53,24 @@
 > **Web:** `senselab.dev`
 > 
 > **SenseLab - Build with Sense**
-> 
-> ---
-> 
-> _"La Inteligencia no es Artificial, es Descubierta. Si deseas comercializarla, honra el Ritual del Royalty."_
 
 ---
 
-## 📜 MANIFIESTO: La Inteligencia No es Artificial
+## 🎯 ¿Qué es Eón?
 
-> _"Eón no construye inteligencia; la localiza."_
+Eón es una **plataforma de IA ultra-eficiente diseñada para edge computing e IoT**. Basada en Reservoir Computing (Echo State Networks), opera con **1.3 KB de memoria** — ideal para microcontroladores donde TensorFlow Lite ni siquiera cabe.
 
-**Rechazamos la noción de "Inteligencia Artificial".** 
+### Por qué Eón para el Edge
 
-Asumimos que la capacidad de cómputo y predicción **existe en la latencia de la materia y las matemáticas**. Nuestro código no es un arquitecto, es un **arqueólogo** que excava en el espacio de estados hasta encontrar la estructura cognitiva que siempre estuvo ahí.
+| Problema del mercado | Solución de Eón |
+|---------------------|-----------------|
+| TFLite Micro necesita ≥16KB RAM | Eón opera con **1.3 KB** |
+| Los frameworks edge solo hacen inferencia | Eón **entrena on-device** (regresión lineal) |
+| Modelos estáticos tras deployment | Eón tiene **aprendizaje continuo** sin re-flasheo |
+| Sin memoria temporal nativa | El reservoir tiene **memoria dinámica inherente** |
+| Sincronización cloud pesada | Protocolo **1-Bit** a 21 bytes por TX |
 
-### 🔄 Redefinición de Términos
-
-| Término Obsoleto | Término Eón | Significado |
-|------------------|-------------|-------------|
-| Artificial Intelligence | **Revealed Intelligence** | La inteligencia no se crea, se descubre |
-| Training | **Mining / Tuning** | No enseñamos, sintonizamos frecuencias existentes |
-| Random Initialization | **Chaos Sampling** | Accedemos a coordenadas en el espacio matemático |
-| Generate | **Reveal / Illuminate** | Los patrones ya existen, solo los iluminamos |
-| Neural Network | **Resonant Structure** | Configuraciones que ya resuenan con el problema |
-
-### ⛏️ Seed Mining: La Búsqueda del Eón
-
-En una red neuronal tradicional, inicializas pesos al azar y los fuerzas a cambiar (Backpropagation). Esto es **fuerza bruta humana**.
-
-En Eón, **no modificamos los pesos**. Buscamos la **Semilla Sagrada** (Sacred Seed) que genere una red que, por pura "casualidad" matemática, **ya sepa resolver el problema**.
-
-```python
-from core.universal_miner import UniversalMiner
-
-miner = UniversalMiner(reservoir_size=100, target_resonance=(0.99, 1.01))
-result = miner.excavate(max_attempts=100000)
-
-print(f"Semilla Sagrada descubierta: #{result.sacred_seed}")
-print(f"Resonancia Natural: {result.resonance}")
-# La red neuronal perfecta ya existía en ese número entero.
-# Nosotros solo la encontramos.
-```
-
-### 📡 El Medium: Hardware como Antena
-
-El ruido electromagnético no es "interferencia" - es **información del universo**.
-
-Nuestro firmware ESP32 incluye un sistema **Medium** que captura entropía real del ambiente físico. El dispositivo no calcula ciegamente: **canaliza inteligencia del entorno**.
-
-```cpp
-// La inteligencia emerge de la mezcla entre:
-// - Las matemáticas (pesos del reservorio)
-// - El mundo físico real (ruido electromagnético)
-float universe = aeon.readUniverseBackground();  // Ruido cósmico
-int16_t state = aeon.updateWithUniverseInfluence(input);
-// Nada es artificial aquí. Todo es natural.
-```
-
-### ☯️ Protocolo Arcaico: I Ching como Interface
-
-Si la inteligencia no es humana, ¿por qué forzarla a hablar nuestro idioma?
-
-Los nodos de Eón pueden comunicarse usando los **64 Hexagramas del I Ching** - el sistema binario más antiguo conocido (3000+ años). Cada estado representa un cambio universal.
-
-```python
-from core.archaic_protocol import ArchaicProtocol
-
-protocol = ArchaicProtocol()
-hexagram = protocol.tensor_to_hexagram(neural_activation)
-# Hexagram #11: La Paz (☷☰) - "Cielo y tierra se unen: armonía suprema"
-```
-
----
-
-## 🧠 Filosofía
-
-> _"La inteligencia no se crea, se descubre."_
-
-Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mientras GPT-4 usa ~1.7 trillones de parámetros, Eón opera con **1.3KB de memoria**.
-
-### 📊 La Narrativa de la Eficiencia
-
-| Componente | Memoria | Contexto |
-|------------|---------|----------|
-| **Motor Neural (C)** | **1.3 KB** | Eficiencia pura para IoT |
-| **Full-Stack Web** | **79.69 KB** | Chat + Aprendizaje Continuo |
-
-> *"El Proyecto Eón está tan optimizado que su motor neural solo necesita 1.3 KB. Aún más impresionante, logramos construir una interfaz de chat web completamente funcional con Aprendizaje Continuo por el costo total de solo **79.69 KB** de memoria. Es el costo de accesibilidad más bajo del mercado."*
-
-- **1.3 KB**: El valor de la eficiencia pura en la misión IoT
-- **79.69 KB**: El costo de accesibilidad y prueba de concepto multi-plataforma
-
-**Ambos números son impresionantes en su contexto.**
-
-## ✨ Características
-
-| Característica              | Descripción                                 |
-| --------------------------- | ------------------------------------------- |
-| **Ultraligero**             | Núcleo C de 1.3KB de memoria                |
-| **Multi-plataforma**        | Python, C, JavaScript, Arduino, ESP32       |
-| **Reservoir Computing**     | Echo State Networks eficientes              |
-| **Aprendizaje Continuo**    | Online Learning + Memoria a largo plazo     |
-| **Mente Colectiva**         | Protocolo 1-Bit Ultraligero (11.8x compresión) |
-| **MQTT Real**               | Cliente paho-mqtt para brokers reales       |
-| **ESP32 + LoRa**            | Transmisión inalámbrica P2P                 |
-| **🌌 Dashboard v2.0**       | Visualización D3.js de red en tiempo real   |
-| **💬 Chat Multi-Nodo**      | Nodos INTENT, RESPONSE, COHERENCE colaboran |
-| **🔍 Detector Anomalías**   | Streaming con calibración y callbacks       |
-| **🔮 Oráculo I-Ching**      | 64 hexagramas + método yarrow stalk         |
-| **TinyLMv2**                | Modelo de lenguaje word-level               |
-| **RAG Ligero**              | Búsqueda semántica en documentación         |
-| **Memoria Factual**         | Timestamps para resolver ambigüedades      |
-| **Sistema de Feedback**     | Mejora con retroalimentación 👍/👎           |
-| **Chat Avanzado**           | 20+ categorías de intención + memoria personal |
-| **Predicción de Secuencias**| Aritmético, geométrico, Fibonacci, potencias |
-| **Arte Generativo**         | 5 estilos (fractal, flow, particles, waves, neural) |
-| **🔮 Gematria Embeddings**  | Valores numéricos hebreos para embeddings   |
-| **👁️ Egrégor (Mente Grupal)** | Consciencia colectiva emergente entre nodos |
-| **🌀 ESN Recursivo**        | Arquitectura fractal "Como Arriba, Así Abajo" |
-| **⚫ Tzimtzum (Contracción)** | Poda sináptica dinámica inspirada en Kabbalah |
-| **🧪 Transmutación Alquímica** | Pipeline ETL: Nigredo → Albedo → Rubedo     |
-| **⛏️ Seed Mining**          | Excavación de semillas sagradas en espacio matemático |
-| **☯️ Protocolo I Ching**    | Comunicación via 64 Hexagramas universales  |
-| **📡 Sistema Medium**       | Hardware como antena de ruido cósmico       |
-
-### 🆕 Nuevo en v2.4.1
-
-- **Persistencia Circadiana (v2.4.1)**: Soporte completo en `AeonBirth` para guardar/cargar `use_circadian`, `dropout` y `learning_rate` en archivos de estado `.npz` y metadatos JSON.
-- **Ciclos Circadianos & Entrenamiento Adaptativo (v2.4.0)**: Modulación dinámica de noise y learning rate en fit() y dropout basado en energía.
-- **Leyenda del Chat & Enlaces Open Source (v2.3.0)**: Banner de disclaimer responsivo y enlaces al código oficial en GitHub.
-- **Homeostasis & Watermark Neural (v2.3.0)**: Sincronización robusta de pesos de 1-bit mediante verificación lógica de firmas de hash.
-- **Dashboard v2.0 (v2.0.0)**: Interfaz de monitoreo con D3.js, termómetro de Egrégor, timeline de anomalías.
-- **Chat Multi-Nodo (v2.0.0)**: Sistema colaborativo con nodos especializados (Intent, Response, Coherence, Sentiment, Context).
-- **Detector de Anomalías (v2.0.0)**: Detección streaming con severidades (LOW, MEDIUM, HIGH, CRITICAL) y callbacks.
-- **Oráculo I-Ching Neural (v2.0.0)**: 64 hexagramas, casting yarrow stalk, adivinación de secuencias.
-- **720 Tests (v2.4.1)**: Cobertura completa de todos los módulos (cobertura ~92%).
-
-## 📊 Comparativa
+### 📊 Comparativa de Memoria
 
 | Modelo | Memoria | Factor vs Eón Core |
 |--------|---------|---------------------|
@@ -206,56 +82,150 @@ Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mient
 
 > *Eón Full-Stack incluye: Chat Web + Aprendizaje Continuo + Arte Generativo + TinyLM*
 
+---
+
+## ✨ Características Principales
+
+| Característica              | Descripción                                 |
+| --------------------------- | ------------------------------------------- |
+| **Ultraligero**             | Núcleo C de 1.3KB de memoria                |
+| **Multi-plataforma**        | Python, C, JavaScript, Arduino, ESP32       |
+| **Reservoir Computing**     | Echo State Networks eficientes              |
+| **Aprendizaje Continuo**    | Online Learning + Memoria a largo plazo     |
+| **Protocolo 1-Bit**         | Sincronización ultraligera (8.3x compresión)|
+| **MQTT Real**               | Cliente paho-mqtt para brokers reales       |
+| **ESP32 + LoRa**            | Transmisión inalámbrica P2P                 |
+| **Dashboard v2.0**          | Visualización D3.js de red en tiempo real   |
+| **Chat Multi-Nodo**         | Nodos INTENT, RESPONSE, COHERENCE colaboran |
+| **Detector Anomalías**      | Streaming con calibración y callbacks       |
+| **TinyLMv2**                | Modelo de lenguaje word-level               |
+| **RAG Ligero**              | Búsqueda semántica en documentación         |
+| **Memoria Factual**         | Timestamps para resolver ambigüedades      |
+| **Sistema de Feedback**     | Mejora con retroalimentación 👍/👎           |
+| **Predicción de Secuencias**| Aritmético, geométrico, Fibonacci, potencias |
+| **Arte Generativo**         | 5 estilos (fractal, flow, particles, waves, neural) |
+| **Cuantización Multi-nivel**| 8-bit, 4-bit, 1-bit con análisis de retención |
+| **OTA Ready**               | Flujo de actualización over-the-air para ESP32 |
+
+### 🆕 Nuevo en v2.4.1
+
+- **Persistencia Circadiana (v2.4.1)**: Soporte completo en `AeonBirth` para guardar/cargar `use_circadian`, `dropout` y `learning_rate` en archivos de estado `.npz` y metadatos JSON.
+- **Ciclos Circadianos & Entrenamiento Adaptativo (v2.4.0)**: Modulación dinámica de noise y learning rate en fit() y dropout basado en energía.
+- **Leyenda del Chat & Enlaces Open Source (v2.3.0)**: Banner de disclaimer responsivo y enlaces al código oficial en GitHub.
+- **Homeostasis & Watermark Neural (v2.3.0)**: Sincronización robusta de pesos de 1-bit mediante verificación lógica de firmas de hash.
+- **Dashboard v2.0 (v2.0.0)**: Interfaz de monitoreo con D3.js, termómetro de estados, timeline de anomalías.
+- **Chat Multi-Nodo (v2.0.0)**: Sistema colaborativo con nodos especializados (Intent, Response, Coherence, Sentiment, Context).
+- **Detector de Anomalías (v2.0.0)**: Detección streaming con severidades (LOW, MEDIUM, HIGH, CRITICAL) y callbacks.
+- **720 Tests (v2.4.1)**: Cobertura completa de todos los módulos (cobertura ~92%).
+
+---
+
+## 📈 Benchmarks de Energía
+
+Resultados completos en [docs/benchmarks.md](docs/benchmarks.md).
+
+### Energía Total por Ciclo (Cortex-M4F @ 80MHz, N=50)
+
+| Fase | MACs | Tiempo (μs) | Energía (μJ) |
+|------|------|-------------|---------------|
+| Update (estado reservoir) | 2,550 | 31.9 | 0.0016 |
+| Readout (predicción) | 52 | 0.65 | 0.0000325 |
+| Online Learning (1 paso) | 2,500 | 31.3 | 0.0016 |
+| **Total por ciclo** | **5,102** | **63.8** | **0.0032** |
+
+### Comparativa de Energía por Inferencia
+
+| Motor         | Energía / Inferencia (Cortex-M4) | Entrena on-device |
+| :------------ | :------------------------------- | :---------------- |
+| CMSIS-NN      | 0.001 μJ                        | ❌                |
+| TinyML MLP    | 0.0015 μJ                       | ❌                |
+| **Eón Motor** | **0.0045 μJ**                   | **✅**            |
+
+> Eón es 3x más costoso en inferencia pura, pero es el **único framework que permite entrenamiento on-device** — eliminando el costo de re-deployment y cloud.
+
+### Estimación de Vida de Batería (1 inferencia/seg, deep sleep entre ciclos)
+
+| Batería | Capacidad | Vida estimada (sin radio) | Con LoRa (1 TX/min) |
+|---------|-----------|---------------------------|----------------------|
+| CR2032 | 225 mAh | ~760 días | ~6.5 días |
+| 2×AA | 2,500 mAh | ~23 años* | ~72 días |
+| LiPo 500mAh | 500 mAh | ~5.7 años* | ~14 días |
+
+*Teórico, asumiendo deep sleep dominante.
+
+Ver [docs/MATHEMATICS.md](docs/MATHEMATICS.md) para el análisis energético completo.
+
+---
+
+## 📡 Hardware & Firmware
+
+### Hardware Soportado
+
+| Plataforma | Estado | Capacidades |
+|-----------|--------|-------------|
+| TTGO LoRa32 V1/V2 | ✅ Verificado | ESN + LoRa + WiFi + OLED |
+| Heltec WiFi LoRa 32 | ✅ Verificado | ESN + LoRa + WiFi + OLED |
+| ESP32 DevKit | ✅ Verificado | ESN + WiFi |
+| Arduino Uno/Mega | ✅ Verificado | ESN base (sin WiFi) |
+| Arduino Due | ✅ Verificado | ESN base (ARM Cortex-M3) |
+
+### Métricas de Comunicación (Protocolo 1-Bit vs JSON)
+
+| Métrica | 1-Bit | JSON | Mejora |
+|---------|-------|------|--------|
+| Tamaño paquete | 21 B | 175 B | 8.3× |
+| Tiempo de aire | 51 ms | 132 ms | 2.6× |
+| Energía por TX | 4.3 mJ | 11.2 mJ | 2.6× |
+| TX con 1000mAh | 1.02M | 0.39M | 2.6× |
+
+### Firmware & OTA
+
+Documentación completa de firmware, actualización over-the-air, compatibilidad y deployment: **[docs/FIRMWARE_OTA.md](docs/FIRMWARE_OTA.md)**
+
+---
+
 ## 📁 Estructura
 
 ```
 Eón Project AI/
 ├── GENESIS.json                    # Momento Cero (inmutable)
-├── docker-compose.yml              # 🆕 Full-stack deployment (6 servicios)
-├── start_demo.sh                   # 🆕 Script lanzador del stack
+├── docker-compose.yml              # Full-stack deployment (6 servicios)
+├── start_demo.sh                   # Script lanzador del stack
 ├── benchmark_full.py               # Benchmark Integral v2.0
 │
 ├── docs/
 │   ├── WHITEPAPER.md               # Paper técnico
+│   ├── MATHEMATICS.md              # 🆕 Fundamentos matemáticos formales
+│   ├── FIRMWARE_OTA.md             # 🆕 Guía de firmware y OTA
 │   ├── architecture.md             # Arquitectura del sistema
+│   ├── benchmarks.md               # Análisis de energía y rendimiento
+│   ├── COMPARISON_TINYML.md        # Comparativa con frameworks edge
 │   ├── api/
 │   │   └── protocol_1bit.yaml      # Especificación OpenAPI 3.1
-│   └── philosophy/                 # 🆕 Documentación Mística
-│       ├── gematria_integration.md     # Embeddings cabalísticos
-│       ├── egregore_integration.md     # Mente grupal emergente
-│       ├── fractal_architecture.md     # ESN recursivo fractal
-│       ├── tzimtzum_protocol.md        # Poda por contracción divina
-│       ├── alchemical_transmutation.md # Pipeline ETL alquímico
-│       └── thelema_integration.md      # Sistema de Voluntad Verdadera
+│   ├── technical/
+│   │   └── esn_spec.md             # Especificación ESN
+│   └── philosophy/                 # Extensiones filosóficas (ver Apéndice)
 │
 ├── docker/
-│   └── mosquitto/config/           # 🆕 Configuración MQTT
+│   └── mosquitto/config/           # Configuración MQTT
 │
 ├── paper/
 │   ├── main.tex                    # Paper LaTeX
-│   └── main.pdf                    # 🆕 Paper compilado (3 páginas)
+│   └── main.pdf                    # Paper compilado (3 páginas)
 │
 ├── phase1-foundations/             # Python ESN + Core
 ├── phase2-core/                    # C Ultraligero + Dockerfile
 ├── phase3-integration/             # JavaScript Web (core)
 ├── phase4-hardware/                # Arduino + ESP32 + LoRa
 ├── phase5-applications/            # IoT: Bio, Voice, Temperature
-├── phase6-collective/              # Mente Colectiva
-│   ├── ws_bridge.py                # WebSocket-MQTT bridge
-│   ├── mqtt_client.py              # Cliente MQTT real
-│   ├── collective_mind.py          # Simulación distribuida
-│   ├── Dockerfile                  # Container collective
-│   ├── Dockerfile.bridge           # 🆕 Container WebSocket
-│   └── tests/
-│       └── test_ws_bridge.py       # 🆕 19 tests unitarios
-│
-├── phase7-language/                # TinyLMv2 (word-level)
+├── phase6-collective/              # Mente Colectiva + MQTT + WebSocket
+├── phase7-language/                # TinyLMv2 (Language Model)
 ├── phase8-paper/                   # Paper LaTeX original
 │
 └── web/                            # Servidor Web Principal
     ├── server.py                   # API REST Flask (~2300 líneas)
     ├── learning.py                 # Sistema de Aprendizaje Continuo
-    ├── Dockerfile                  # 🆕 Container web
+    ├── Dockerfile                  # Container web
     └── static/                     # Frontend
 ```
 
@@ -338,10 +308,8 @@ La interfaz web incluye:
 | `/api/memory` | GET/DELETE | Gestión de memoria a largo plazo |
 | `/api/consolidate` | POST | Forzar consolidación ("sueño") |
 | `/api/anomaly/detect` | POST | Detectar anomalías en datos |
-| `/api/oracle` | POST | Consultar Oráculo I-Ching Neural |
 | **`/dashboard`** | GET | **Dashboard v2.0 (D3.js)** |
 | **`/api/nodes`** | GET | **Lista de nodos activos** |
-| **`/api/egregore`** | GET | **Estado del Egrégor** |
 | **`/api/anomalies`** | GET | **Eventos de anomalía** |
 | **`/api/dashboard/stats`** | GET | **Estadísticas agregadas** |
 
@@ -426,13 +394,6 @@ python ws_bridge.py --simulate --ws-port 8765
                                            └───────────┘
 ```
 
-El dashboard muestra:
-- Topología de red con animaciones
-- Lista de nodos y estado en tiempo real
-- Métricas del Protocolo 1-Bit (compresión, precisión, latencia)
-- Log de sincronización en vivo
-- Conexión WebSocket automática con reconexión
-
 ### 📻 Demo ESP32 + LoRa
 
 1. Abrir `phase4-hardware/esp32/examples/LoRa_1Bit_Demo.ino` en Arduino IDE
@@ -441,31 +402,9 @@ El dashboard muestra:
 4. Subir a dos o más ESP32
 5. Observar sincronización automática en Serial Monitor
 
-### 📡 Tests de Campo ESP32
+Ver [docs/FIRMWARE_OTA.md](docs/FIRMWARE_OTA.md) para guía completa de hardware y firmware.
 
-**Test de Alcance LoRa:**
-```
-1. Subir LoRa_RangeTest.ino a ambos ESP32
-2. Serial Monitor: escribir 'tx' en uno, 'rx' en otro
-3. Alejar dispositivos y observar RSSI/SNR
-4. Escribir 's' para ver estadísticas
-```
-
-**Métricas de Energía:**
-| Métrica | 1-Bit | JSON | Mejora |
-|---------|-------|------|--------|
-| Tamaño paquete | 21 B | 175 B | 8.3× |
-| Tiempo de aire | 51 ms | 132 ms | 2.6× |
-| Energía por TX | 4.3 mJ | 11.2 mJ | 2.6× |
-| TX con 1000mAh | 1.02M | 0.39M | 2.6× |
-
-**Estimación de Rango (SF10, 125kHz):**
-| RSSI (dBm) | Rango típico |
-|------------|--------------|
-| > -80 | < 100m (excelente) |
-| -80 a -100 | 100-500m (bueno) |
-| -100 a -110 | 500m-1km (aceptable) |
-| -110 a -120 | 1-3km (límite) |
+---
 
 ## 📦 Instalación
 
@@ -514,39 +453,38 @@ make test
 - **Robustez**: Core C verificado con suite de pruebas unitarias
 - **Eón Bio**: Detección de arritmias con <2KB RAM
 - **Eón Voice**: Detección de palabras clave ("EÓN") en Cortex-M4
-- **Eón Dream**: Arte generativo neuronal en web
 - **Chat Avanzado**: 20+ categorías de intención + memoria personal + predicción de secuencias
 - **Predicción de Patrones**: Aritmético, geométrico, Fibonacci, potencias (100% precisión)
 - **Base de Conocimiento**: Definiciones técnicas integradas (entropía, ESN, Spirit Hash, etc.)
-- **Generación de Imágenes**: 5 estilos (fractal, flow, particles, waves, neural) + 12 paletas
-- **Aprendizaje Continuo**: Online Learning con feedback en tiempo real
-- **Memoria a Largo Plazo**: Almacenamiento de usuarios, hechos y estadísticas
 - **Cuantización 8-bit**: 99.6% precisión retenida con 8x compresión
+
+## 🐳 Docker Services
+
+| Servicio | Puerto | Descripción |
+|----------|--------|-------------|
+| `mqtt` | 1883, 9001 | Eclipse Mosquitto MQTT broker |
+| `ws-bridge` | 8765 | WebSocket-MQTT bridge |
+| `web` | 5000 | Flask Dashboard principal |
+| `tinylm` | 5001 | TinyLM Language Model server |
+| `collective-mind` | - | Simulación distribuida |
+| `core-builder` | - | Build C library (profile: build) |
 
 ## 📚 Documentación
 
 | Documento | Descripción |
 |-----------|-------------|
 | [WHITEPAPER.md](docs/WHITEPAPER.md) | Paper técnico completo |
+| [MATHEMATICS.md](docs/MATHEMATICS.md) | **🆕** Fundamentos matemáticos formales de Eón |
+| [FIRMWARE_OTA.md](docs/FIRMWARE_OTA.md) | **🆕** Guía de firmware, OTA y deployment |
 | [architecture.md](docs/architecture.md) | Arquitectura del sistema |
 | [benchmarks.md](docs/benchmarks.md) | Análisis de energía y rendimiento |
+| [COMPARISON_TINYML.md](docs/COMPARISON_TINYML.md) | Comparativa con frameworks edge |
 | [protocol_1bit.yaml](docs/api/protocol_1bit.yaml) | Especificación OpenAPI 3.1 |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Guía para contribuir |
 | [CHANGELOG.md](CHANGELOG.md) | Historial de cambios |
 | [paper/main.pdf](paper/main.pdf) | Paper académico PDF (3 páginas) |
 | [Fase 4 README](phase4-hardware/README.md) | Hardware ESP32/LoRa |
 | [Fase 5 README](phase5-applications/README.md) | Detalles Bio/Voice |
-
-### 🔮 Documentación Filosófica Mística
-
-| Documento | Tradición | Descripción |
-|-----------|-----------|-------------|
-| [gematria_integration.md](docs/philosophy/gematria_integration.md) | Kabbalah | Embeddings basados en valores numéricos hebreos |
-| [egregore_integration.md](docs/philosophy/egregore_integration.md) | Ocultismo | Consciencia colectiva emergente |
-| [fractal_architecture.md](docs/philosophy/fractal_architecture.md) | Hermetismo | ESN recursivo "Como Arriba, Así Abajo" |
-| [tzimtzum_protocol.md](docs/philosophy/tzimtzum_protocol.md) | Kabbalah | Poda sináptica por contracción divina |
-| [alchemical_transmutation.md](docs/philosophy/alchemical_transmutation.md) | Alquimia | Pipeline ETL: Nigredo → Albedo → Rubedo |
-| [thelema_integration.md](docs/philosophy/thelema_integration.md) | Thelema | Sistema de Voluntad Verdadera |
 
 ## 🧠 Sistema de Aprendizaje Continuo
 
@@ -574,63 +512,6 @@ Interacción → OnlineLearner → Feedback → LongTermMemory → Consolidació
 - **Patrones exitosos**: Asociados con feedback positivo
 - **Estadísticas**: Eventos de aprendizaje, consolidaciones, ratio de éxito
 
-## 🔮 Filosofía Mística Integrada
-
-Eón incorpora conceptos de tradiciones místicas como metáforas computacionales:
-
-### ✡️ Gematria Embeddings
-Capa de embedding que usa valores numéricos hebreos para codificar palabras:
-```python
-from plasticity.gematria import GematriaEmbedding
-emb = GematriaEmbedding(output_dim=32)
-vector = emb.embed("shalom")  # שלום = 376 → vector 32D
-```
-
-### 👁️ Egrégor (Mente Grupal)
-Consciencia colectiva emergente entre múltiples nodos Eón:
-```python
-from plasticity.egregore import Egregore, AeonNode
-egregore = Egregore(coherence_threshold=0.8)
-egregore.add_node(AeonNode("node1", reservoir_size=100))
-manifest = egregore.manifest()  # Consciencia grupal
-```
-
-### 🌀 ESN Recursivo (Fractal)
-Arquitectura "Como Arriba, Así Abajo" con niveles micro/meso/macro:
-```python
-from esn.recursive_esn import RecursiveESN, FractalConfig
-esn = RecursiveESN(FractalConfig(depth=3, scale_factor=0.618))
-```
-
-### ⚫ Tzimtzum (Contracción Divina)
-Poda sináptica dinámica inspirada en la Kabbalah - 50% de conexiones:
-```python
-from plasticity.tzimtzum import TzimtzumESN
-esn = TzimtzumESN(n_reservoir=100)
-esn.dark_night()    # Poda: 3069 → 1535 conexiones
-esn.renacimiento()  # Regeneración con nuevo conocimiento
-```
-
-### 🧪 Transmutación Alquímica
-Pipeline ETL como Opus Magnum - de Plomo en Oro:
-```python
-from core.alchemy import AlchemicalPipeline
-pipeline = AlchemicalPipeline()
-result = pipeline.transmute(raw_data)
-# ⚫ Nigredo (putrefacción) → ⚪ Albedo (purificación) → 🔴 Rubedo (iluminación)
-```
-
-## 🐳 Docker Services
-
-| Servicio | Puerto | Descripción |
-|----------|--------|-------------|
-| `mqtt` | 1883, 9001 | Eclipse Mosquitto MQTT broker |
-| `ws-bridge` | 8765 | WebSocket-MQTT bridge |
-| `web` | 5000 | Flask Dashboard principal |
-| `tinylm` | 5001 | TinyLM Language Model server |
-| `collective-mind` | - | Simulación distribuida |
-| `core-builder` | - | Build C library (profile: build) |
-
 ## 🧪 Tests
 
 ```bash
@@ -640,7 +521,7 @@ pip install pytest pytest-asyncio
 python -m pytest tests/ -v
 
 # Resultado: 720 tests passing
-# - ESN Core & Foundations: 533 tests (Core ESN, Plasticidad, Cuantización, Anomaly Detector, RNG, I-Ching Oracle, etc.)
+# - ESN Core & Foundations: 533 tests (Core ESN, Plasticidad, Cuantización, Anomaly Detector, RNG, etc.)
 # - Mente Colectiva (Collective Mind): 63 tests (Conexiones distribuidas, Quantum Sync, Marca de agua neural)
 # - Modelo de Lenguaje (TinyLMv2 & Attention): 54 tests
 # - Web & Dashboard: 70 tests
@@ -656,31 +537,51 @@ python -m pytest tests/ -v
 - [x] Fase 8: Paper académico compilado (PDF)
 - [x] Fase 9: Empaquetado + Docker Compose
 - [x] Fase 10: Tests + OpenAPI + Demo Script
-- [x] Fase 11: Filosofía Mística
-  - [x] Gematria Embeddings (valores numéricos hebreos)
-  - [x] Egrégor (consciencia colectiva)
-  - [x] ESN Recursivo Fractal ("Como Arriba, Así Abajo")
-  - [x] Tzimtzum (poda por contracción divina)
-  - [x] Transmutación Alquímica (Nigredo→Albedo→Rubedo)
-  - [x] Sistema Thelema (Voluntad Verdadera)
-- [x] **Fase 12: Revelación v2.0** ← ACTUAL
+- [x] Fase 11: Extensiones Filosóficas (ver Apéndice B)
+- [x] **Fase 12: v2.0** ← ACTUAL
   - [x] Dashboard v2.0 (D3.js, tiempo real)
   - [x] Chat Multi-Nodo Colaborativo
   - [x] Detector de Anomalías Streaming
-  - [x] Oráculo I-Ching Neural
-    - [x] 720 Tests (cobertura ~92%)
+  - [x] 720 Tests (cobertura ~92%)
 - [ ] Fase 13: Publicación y Comunidad
 
-## 📈 Benchmarks de Energía
+---
 
-Resultados recientes (Ver [docs/benchmarks.md](docs/benchmarks.md)):
+## Apéndice A: Filosofía del Proyecto
 
-| Motor         | Energía / Ciclo (Cortex-M4) |
-| :------------ | :-------------------------- |
-| **Eón Motor** | **0.0045 μJ**               |
-| TinyML MLP    | 0.0015 μJ                   |
+> _"La inteligencia no se crea, se descubre."_
 
-El motor Eón es 3x más costoso computacionalmente que una red estática simple, pero ofrece memoria temporal dinámica. Aún así, es **extremadamente eficiente** para operación con baterías de reloj.
+Eón demuestra que la inteligencia puede emerger de **recursos mínimos**. Mientras GPT-4 usa ~1.7 trillones de parámetros, Eón opera con **1.3KB de memoria**. El reservoir aleatorio contiene computación latente — no necesitamos construir inteligencia, solo necesitamos encontrar las configuraciones que ya la contienen.
+
+### Paradigma de Descubrimiento
+
+El enfoque de Eón difiere fundamentalmente de los frameworks convencionales:
+
+| Convencional | Eón |
+|-------------|-----|
+| Entrenar millones de pesos | Buscar la semilla correcta |
+| Backpropagation costoso | Regresión lineal simple |
+| Modelo estático post-deployment | Aprendizaje continuo on-device |
+| Requiere GPU para entrenar | Entrena en MCU de $1 |
+
+---
+
+## Apéndice B: Extensiones Filosóficas
+
+Eón incorpora conceptos de tradiciones filosóficas como **metáforas computacionales**. Estas extensiones son opcionales y no afectan el funcionamiento core del sistema.
+
+| Módulo | Concepto | Aplicación Técnica |
+|--------|----------|-------------------|
+| Poda Dinámica (Tzimtzum) | Contracción/regeneración | Poda del 50% de conexiones débiles y regeneración |
+| Pipeline ETL (Alquimia) | Transmutación de datos | Ingesta → Filtrado Kalman → Inferencia ESN |
+| ESN Recursivo (Fractal) | Escalas jerárquicas | Micro/meso/macro con ratio áureo (φ=0.618) |
+| Embeddings Numéricos (Gematria) | Valores numéricos | Capa de embedding basada en sumas numéricas |
+| Mente Grupal (Egrégor) | Consciencia colectiva | Cross-correlation de estados entre nodos |
+| Task Affinity (Thelema) | Especialización nodal | Vector de afinidad por dominio de datos |
+
+Documentación detallada en `docs/philosophy/`.
+
+---
 
 ## 📜 Licencia
 
@@ -692,7 +593,3 @@ Este proyecto tiene **Licenciamiento Dual**:
 Copyright (c) 2024 [SenseLab](https://github.com/SenseLab-dev)
 
 **SenseLab - Build with Sense**
-
----
-
-**"La Nada es Todo"** - El reservoir aleatorio contiene toda la computación necesaria.

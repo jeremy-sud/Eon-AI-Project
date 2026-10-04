@@ -269,13 +269,15 @@ pytest -v
 
 ---
 
-*Updated: 2026-06-13 (v2.4.0)*
+*Updated: 2026-10-04 (v2.4.1)*
 
-## 🔮 Mystical Architecture Extensions (v1.8.0)
+---
 
-El Proyecto Eón ahora integra conceptos de tradiciones místicas como metáforas computacionales:
+## Appendix: Philosophical Architecture Extensions (v1.8.0)
 
-### Gematria Embeddings (Kabbalah)
+Estas extensiones usan conceptos de tradiciones filosóficas como **metáforas computacionales** para técnicas estándar de machine learning. Son módulos opcionales que no afectan el core del sistema:
+
+### Numeric Embeddings (Gematria-inspired)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -291,7 +293,7 @@ El Proyecto Eón ahora integra conceptos de tradiciones místicas como metáfora
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Egrégor - Consciencia Colectiva
+### Cross-Node Coherence (Egrégor pattern)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -318,7 +320,7 @@ El Proyecto Eón ahora integra conceptos de tradiciones místicas como metáfora
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### ESN Recursivo Fractal ("Como Arriba, Así Abajo")
+### Multi-Scale Recursive ESN (Fractal Architecture)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -344,7 +346,7 @@ El Proyecto Eón ahora integra conceptos de tradiciones místicas como metáfora
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Tzimtzum - Ciclo de Contracción Divina
+### Dynamic Pruning Cycle (Prune/Regrow)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -379,7 +381,7 @@ El Proyecto Eón ahora integra conceptos de tradiciones místicas como metáfora
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Transmutación Alquímica - Pipeline ETL
+### Multi-Stage ETL Pipeline
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐

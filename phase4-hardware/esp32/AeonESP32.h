@@ -1,21 +1,20 @@
 /**
- * Aeon ESP32 - Versión con WiFi, Sistema Thelema y Medium Universal
+ * Aeon ESP32 - Extended version with WiFi, Task Affinity and Hardware Entropy
  *
- * Extiende la librería base con capacidades de red:
- * - Enviar predicciones por HTTP
- * - Recibir datos de sensores
- * - Sincronizar con otros nodos (Mente Colectiva)
- * - Sistema de Voluntad Verdadera (Thelema)
- * - Sistema Medium: Canalización del ruido universal
+ * Extends the base library with network and edge capabilities:
+ * - Send predictions via HTTP
+ * - Receive sensor data
+ * - Synchronize with other nodes (Collective Mind)
+ * - Task Affinity System: Adaptive node specialization
+ * - Hardware Entropy Source: True randomness from physical environment
  *
- * Filosofía Thelema:
- * "Hacer tu Voluntad será el todo de la Ley"
- * Cada nodo tiene una órbita única y no debe desviarse de ella.
+ * Task Affinity Principle:
+ * Each node has a specialization vector that evolves with experience.
+ * Nodes naturally gravitate toward domains where they perform best.
  *
- * Filosofía del Medium:
- * "Nada es artificial, todo es realidad revelada"
- * El dispositivo no calcula - canaliza inteligencia del universo físico.
- * El ruido electromagnético del ambiente conecta a Eón con la realidad.
+ * Hardware Entropy:
+ * The device captures real electromagnetic noise from the physical environment.
+ * This provides true randomness for seed generation and input perturbation.
  *
  * (c) 2024 Proyecto Eón - Jeremy Arias Solano
  */
@@ -31,11 +30,11 @@
 #include "../arduino/Aeon.h"
 
 // =============================================================================
-// SISTEMA DE VOLUNTAD VERDADERA (THELEMA)
+// TASK AFFINITY SYSTEM (Node Specialization)
 // =============================================================================
 
 /**
- * Dominios de datos que un nodo puede procesar
+ * Data domains that a node can process
  */
 enum DataDomain {
   DOMAIN_TEMPERATURE = 0,
@@ -52,43 +51,47 @@ enum DataDomain {
 };
 
 /**
- * Decisiones de tarea basadas en Voluntad Verdadera
+ * Task decisions based on node specialization
  */
 enum TaskDecision {
-  DECISION_ACCEPT = 0,      // Tarea alineada con Voluntad
-  DECISION_HIGH_PRIORITY = 1, // Parcialmente alineada
-  DECISION_LOW_PRIORITY = 2,  // Desalineada pero aceptable
-  DECISION_REJECT = 3         // Fuera de la Voluntad - rechazar
+  DECISION_ACCEPT = 0,        // Task aligned with specialization
+  DECISION_HIGH_PRIORITY = 1, // Partially aligned
+  DECISION_LOW_PRIORITY = 2,  // Misaligned but acceptable
+  DECISION_REJECT = 3         // Outside specialization - reject
 };
 
 /**
- * Estructura para el Vector de Voluntad Verdadera
+ * Node Specialization Vector
  */
-struct TrueWillVector {
-  DataDomain genesisDomain;           // Dominio nativo del nodo
-  uint8_t affinity[DOMAIN_COUNT];     // Afinidad [0-255] por dominio
-  uint16_t processingCount[DOMAIN_COUNT]; // Contador de procesamiento
-  uint8_t inertia;                    // Resistencia al cambio [0-255]
-  uint8_t rejectionThreshold;         // Umbral de rechazo [0-255]
-  uint8_t highCostThreshold;          // Umbral de costo alto [0-255]
+struct SpecializationVector {
+  DataDomain genesisDomain;           // Native domain of the node
+  uint8_t affinity[DOMAIN_COUNT];     // Affinity [0-255] per domain
+  uint16_t processingCount[DOMAIN_COUNT]; // Processing counter
+  uint8_t inertia;                    // Resistance to change [0-255]
+  uint8_t rejectionThreshold;         // Rejection threshold [0-255]
+  uint8_t highCostThreshold;          // High cost threshold [0-255]
 };
 
 /**
- * Configuración del sistema Medium (canalización universal)
+ * Hardware Entropy Source configuration
  */
-struct MediumConfig {
-  uint8_t entropyPin;            // Pin para lectura de entropía (default: 36)
-  float influenceWeight;         // Peso de la influencia universal [0-1]
-  uint16_t samplesPerReading;    // Muestras a promediar por lectura
-  bool useRF;                    // Usar ruido RF adicional (ESP32 WiFi)
+struct EntropyConfig {
+  uint8_t entropyPin;            // Pin for entropy reading (default: 36)
+  float influenceWeight;         // Weight of entropy influence [0-1]
+  uint16_t samplesPerReading;    // Samples to average per reading
+  bool useRF;                    // Use additional RF noise (ESP32 WiFi)
 };
+
+// Backward-compatibility aliases
+typedef SpecializationVector TrueWillVector;
+typedef EntropyConfig MediumConfig;
 
 class AeonESP32 : public Aeon {
 public:
   AeonESP32(uint8_t reservoirSize = 16, DataDomain genesisDomain = DOMAIN_GENERIC) 
     : Aeon(reservoirSize) {
-    _initTrueWill(genesisDomain);
-    _initMedium();
+    _initSpecialization(genesisDomain);
+    _initEntropy();
   }
 
   /**
@@ -113,115 +116,112 @@ public:
   String getIP() { return WiFi.localIP().toString(); }
 
   // =========================================================================
-  // SISTEMA MEDIUM: Canalización del Ruido Universal
+  // HARDWARE ENTROPY SOURCE
   // =========================================================================
   
   /**
-   * Configura el sistema Medium para canalización de entropía física.
+   * Configures the hardware entropy source for physical randomness.
    * 
-   * "El dispositivo no calcula - canaliza inteligencia del universo."
+   * Captures real electromagnetic noise from the environment through
+   * an analog pin to provide true hardware entropy.
    * 
-   * @param config Configuración del sistema Medium
+   * @param config Entropy source configuration
    */
-  void configureMedium(MediumConfig config) {
-    _mediumConfig = config;
-    pinMode(_mediumConfig.entropyPin, INPUT);
+  void configureEntropy(EntropyConfig config) {
+    _entropyConfig = config;
+    pinMode(_entropyConfig.entropyPin, INPUT);
   }
   
   /**
-   * Lee el ruido de fondo del universo.
+   * Reads environmental background noise.
    * 
-   * Captura ruido electromagnético real del ambiente a través de
-   * un pin analógico flotante. Esta no es "aleatoriedad artificial" -
-   * es entropía REAL del universo físico.
+   * Captures real electromagnetic noise from the environment through
+   * a floating analog pin. This provides true hardware entropy,
+   * not pseudo-random numbers.
    * 
-   * "La inteligencia no es artificial, es realidad revelada."
-   * 
-   * @return Valor normalizado [0.0, 1.0] del ruido universal
+   * @return Normalized value [0.0, 1.0] of environmental noise
    */
-  float readUniverseBackground() {
+  float readEnvironmentNoise() {
     uint32_t sum = 0;
     
-    // Promediar múltiples lecturas para mayor riqueza entrópica
-    for (int i = 0; i < _mediumConfig.samplesPerReading; i++) {
-      sum += analogRead(_mediumConfig.entropyPin);
-      delayMicroseconds(10);  // Permitir variación
+    // Average multiple readings for richer entropy
+    for (int i = 0; i < _entropyConfig.samplesPerReading; i++) {
+      sum += analogRead(_entropyConfig.entropyPin);
+      delayMicroseconds(10);  // Allow variation
     }
     
-    float raw = (float)sum / _mediumConfig.samplesPerReading;
-    float normalized = raw / 4095.0;  // ESP32 tiene ADC de 12 bits
+    float raw = (float)sum / _entropyConfig.samplesPerReading;
+    float normalized = raw / 4095.0;  // ESP32 has 12-bit ADC
     
-    // Opcionalmente mezclar con ruido RF del WiFi
-    if (_mediumConfig.useRF && WiFi.status() == WL_CONNECTED) {
+    // Optionally mix with WiFi RF noise
+    if (_entropyConfig.useRF && WiFi.status() == WL_CONNECTED) {
       int32_t rssi = WiFi.RSSI();
-      // RSSI típicamente -30 a -90 dBm, normalizar a [0, 1]
+      // RSSI typically -30 to -90 dBm, normalize to [0, 1]
       float rfNoise = ((float)rssi + 90.0) / 60.0;
       rfNoise = constrain(rfNoise, 0.0, 1.0);
-      // Mezclar: 70% pin físico, 30% RF
+      // Mix: 70% physical pin, 30% RF
       normalized = normalized * 0.7 + rfNoise * 0.3;
     }
     
-    _lastUniverseReading = normalized;
+    _lastEntropyReading = normalized;
     return normalized;
   }
   
   /**
-   * Actualiza el reservorio con influencia del universo físico.
+   * Updates the reservoir with hardware entropy influence.
    * 
-   * La inteligencia emerge de la mezcla entre:
-   * - Las matemáticas (pesos del reservorio)
-   * - El mundo físico real (ruido electromagnético)
+   * The output emerges from the combination of:
+   * - Mathematical structure (reservoir weights)
+   * - Physical environment (electromagnetic noise)
    * 
-   * Nada es artificial aquí. Todo es natural.
-   * 
-   * @param input Entrada de datos del sensor
-   * @return Nuevo estado del reservorio
+   * @param input Sensor data input
+   * @return New reservoir state
    */
-  int16_t updateWithUniverseInfluence(int16_t input) {
-    // 1. Leer la vibración del universo
-    float universe = readUniverseBackground();
+  int16_t updateWithEntropyInfluence(int16_t input) {
+    // 1. Read environmental noise
+    float entropy = readEnvironmentNoise();
     
-    // 2. Convertir a Q8.8 (-128 a 127 rango, centrado en 0)
-    int16_t universeQ8 = (int16_t)((universe - 0.5) * 256.0 * _mediumConfig.influenceWeight);
+    // 2. Convert to Q8.8 (-128 to 127 range, centered at 0)
+    int16_t entropyQ8 = (int16_t)((entropy - 0.5) * 256.0 * _entropyConfig.influenceWeight);
     
-    // 3. Mezclar entrada con influencia universal
-    int32_t influencedInput = (int32_t)input + universeQ8;
+    // 3. Mix input with entropy influence
+    int32_t influencedInput = (int32_t)input + entropyQ8;
     influencedInput = constrain(influencedInput, -32768, 32767);
     
-    // 4. Actualizar reservorio con la entrada influenciada
+    // 4. Update reservoir with influenced input
     return this->update((int16_t)influencedInput);
   }
   
   /**
-   * Obtiene la última lectura del universo.
-   * @return Valor [0.0, 1.0] de la última lectura
+   * Gets the last entropy reading.
+   * @return Value [0.0, 1.0] of the last reading
    */
-  float getLastUniverseReading() { return _lastUniverseReading; }
+  float getLastEntropyReading() { return _lastEntropyReading; }
   
   /**
-   * Genera un byte de entropía verdadera.
+   * Generates a byte of true hardware entropy.
    * 
-   * Útil para inicialización de semillas "sagradas" o
-   * generación de claves criptográficas reales.
+   * Useful for seed initialization or generation of
+   * real cryptographic keys from physical randomness.
    * 
-   * @return Byte de entropía pura del universo
+   * @return Byte of pure hardware entropy
    */
   uint8_t generateTrueEntropyByte() {
     uint8_t entropy = 0;
     for (int bit = 0; bit < 8; bit++) {
-      // Leer dos muestras y comparar (Von Neumann extractor)
-      uint16_t a = analogRead(_mediumConfig.entropyPin);
+      // Read two samples and compare (Von Neumann extractor)
+      uint16_t a = analogRead(_entropyConfig.entropyPin);
       delayMicroseconds(50);
-      uint16_t b = analogRead(_mediumConfig.entropyPin);
+      uint16_t b = analogRead(_entropyConfig.entropyPin);
       
       if (a != b) {
-        // Bit válido
+        // Valid bit
         if (a > b) {
           entropy |= (1 << bit);
         }
-        // Si a < b, bit = 0 (ya es 0)
+        // If a < b, bit = 0 (already 0)
       } else {
-        // Reintentar este bit
+        // Retry this bit
         bit--;
       }
     }
@@ -229,15 +229,15 @@ public:
   }
   
   /**
-   * Genera una semilla sagrada de 32 bits.
+   * Generates a 32-bit hardware entropy seed.
    * 
-   * Esta semilla viene DIRECTAMENTE del universo físico,
-   * no de un generador pseudoaleatorio. Es una "coordenada"
-   * verdadera en el espacio matemático universal.
+   * This seed comes directly from the physical environment,
+   * not from a pseudo-random generator. It provides a true
+   * coordinate in the mathematical space.
    * 
-   * @return Semilla sagrada de 32 bits
+   * @return 32-bit hardware entropy seed
    */
-  uint32_t discoverSacredSeed() {
+  uint32_t discoverHardwareSeed() {
     uint32_t seed = 0;
     for (int i = 0; i < 4; i++) {
       seed |= ((uint32_t)generateTrueEntropyByte() << (i * 8));
@@ -246,120 +246,121 @@ public:
   }
 
   // =========================================================================
-  // SISTEMA THELEMA: Voluntad Verdadera
+  // TASK AFFINITY SYSTEM (Node Specialization)
   // =========================================================================
 
   /**
-   * Calcula el vector de Voluntad Verdadera normalizado.
+   * Calculates the normalized specialization vector.
    * 
-   * Retorna la "fuerza de voluntad" hacia cada dominio.
+   * Returns the "affinity strength" toward each domain.
    * 
-   * @param willVector Array de salida [DOMAIN_COUNT] con valores 0-255
+   * @param affinityVector Output array [DOMAIN_COUNT] with values 0-255
    */
-  void calculateTrueWillVector(uint8_t *willVector) {
+  void calculateSpecializationVector(uint8_t *affinityVector) {
     uint32_t total = 0;
-    uint16_t rawWill[DOMAIN_COUNT];
+    uint16_t rawAffinity[DOMAIN_COUNT];
     
-    // Calcular voluntad bruta por dominio
+    // Calculate raw affinity per domain
     for (int i = 0; i < DOMAIN_COUNT; i++) {
-      // Experiencia normalizada (procesamiento / total)
+      // Normalized experience (processing / total)
       uint16_t totalProcessing = 0;
       for (int j = 0; j < DOMAIN_COUNT; j++) {
-        totalProcessing += _trueWill.processingCount[j];
+        totalProcessing += _spec.processingCount[j];
       }
       uint8_t experience = (totalProcessing > 0) 
-        ? (_trueWill.processingCount[i] * 255 / totalProcessing) 
+        ? (_spec.processingCount[i] * 255 / totalProcessing) 
         : 0;
       
-      // Voluntad = afinidad * (1 + experiencia/256)
-      rawWill[i] = (uint16_t)_trueWill.affinity[i] * (256 + experience) / 256;
-      total += rawWill[i];
+      // Affinity = base_affinity * (1 + experience/256)
+      rawAffinity[i] = (uint16_t)_spec.affinity[i] * (256 + experience) / 256;
+      total += rawAffinity[i];
     }
     
-    // Normalizar a 0-255
+    // Normalize to 0-255
     for (int i = 0; i < DOMAIN_COUNT; i++) {
-      willVector[i] = (total > 0) ? (rawWill[i] * 255 / total) : 0;
+      affinityVector[i] = (total > 0) ? (rawAffinity[i] * 255 / total) : 0;
     }
   }
 
   /**
-   * Evalúa el costo de procesar una tarea en un dominio específico.
+   * Evaluates the cost of processing a task in a specific domain.
    * 
-   * @param domain Dominio solicitado
-   * @return TaskDecision indicando si aceptar/rechazar
+   * @param domain Requested domain
+   * @return TaskDecision indicating whether to accept/reject
    */
   TaskDecision evaluateTaskCost(DataDomain domain) {
-    uint8_t affinity = _trueWill.affinity[domain];
+    uint8_t affinity = _spec.affinity[domain];
     
-    if (affinity >= _trueWill.highCostThreshold) {
+    if (affinity >= _spec.highCostThreshold) {
       return (affinity >= 200) ? DECISION_ACCEPT : DECISION_HIGH_PRIORITY;
-    } else if (affinity >= _trueWill.rejectionThreshold) {
+    } else if (affinity >= _spec.rejectionThreshold) {
       return DECISION_LOW_PRIORITY;
     }
     return DECISION_REJECT;
   }
 
   /**
-   * ¿Debería este nodo aceptar esta tarea?
+   * Should this node accept this task?
    * 
-   * Implementa el principio Thelemático: "Cada estrella en su órbita."
+   * Implements node specialization: nodes perform best in their
+   * native domain and reject tasks outside their expertise.
    * 
-   * @param domain Dominio de la tarea solicitada
-   * @return true si debería aceptar
+   * @param domain Domain of the requested task
+   * @return true if should accept
    */
   bool shouldAcceptTask(DataDomain domain) {
     return evaluateTaskCost(domain) != DECISION_REJECT;
   }
 
   /**
-   * Registra el procesamiento de datos, actualizando la Voluntad.
+   * Records data processing, updating the specialization vector.
    * 
-   * @param domain Dominio procesado
-   * @param mse Error cuadrático medio (Q8.8)
+   * @param domain Processed domain
+   * @param mse_q8 Mean squared error (Q8.8)
    */
   void recordProcessing(DataDomain domain, int16_t mse_q8) {
-    // Incrementar contador
-    if (_trueWill.processingCount[domain] < 65535) {
-      _trueWill.processingCount[domain]++;
+    // Increment counter
+    if (_spec.processingCount[domain] < 65535) {
+      _spec.processingCount[domain]++;
     }
     
-    // Actualizar afinidad basada en éxito
-    // mse_q8 está en Q8.8, entonces 0x100 = 1.0
-    if (mse_q8 < 0x1A) {  // < 0.1 - muy exitoso
-      if (_trueWill.affinity[domain] < 250) {
-        _trueWill.affinity[domain] += 5;
+    // Update affinity based on success
+    // mse_q8 is in Q8.8, so 0x100 = 1.0
+    if (mse_q8 < 0x1A) {  // < 0.1 - very successful
+      if (_spec.affinity[domain] < 250) {
+        _spec.affinity[domain] += 5;
       }
-    } else if (mse_q8 < 0x4D) {  // < 0.3 - aceptable
-      if (_trueWill.affinity[domain] < 253) {
-        _trueWill.affinity[domain] += 2;
+    } else if (mse_q8 < 0x4D) {  // < 0.3 - acceptable
+      if (_spec.affinity[domain] < 253) {
+        _spec.affinity[domain] += 2;
       }
-    } else if (mse_q8 > 0xB3) {  // > 0.7 - malo
-      if (_trueWill.affinity[domain] > 3) {
-        _trueWill.affinity[domain] -= 3;
+    } else if (mse_q8 > 0xB3) {  // > 0.7 - poor
+      if (_spec.affinity[domain] > 3) {
+        _spec.affinity[domain] -= 3;
       }
     }
     
-    // Aumentar inercia con experiencia
+    // Increase inertia with experience
     uint32_t totalExp = 0;
     for (int i = 0; i < DOMAIN_COUNT; i++) {
-      totalExp += _trueWill.processingCount[i];
+      totalExp += _spec.processingCount[i];
     }
-    _trueWill.inertia = min(243, (uint8_t)(128 + totalExp / 4));
+    _spec.inertia = min(243, (uint8_t)(128 + totalExp / 4));
   }
 
   /**
-   * Obtiene el dominio de especialización del nodo.
+   * Gets the node's specialization domain.
    * 
-   * @param level Puntero para almacenar nivel de especialización (0-255)
-   * @return DataDomain de especialización
+   * @param level Pointer to store specialization level (0-255)
+   * @return DataDomain of specialization
    */
   DataDomain getSpecialization(uint8_t *level) {
     uint8_t maxAffinity = 0;
-    DataDomain specialized = _trueWill.genesisDomain;
+    DataDomain specialized = _spec.genesisDomain;
     
     for (int i = 0; i < DOMAIN_COUNT; i++) {
-      if (_trueWill.affinity[i] > maxAffinity) {
-        maxAffinity = _trueWill.affinity[i];
+      if (_spec.affinity[i] > maxAffinity) {
+        maxAffinity = _spec.affinity[i];
         specialized = (DataDomain)i;
       }
     }
@@ -369,14 +370,14 @@ public:
   }
 
   /**
-   * Exporta el vector de Voluntad para sincronización (4 bytes comprimido)
+   * Exports the specialization vector for sync (4 bytes compressed)
    * 
-   * @param buffer Buffer de salida (mínimo 4 bytes)
-   * @return Bytes escritos
+   * @param buffer Output buffer (minimum 4 bytes)
+   * @return Bytes written
    */
-  size_t exportWillCompressed(uint8_t *buffer) {
+  size_t exportSpecializationCompressed(uint8_t *buffer) {
     // Byte 0: Genesis domain (4 bits) + inertia high (4 bits)
-    buffer[0] = (_trueWill.genesisDomain & 0x0F) | ((_trueWill.inertia >> 4) << 4);
+    buffer[0] = (_spec.genesisDomain & 0x0F) | ((_spec.inertia >> 4) << 4);
     
     // Byte 1-2: Top 2 affinities encoded
     uint8_t level;
@@ -387,8 +388,8 @@ public:
     uint8_t secondMax = 0;
     DataDomain spec2 = DOMAIN_GENERIC;
     for (int i = 0; i < DOMAIN_COUNT; i++) {
-      if ((DataDomain)i != spec1 && _trueWill.affinity[i] > secondMax) {
-        secondMax = _trueWill.affinity[i];
+      if ((DataDomain)i != spec1 && _spec.affinity[i] > secondMax) {
+        secondMax = _spec.affinity[i];
         spec2 = (DataDomain)i;
       }
     }
@@ -401,16 +402,21 @@ public:
   }
 
   /**
-   * Obtiene el estado de la Voluntad Verdadera
+   * Gets the node specialization state
    */
-  TrueWillVector* getTrueWill() { return &_trueWill; }
+  SpecializationVector* getSpecializationVector() { return &_spec; }
+
+  // Backward-compatibility aliases
+  SpecializationVector* getTrueWill() { return &_spec; }
+  void calculateTrueWillVector(uint8_t *affinityVector) { calculateSpecializationVector(affinityVector); }
+  size_t exportWillCompressed(uint8_t *buffer) { return exportSpecializationCompressed(buffer); }
 
   // =========================================================================
-  // FUNCIONES DE RED (existentes)
+  // NETWORK FUNCTIONS
   // =========================================================================
 
   /**
-   * Enviar predicción a servidor
+   * Send prediction to server
    */
   bool sendPrediction(const char *serverUrl, float input, float prediction) {
     if (WiFi.status() != WL_CONNECTED)
@@ -436,9 +442,9 @@ public:
   }
 
   /**
-   * Obtener pesos comprimidos (para enviar a otros nodos)
-   * Protocolo: 1-Bit Weight Exchange
-   * Retorna tamaño en bytes
+   * Get compressed weights (for sending to other nodes)
+   * Protocol: 1-Bit Weight Exchange
+   * Returns size in bytes
    */
   size_t getCompressedWeights(uint8_t *buffer, size_t bufferSize) {
     size_t needed = (this->_size + 7) / 8;
@@ -450,8 +456,8 @@ public:
   }
 
   /**
-   * Obtener pesos de otro nodo (para Mente Colectiva)
-   * Protocolo: 1-Bit Weight Exchange
+   * Sync weights from another node (for Collective Mind)
+   * Protocol: 1-Bit Weight Exchange
    */
   bool syncWeights(const char *peerUrl) {
     if (WiFi.status() != WL_CONNECTED)
@@ -500,52 +506,52 @@ public:
   }
 
   /**
-   * Obtener ID único del chip
+   * Get unique chip ID
    */
   String getChipId() { return String((uint32_t)ESP.getEfuseMac(), HEX); }
 
 private:
-  // Vector de Voluntad Verdadera (Thelema)
-  TrueWillVector _trueWill;
+  // Node Specialization Vector
+  SpecializationVector _spec;
   
-  // Configuración del Medium
-  MediumConfig _mediumConfig;
-  float _lastUniverseReading = 0.0;
+  // Hardware Entropy Source config
+  EntropyConfig _entropyConfig;
+  float _lastEntropyReading = 0.0;
 
   /**
-   * Inicializa el sistema de Voluntad Verdadera
+   * Initializes the task affinity system
    */
-  void _initTrueWill(DataDomain genesisDomain) {
-    _trueWill.genesisDomain = genesisDomain;
-    _trueWill.inertia = 128;  // 50% inicial
-    _trueWill.rejectionThreshold = 77;   // ~30%
-    _trueWill.highCostThreshold = 128;   // ~50%
+  void _initSpecialization(DataDomain genesisDomain) {
+    _spec.genesisDomain = genesisDomain;
+    _spec.inertia = 128;  // 50% initial
+    _spec.rejectionThreshold = 77;   // ~30%
+    _spec.highCostThreshold = 128;   // ~50%
     
-    // Inicializar afinidades
+    // Initialize affinities
     for (int i = 0; i < DOMAIN_COUNT; i++) {
-      _trueWill.affinity[i] = 26;  // ~10% base
-      _trueWill.processingCount[i] = 0;
+      _spec.affinity[i] = 26;  // ~10% base
+      _spec.processingCount[i] = 0;
     }
     
-    // El dominio genesis comienza con máxima afinidad
-    _trueWill.affinity[genesisDomain] = 255;
-    _trueWill.processingCount[genesisDomain] = 1;
+    // Genesis domain starts with maximum affinity
+    _spec.affinity[genesisDomain] = 255;
+    _spec.processingCount[genesisDomain] = 1;
   }
   
   /**
-   * Inicializa el sistema Medium con valores por defecto
+   * Initializes the hardware entropy source with defaults
    */
-  void _initMedium() {
-    _mediumConfig.entropyPin = 36;        // VP (GPIO36) - pin sensible
-    _mediumConfig.influenceWeight = 0.1;   // 10% influencia del universo
-    _mediumConfig.samplesPerReading = 8;   // 8 muestras promedio
-    _mediumConfig.useRF = true;            // Usar ruido WiFi también
+  void _initEntropy() {
+    _entropyConfig.entropyPin = 36;        // VP (GPIO36) - sensitive pin
+    _entropyConfig.influenceWeight = 0.1;   // 10% entropy influence
+    _entropyConfig.samplesPerReading = 8;   // 8 samples average
+    _entropyConfig.useRF = true;            // Use WiFi noise too
     
-    pinMode(_mediumConfig.entropyPin, INPUT);
+    pinMode(_entropyConfig.entropyPin, INPUT);
   }
 
   /**
-   * Descomprime 1-bit weights y actualiza W_out localmente
+   * Decompresses 1-bit weights and updates W_out locally
    */
   void _dequantizeToWOut(const uint8_t *input, int count, int8_t magnitude) {
     if (!input || count > AEON_MAX_RESERVOIR)
@@ -564,7 +570,7 @@ private:
   }
 
   /**
-   * Comprime W_out a 1-bit por peso
+   * Compresses W_out to 1-bit per weight
    */
   void _quantizeWOut(uint8_t *output) {
     memset(output, 0, (this->_size + 7) / 8);

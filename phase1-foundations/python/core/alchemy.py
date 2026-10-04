@@ -1,32 +1,18 @@
 """
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                       ALCHEMICAL TRANSMUTATION PIPELINE                       ║
-║                        Opus Magnum - De Plomo en Oro                          ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║                                                                               ║
-║  "Visita Interiora Terrae Rectificando Invenies Occultum Lapidem"            ║
-║  (Visita el interior de la tierra, y rectificando encontrarás                ║
-║   la piedra oculta)                                                           ║
-║                              - V.I.T.R.I.O.L.                                 ║
-║                                                                               ║
-║  OPUS MAGNUM - LA GRAN OBRA:                                                  ║
-║  ──────────────────────────                                                   ║
-║                                                                               ║
-║  ┌─────────────────────────────────────────────────────────────────────┐     ║
-║  │                                                                      │     ║
-║  │   NIGREDO ⚫  ───────▶  ALBEDO ⚪  ───────▶  RUBEDO 🔴              │     ║
-║  │  (Putrefacción)       (Purificación)        (Iluminación)           │     ║
-║  │                                                                      │     ║
-║  │  Datos Crudos    ▶   Filtrado/Limpieza   ▶  Inferencia/Oro         │     ║
-║  │  Sensor Noise    ▶   Kalman Filter       ▶  Predicción ESN         │     ║
-║  │  Materia Prima   ▶   Mercurio Filosófico ▶  Piedra Filosofal       │     ║
-║  │                                                                      │     ║
-║  └─────────────────────────────────────────────────────────────────────┘     ║
-║                                                                               ║
-║  La alquimia no es transformación literal de metales, sino la                ║
-║  purificación gradual de la materia prima hasta revelar su esencia.          ║
-║                                                                               ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+Proyecto Eón - Pipeline de Acondicionamiento de Señales y Filtrado Kalman Multinivel
+====================================================================================
+
+Pipeline de preprocesamiento, acondicionamiento y predicción para sensores Edge / IoT.
+
+Arquitectura por Fases (Pipeline Stages):
+  1. RAW / INGESTION (Nigredo) ──▶ Ingesta de datos crudos del sensor con ruido.
+  2. FILTERING / KALMAN (Albedo) ──▶ Filtrado Kalman y remoción de anomalías estadísticas.
+  3. PROJECTION (Citrinitas) ──▶ Normalización y proyección de características.
+  4. INFERENCE (Rubedo) ──▶ Inferencia y predicción mediante reservoir ESN.
+
+[Nota Histórica / Metafórica]:
+El proyecto exploró inicialmente esta arquitectura bajo la metáfora de la transmutación
+alquímica ("de plomo en oro"), conservando aliases para compatibilidad con código legacy.
 """
 
 import numpy as np
@@ -719,6 +705,12 @@ def demonstrate_alchemy():
     
     return pipeline
 
+
+# Technical Production Standards (ETL & Sensor Conditioning Pipeline)
+PipelinePhase = AlchemicalPhase
+ConditioningState = TransmutationState
+PipelineConfig = AlchemicalConfig
+DataConditioningPipeline = AlchemicalPipeline
 
 if __name__ == "__main__":
     pipeline = demonstrate_alchemy()

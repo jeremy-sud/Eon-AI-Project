@@ -1,9 +1,11 @@
 """
-Tests for Mystical Modules
-==========================
-Tests for Tzimtzum, Alchemy, Recursive ESN, HebbianTzimtzum, and Egrégor.
-
-Run with: pytest phase1-foundations/python/tests/test_mystical_modules.py -v
+Tests de Integración: Módulos de Poda Dinámica, Pipelines de Acondicionamiento y Extensiones
+===========================================================================================
+Verifica el funcionamiento de:
+- DynamicPruningESN / TzimtzumESN (poda dinámica y regeneración estructural)
+- DataConditioningPipeline / AlchemicalPipeline (ingesta, filtrado Kalman y predicción)
+- RecursiveEchoStateNetwork (arquitectura multi-escala)
+- HebbianTzimtzumESN (plasticidad combinada)
 """
 
 import pytest

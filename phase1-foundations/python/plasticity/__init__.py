@@ -7,20 +7,31 @@ from .tzimtzum import (
     TzimtzumConfig, 
     TzimtzumState, 
     TzimtzumMixin,
-    ContractionPhase
+    ContractionPhase,
+    DynamicPruningESN,
+    DynamicPruningConfig,
+    DynamicPruningState,
+    DynamicPruningMixin,
+    PruningPhase
 )
 from .hebbian_tzimtzum import HebbianTzimtzumESN
 
 __all__ = [
-    # Hebbian
+    # Hebbian Plasticity
     'HebbianESN',
     'compare_plasticity_types',
-    # Tzimtzum
+    # Dynamic Pruning (Production Standards)
+    'DynamicPruningESN',
+    'DynamicPruningConfig',
+    'DynamicPruningState',
+    'DynamicPruningMixin',
+    'PruningPhase',
+    # Legacy / Experimental Aliases
     'TzimtzumESN',
     'TzimtzumConfig',
     'TzimtzumState',
     'TzimtzumMixin',
     'ContractionPhase',
-    # Combined
+    # Combined Plasticity
     'HebbianTzimtzumESN',
 ]

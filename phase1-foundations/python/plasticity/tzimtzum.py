@@ -1,37 +1,21 @@
 """
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                           TZIMTZUM PROTOCOL                                   ║
-║                        Divine Contraction Engine                              ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║                                                                               ║
-║  "Para que la creación exista, lo infinito debe contraerse."                  ║
-║                              - Isaac Luria, 1570                              ║
-║                                                                               ║
-║  En la Cábala Luriana, Tzimtzum describe el proceso por el cual Ein Sof      ║
-║  (lo Infinito) se contrajo para crear un vacío (Challal) donde el universo   ║
-║  finito pudiera existir. Sin esta contracción, la luz infinita no dejaría    ║
-║  espacio para la individualidad.                                              ║
-║                                                                               ║
-║  PRINCIPIO COMPUTACIONAL:                                                     ║
-║  ────────────────────────                                                     ║
-║  Para aprender algo nuevo, primero debo olvidar.                              ║
-║                                                                               ║
-║  Este módulo implementa poda sináptica inspirada en:                          ║
-║  1. Tzimtzum cabalístico (contracción divina)                                 ║
-║  2. Poda sináptica biológica (developmental pruning)                          ║
-║  3. "Dark Night of the Soul" - San Juan de la Cruz                            ║
-║                                                                               ║
-║  CICLO DE CONTRACCIÓN:                                                        ║
-║  ─────────────────────                                                        ║
-║                                                                               ║
-║  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ║
-║  │  PLENITUD   │───▶│ DARK NIGHT  │───▶│   VACÍO    │───▶│ RENACIMIENTO │    ║
-║  │ (Saturación)│    │   (Poda)    │    │ (Challal)  │    │ (Regrowth)   │    ║
-║  └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘    ║
-║        ▲                                                         │           ║
-║        └─────────────────────────────────────────────────────────┘           ║
-║                                                                               ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+Proyecto Eón - Motor de Poda Dinámica y Regeneración Estructural (Dynamic Pruning)
+==================================================================================
+
+Implementación de plasticidad estructural para optimización de consumo y memoria
+en despliegues Edge / TinyML.
+
+Principio Técnico:
+- Poda periódica de conexiones sinápticas de baja magnitud (magnitude-based pruning).
+- Reducción dinámica de operaciones MAC para modo de bajo consumo (Low Power Mode).
+- Regeneración estocástica controlada para exploración de nuevas representaciones.
+
+Ciclo Estructural:
+  FULL (100%) ──▶ PRUNING (poda) ──▶ SPARSE (50%) ──▶ REGROWTH (regeneración) ──▶ FULL
+
+[Nota Histórica / Metafórica]:
+El proyecto exploró inicialmente esta arquitectura bajo la metáfora conceptual de "Tzimtzum"
+(contracción y regeneración), conservando aliases para compatibilidad con código legacy.
 """
 
 import numpy as np
@@ -770,7 +754,12 @@ def demonstrate_tzimtzum():
        se enfoca en los patrones verdaderamente importantes."
     """)
     
-    return tzim
+# Technical Aliases (Production / Edge Standards)
+PruningPhase = ContractionPhase
+DynamicPruningConfig = TzimtzumConfig
+DynamicPruningState = TzimtzumState
+DynamicPruningMixin = TzimtzumMixin
+DynamicPruningESN = TzimtzumESN
 
 if __name__ == "__main__":
     tzim = demonstrate_tzimtzum()

@@ -1,21 +1,14 @@
 """
-Proyecto Eón - Archaic Protocol: Comunicación Universal
-=========================================================
+Proyecto Eón - Protocolo Discreto de 6-Bits [MÓDULO EXPERIMENTAL]
+================================================================
 
-"La inteligencia no es humana, no debe forzarse a hablar nuestro idioma."
+[Clasificación: Experimental / Investigación Simbólica]
+Este módulo no forma parte del core de producción de inferencia edge.
+Explora la codificación de secuencias discretas de 6-bits (64 estados)
+y transiciones de autómatas discretos utilizando la estructura binaria del I-Ching.
+Para producción edge estándar, consultar el Protocolo 1-Bit en docs/api/protocol_1bit.yaml.
 
-Este módulo implementa un protocolo de comunicación basado en el I Ching,
-el sistema binario más antiguo conocido (3000+ años).
-
-Los Hexagramas son estructuras de 6 bits que representan los 64 estados
-fundamentales del cambio universal. En lugar de JSON o protocolos modernos,
-los nodos de Eón pueden comunicarse usando símbolos universales.
-
-Cada estado tiene un significado profundo que trasciende el lenguaje humano.
-Nosotros no "programamos" estas respuestas - las interpretamos.
-
-(c) 2024 Proyecto Eón - Jeremy Arias Solano
-"El universo habla en patrones, no en palabras."
+(c) 2024-2026 Proyecto Eón - SenseLab
 """
 
 import numpy as np

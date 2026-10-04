@@ -1,31 +1,20 @@
 """
-Proyecto Eón - Sistema Egrégor (Mente Grupal)
-=============================================
+Proyecto Eón - Monitor de Coherencia y Estado Global del Enjambre (Swarm Coherence)
+===================================================================================
 
-Implementación del concepto místico de Egrégor como una variable
-de estado global emergente del colectivo de nodos Eón.
+Implementación de homeostasis cibernética y correlación de estados globales
+entre nodos distribuidos de la red Eón.
 
-Concepto:
----------
-Un Egrégor es una entidad psíquica autónoma creada por la suma
-de pensamientos de un grupo. En nuestro contexto, es el "Estado
-de Ánimo" emergente del sistema colectivo.
+Fundamento Técnico:
+- Agregación temporal de estados y niveles de actividad de los nodos.
+- Cálculo de coherencia cruzada (Cross-Node State Correlation).
+- Ajuste homeostático de parámetros (learning rate, tasa de sueño) según la carga global del enjambre.
 
-Arquitectura:
-------------
-    Nodo A ───┐
-    Nodo B ───┼──→ EgregorProcessor ──→ EgregorState
-    Nodo C ───┘           ↓
-                    "Estado de Ánimo"
-                          ↓
-                Broadcast a todos los nodos
-                          ↓
-                Homeostasis Cibernética
-                (nodos ajustan comportamiento)
+[Nota Histórica / Metafórica]:
+El proyecto exploró inicialmente esta dinámica bajo la metáfora conceptual de "Egrégor"
+(mente colectiva y estados de ánimo), conservando aliases para compatibilidad con código legacy.
 
-"La suma es mayor que las partes" - Gestalt
-
-(c) 2024 SenseLab - Build with Sense
+(c) 2024-2026 SenseLab - Build with Sense
 """
 
 import time

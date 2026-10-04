@@ -22,8 +22,12 @@ from .archaic_protocol import (
     HEXAGRAMS
 )
 
-# Pipeline Alquímico (ETL Transmutation)
+# Pipeline de Acondicionamiento de Señal y Filtrado (ETL Pipeline)
 from .alchemy import (
+    DataConditioningPipeline,
+    PipelineConfig,
+    PipelinePhase,
+    ConditioningState,
     AlchemicalPipeline,
     AlchemicalConfig,
     AlchemicalPhase,
@@ -94,7 +98,13 @@ __all__ = [
     'HexagramStream',
     'HEXAGRAMS',
     
-    # Alchemical Pipeline
+    # Sensor Conditioning & Filtering Pipeline (Production Standards)
+    'DataConditioningPipeline',
+    'PipelineConfig',
+    'PipelinePhase',
+    'ConditioningState',
+    
+    # Alchemical Pipeline (Legacy Aliases)
     'AlchemicalPipeline',
     'AlchemicalConfig',
     'AlchemicalPhase',

@@ -1,22 +1,14 @@
 """
-Proyecto Eón - Oráculo I-Ching Neural
-=====================================
+Proyecto Eón - Oráculo de Secuencias Discretas [MÓDULO EXPERIMENTAL]
+=====================================================================
 
-Un oráculo que combina la sabiduría milenaria del I-Ching con
-la capacidad predictiva de las Echo State Networks.
+[Clasificación: Experimental / Investigación Simbólica]
+Este módulo no forma parte del core de producción de inferencia edge.
+Implementa un modelo predictivo sobre espacios discretos de 64 estados binarios
+(representación de 6 bits inspirada en hexagramas), demostrando la versatilidad
+del reservoir computing para modelar autómatas finitos y transiciones estocásticas.
 
-El I-Ching tiene 64 hexagramas, cada uno compuesto de 6 líneas (bits).
-Esta representación binaria es perfecta para redes neuronales.
-
-Concepto:
----------
-1. El ESN aprende patrones de transición entre hexagramas
-2. Dado un hexagrama actual y una pregunta, predice el siguiente
-3. La interpretación combina matemática con tradición
-
-"El universo habla en patrones, no en palabras."
-
-(c) 2024 Proyecto Eón - Jeremy Arias Solano
+(c) 2024-2026 Proyecto Eón - SenseLab
 """
 
 import numpy as np

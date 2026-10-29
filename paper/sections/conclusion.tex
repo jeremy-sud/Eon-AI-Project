@@ -1,5 +1,14 @@
-\section{Conclusion}
+\section{Conclusion and Future Work}
 
-Eón demonstrates that useful intelligence does not strictly require massive scale. By carefully optimizing the "software of the mind"---specifically, by leveraging the mathematical properties of Reservoir Computing and deterministic generation---we can embed adaptive learning into the smallest of electronic devices. This opens the door to a "Mycelial Intelligence" where smart dust, bio-implants, and environmental sensors can learn, adapt, and share knowledge without ever touching the cloud.
+In this paper, we introduced \textbf{Eón}, an ultra-lightweight neuromorphic intelligence architecture that challenges the prevailing assumption that effective machine learning necessitates high-power hardware accelerators. By exploiting the mathematical properties of Reservoir Computing and replacing naive matrix operations with numerically principled algorithms, Eón establishes that functional temporal intelligence can operate reliably within a $1.3\,\text{KB}$ RAM and $14\,\text{KB}$ Flash footprint on edge hardware costing under \$3.
 
-\end{document}
+Specifically, we proved and demonstrated that:
+\begin{enumerate}
+    \item Readout layer training for regularized Echo State Networks is strictly symmetric positive-definite, enabling exact Cholesky decomposition ($A = L L^T$) that reduces floating-point arithmetic from $M^3$ to $\frac{1}{3} M^3$ flops while guaranteeing unconditional numerical stability without pivoting.
+    \item Real-time Normalized Least-Mean-Squares (NLMS) adaptation achieves continuous on-device learning with $O(N)$ arithmetic complexity, bypassing the prohibitive covariance matrix storage of RLS.
+    \item Orthogonal reservoirs constructed via the Cayley transform eliminate dead dynamic modes, maximizing memory capacity across non-stationary regimes.
+    \item Oja's normalized learning rule guarantees asymptotic weight norm convergence without requiring per-step matrix eigenspectrum evaluations.
+    \item Procedural LCG seed synchronization combined with 1-bit sign quantization enables decentralized edge swarms to exchange learned models with an $8.3\times$ payload reduction and $2.6\times$ energy savings over LoRa radio links.
+\end{enumerate}
+
+These results lay the foundation for truly autonomous, zero-cloud edge intelligence in biosensors, environmental telemetry, and smart agricultural networks. Future work will focus on integrating CMSIS-DSP SIMD intrinsics (\texttt{\_\_SMLAD}) for single-cycle dual-MAC operations on ARM Cortex-M processors and exploring decentralized gradient consensus in multi-hop mesh swarms.

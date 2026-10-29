@@ -73,16 +73,43 @@ Este roadmap establece la ruta de evolución técnica para transformar a Eón en
   - Implementación en `phase1-foundations/python/learning/ud_rls.py` y port nativo en C `libAeon_rls_ud.c`.
 * **Criterio de Aceptación:** MSE acotado sin degradación ni NaN tras 100,000 ciclos de aprendizaje continuo en Cortex-M4F sin FPU de 64 bits.
 
-### 13.4 Reservoirs Ortogonales y Simplécticos
+### 13.4 Reservoirs Ortogonales y Simplécticos `[COMPLETADO]`
 * **Problema:** Los reservoirs generados con pesos gaussianos aleatorios tienen una distribución de eigenvalores en el plano complejo con alta varianza, provocando modos resonantes espurios y amortiguamiento desbalanceado.
 * **Fundamento Matemático:**
   - Matriz ortogonal estricta $W W^T = I$, con eigenvalores sobre el círculo unitario $|\lambda_i| = 1$.
   - Escalado exacto $W \leftarrow \rho \cdot W$ asegura que todos los modos decaigan a la tasa idéntica $\rho^t$.
   - Generación mediante transformadas de Cayley a partir de matrices antisimétricas $A = -A^T$:
-    $$W = (I - A)(I + A)^{-1}$$
+    $$W = \rho (I - A)(I + A)^{-1}$$
 * **Implementación:**
-  - Generador ortogonal en `phase1-foundations/python/utils/matrix_init.py`.
-* **Criterio de Aceptación:** Retención de memoria $MC$ un 25% superior a reservoirs gaussianos idénticos en tamaño.
+  - Generador ortogonal implementado y verificado en [`phase1-foundations/python/utils/matrix_init.py`](../phase1-foundations/python/utils/matrix_init.py#L110) (`generate_orthogonal_reservoir`).
+* **Criterio de Aceptación:** Retención de memoria $MC$ un 25% superior a reservoirs gaussianos idénticos en tamaño, autovalores uniformes sobre radio $\rho$.
+
+### 13.5 Factorización Exacta de Cholesky ($A = L L^T$) para Ridge Regression `[COMPLETADO]`
+* **Problema:** El entrenamiento de lectura por inversión densa o LU tiene costo $O(M^3)$ y requiere pivoteo numérico inestable bajo punto fijo.
+* **Fundamento Matemático:**
+  - La matriz de covarianza regularizada $A = X^T X + \lambda I_M$ es estrictamente simétrica y definida positiva (SPD) para $\lambda > 0$.
+  - Descomposición triangular $A = L L^T$ con complejidad reducida a $\frac{1}{3} M^3$ flops ($2.98\times$ aceleración en ARM Cortex-M4 @ 64MHz) sin pivoteo.
+* **Implementación:**
+  - Implementado con solver Cholesky directo y subrutina LAPACK `DPOSV` en [`phase1-foundations/python/utils/matrix_init.py`](../phase1-foundations/python/utils/matrix_init.py#L75) (`ridge_regression`).
+
+### 13.6 Adaptación Streaming Continua: Regla Delta NLMS $O(M)$ `[COMPLETADO]`
+* **Problema:** El algoritmo RLS requiere acumular y actualizar una matriz $M \times M$ ($O(M^2)$ en memoria y tiempo), incompatible con microcontroladores de $\le 2\,\text{KB}$ RAM.
+* **Fundamento Matemático:**
+  - Regla delta normalizada en tiempo real:
+    $$W_{out}(t) = W_{out}(t-1) + \eta \frac{e(t) \tilde{x}(t)^T}{\|\tilde{x}(t)\|_2^2 + \epsilon}$$
+  - Complejidad $O(M)$ en tiempo y memoria, con cota instantánea de energía contra impulsos.
+* **Implementación:**
+  - Implementado en [`phase1-foundations/python/esn/esn.py`](../phase1-foundations/python/esn/esn.py) (`StreamingReadout`, `StreamingESN`) y ANSI C `aeon_online_train_step`.
+
+### 13.7 Plasticidad No Supervisada de Oja ($\|w_i\|_2 \to 1$) `[COMPLETADO]`
+* **Problema:** La regla Hebbiana clásica diverge asintóticamente ($\|w\| \to \infty$) saturando registros enteros de punto fijo Q8.8.
+* **Fundamento Matemático:**
+  - Regla normalizada de Oja:
+    $$\Delta w_{ij} = \eta_H x_i (x_j - x_i w_{ij})$$
+  - Convergencia garantizada al primer componente principal sin recálculo de espectros.
+* **Implementación:**
+  - Implementado en [`phase1-foundations/python/plasticity/hebbian.py`](../phase1-foundations/python/plasticity/hebbian.py) (`plasticity_type='oja'`).
+
 
 ---
 

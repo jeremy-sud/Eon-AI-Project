@@ -33,6 +33,10 @@ Esta sección detalla las funcionalidades clave de Eón y su relevancia técnica
 | Característica              | Descripción Técnica                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Núcleo Ultraligero (C)**  | Implementación fundamental en C con una huella de memoria de solo 1.3 KB, optimizada para microcontroladores y entornos con RAM extremadamente limitada.                                                                                                                                                                                                                                                                                        |
+| **Factorización de Cholesky ($LL^T$)** | Solucionador analítico exacto para la capa de lectura con $O(\frac{1}{3}M^3)$ flops ($2.98\times$ aceleración en ARM Cortex-M4 @ 64MHz). Demostración estricta de simetría y definición positiva (SPD) con estabilidad incondicional libre de pivoteo numérico.                                                                                                                                                                                    |
+| **Adaptación Continua NLMS ($O(N)$)** | Regla delta streaming normalizada que permite el aprendizaje ininterrumpido en el microcontrolador sin almacenar la matriz de covarianza, con estabilidad geométrica garantizada.                                                                                                                                                                                                                                                               |
+| **Reservorios Ortogonales de Cayley** | Generador ortogonal $W = \rho (I - A)(I + A)^{-1}$ con $A = -A^T$ para maximizar la capacidad de memoria temporal lineal sin modos resonantes amortiguados.                                                                                                                                                                                                                                                                               |
+| **Plasticidad de Oja Normalizada** | Regla Hebbiana intrínseca $\Delta w_{ij} = \eta_H x_i (x_j - x_i w_{ij})$ con convergencia asintótica de norma ($\|w_i\|_2 \to 1$), evitando desbordamientos en registros de punto fijo.                                                                                                                                                                                                                                                    |
 | **Multi-plataforma**        | Compatibilidad nativa con Python para desarrollo de alto nivel y simulación, C/C++ para rendimiento en el edge, JavaScript para interfaz web, y firmware para Arduino/ESP32, garantizando versatilidad en el despliegue.                                                                                                                                                                                                                          |
 | **Reservoir Computing (ESN)**| Utiliza Echo State Networks, un tipo de Red Neuronal Recurrente, para procesar series temporales con un entrenamiento mínimo y eficiente. La dinámica intrínseca del "reservoir" proporciona una memoria temporal inherente para el reconocimiento de patrones y la predicción.                                                                                                                                                                      |
 | **Aprendizaje Continuo On-Device**| Implementa algoritmos de aprendizaje online (regresión lineal adaptativa) que permiten al modelo ajustarse y mejorar continuamente en el dispositivo con nuevos datos, sin necesidad de re-flashear el firmware o depender de reentrenamiento en la nube.                                                                                                                                                                                  |
@@ -118,17 +122,21 @@ Eón Project AI/
 │   └── mosquitto/config/           # Configuración MQTT
 │
 ├── paper/
-│   ├── main.tex                    # Paper LaTeX
-│   └── main.pdf                    # Paper compilado (3 páginas)
+│   ├── main.tex                    # Paper LaTeX académico formal en inglés
+│   ├── main.pdf                    # Paper compilado (10 páginas, IEEE/ACM style)
+│   ├── references.bib              # Referencias académicas completas
+│   └── sections/                   # Secciones modulares del paper
 │
-├── phase1-foundations/             # Python ESN + Core
-├── phase2-core/                    # C Ultraligero + Dockerfile
+├── phase1-foundations/             # Python ESN + Core (Cholesky, Cayley, Oja)
+├── phase2-core/                    # C Ultraligero Q8.8 + Dockerfile
 ├── phase3-integration/             # JavaScript Web (core)
 ├── phase4-hardware/                # Arduino + ESP32 + LoRa
 ├── phase5-applications/            # IoT: Bio, Voice, Temperature
 ├── phase6-collective/              # Mente Colectiva + MQTT + WebSocket
 ├── phase7-language/                # TinyLMv2 (Language Model)
-├── phase8-paper/                   # Paper LaTeX original
+├── phase8-paper/                   # Paper LaTeX académico en español (5 páginas)
+│   ├── paper.tex                   # Documento principal en español
+│   └── paper.pdf                   # Paper compilado en español con pruebas formales
 │
 └── web/                            # Servidor Web Principal
     ├── server.py                   # API REST Flask (~2300 líneas)

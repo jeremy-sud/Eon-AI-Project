@@ -12,6 +12,8 @@ build/
 dist/
 *.egg-info/
 aeon_demo
+test_aeon
+phase2-core/libAeon/test_aeon
 
 # IDEs
 .vscode/
@@ -38,3 +40,11 @@ node_modules/
 eon-pem-key-holder/
 *.pem
 *.key
+
+# LaTeX temp files
+*.aux
+*.out
+*.blg
+*.bbl
+*.fls
+*.fdb_latexmk

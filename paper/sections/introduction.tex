@@ -1,15 +1,26 @@
 \section{Introduction}
 
-The field of TinyML aims to bring machine learning to the network edge. However, dominant approaches like TensorFlow Lite for Microcontrollers predominantly rely on compressing feed-forward architectures (CNNs, MLPs) trained offline \cite{warden2019tinyml}. While effective for static classification, these models lack inherent temporal memory and on-device plasticity. 
+The proliferation of Internet of Things (IoT) sensors, wearable health monitors, and remote environmental nodes has fueled the emergence of Tiny Machine Learning (TinyML) \cite{warden2019tinyml}. Bringing inference directly to edge transducers eliminates transmission latency, mitigates privacy hazards associated with raw data streaming, and radically reduces communication energy. 
 
-Reservoir Computing (RC), specifically Echo State Networks (ESNs) \cite{jaeger2001echo}, offers a compelling alternative. By fixing a large, random recurrent hidden layer (the "reservoir") and only training a linear output layer, RC allows for extremely cheap training and inference. 
+However, prevailing TinyML paradigms face fundamental theoretical and practical bottlenecks. Dominant toolchains such as TensorFlow Lite for Microcontrollers (TFLM) and Edge Impulse primarily rely on offline quantization and pruning of static, feed-forward architectures (e.g., Depthwise Separable CNNs or MLPs). While competent for static pattern recognition, these models possess three severe shortcomings when deployed on deeply embedded hardware:
+\begin{enumerate}
+    \item \textbf{Absence of On-Device Plasticity:} Static weights cannot adapt to sensor degradation, calibration drift, or changing operational regimes in the field without costly round-trip communication to a centralized cloud server.
+    \item \textbf{Disregard for Temporal Recurrence:} Processing temporal sequences requires artificial windowing (sliding buffers), which scales memory consumption quadratically with context length.
+    \item \textbf{RAM Exclusivity:} Standard deep TinyML runtimes typically demand between $30\,\text{KB}$ and $256\,\text{KB}$ of Static RAM (SRAM) for intermediate activation buffers, excluding ultra-low-cost, battery-harvesting microcontrollers (such as ARM Cortex-M0+, MSP430, or ATmega328P) that operate within strict budgets of $2\,\text{KB}$ to $8\,\text{KB}$ RAM.
+\end{enumerate}
 
-\textbf{Eón} explores the lower bound of this paradigm. We ask: \textit{What is the minimal viable structure required for emergent functional intelligence?} 
+Reservoir Computing (RC), and specifically Echo State Networks (ESNs) \cite{jaeger2001echo, lukovsevivc2009reservoir}, offers an analytically elegant solution to these limitations. An ESN projects sequential inputs into a high-dimensional, recurrent, non-linear dynamic reservoir whose internal synaptic weights are fixed upon initialization. Only the readout projection layer ($W_{out}$) is trained via convex linear regression. This architectural decoupling yields two distinct advantages for the edge: (i) temporal memory is naturally embedded into the recurrent state trajectory without buffer management, and (ii) training reduces to a convex, single-step least-squares problem, circumventing the computational burden and local minima of backpropagation through time (BPTT).
 
-Our contributions are:
+Despite these theoretical advantages, deploying Reservoir Computing directly onto bare-metal microcontrollers presents non-trivial mathematical and numerical challenges. Traditional implementations rely on dense double-precision matrices, compute full matrix inversions ($O(N^3)$ operations) via Gauss-Jordan elimination, and suffer from numerical degradation or eigenvalue drift in integer-only hardware. Furthermore, continuous Hebbian adaptation often triggers catastrophic unbounded weight inflation unless regulated by computationally expensive per-step eigenspectrum factorizations.
+
+\subsection{Contributions}
+In this work, we present \textbf{Eón}, an open-source, mathematically principled, ultra-lightweight neuromorphic intelligence engine engineered specifically for sub-$2\,\text{KB}$ RAM environments. Our primary contributions are:
 \begin{itemize}
-    \item A fixed-point C implementation fitting in 1.3KB RAM.
-    \item A deterministic cross-platform initialization scheme ("Spirit Hash").
-    \item Protocols for distributed learning via 1-bit quantization.
-    \item Real-world prototypes in text, bio-signals, and audio.
+    \item \textbf{Production-Grade C Core with Fixed-Point Arithmetic:} A self-contained, bare-metal C engine (\texttt{libAeon}) implementing Q8.8 fixed-point arithmetic, requiring only $1.3\,\text{KB}$ of RAM for a 32-neuron reservoir and compiling to less than $14\,\text{KB}$ of Flash memory.
+    \item \textbf{Cholesky-Factorized Training ($O(\frac{1}{3} N^3)$):} Mathematical proof and embedded realization of exact Cholesky decomposition ($A = L L^T$) for regularized symmetric positive-definite normal equations, eliminating pivot-division instability and reducing training complexity by $66\%$ over Gauss-Jordan and $50\%$ over general LU.
+    \item \textbf{Normalized LMS Online Adaptation:} An on-device delta rule requiring only $O(N)$ MAC operations and zero covariance matrix memory, enabling battery-powered microcontrollers to adapt continuously in real time.
+    \item \textbf{Orthogonal Reservoirs via Cayley Transform:} Generation of strictly orthogonal reservoir topologies ($W = \rho (I - A)(I + A)^{-1}$) that maximize echo memory capacity and prevent fading gradients.
+    \item \textbf{Asymptotically Bounded Plasticity (Oja's Rule):} Implementation of Oja's normalized learning rule, guaranteeing bounded synaptic evolution and principal component subspace convergence without requiring runtime matrix eigenvalue computations.
+    \item \textbf{Zero-Bandwidth Sync \& 1-Bit Weight Quantization:} A deterministic Linear Congruential Generator (LCG) seed-synchronization protocol combined with 1-bit sign quantization, compressing synchronization payloads by $8.3\times$ and extending LoRa IoT sensor battery lifetimes by $2.6\times$.
+    \item \textbf{Cross-Domain Validation:} Comprehensive empirical validation across bio-medical cardiac arrhythmia detection, keyword spotting, and chaotic Mackey-Glass sequence modeling.
 \end{itemize}

@@ -15,9 +15,18 @@ import time
 # Path setup
 _current_dir = os.path.dirname(os.path.abspath(__file__))
 _web_dir = os.path.dirname(_current_dir)
-sys.path.insert(0, _web_dir)
+if _web_dir not in sys.path:
+    sys.path.insert(0, _web_dir)
 
-from learning import OnlineLearner, LongTermMemory, EonLearningSystem
+import importlib.util
+_learning_path = os.path.join(_web_dir, "learning.py")
+_learning_spec = importlib.util.spec_from_file_location("web_learning_mod", _learning_path)
+_web_learning = importlib.util.module_from_spec(_learning_spec)
+_learning_spec.loader.exec_module(_web_learning)
+
+OnlineLearner = _web_learning.OnlineLearner
+LongTermMemory = _web_learning.LongTermMemory
+EonLearningSystem = _web_learning.EonLearningSystem
 
 
 class TestOnlineLearner:

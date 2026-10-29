@@ -28,15 +28,18 @@ from esn.esn import EchoStateNetwork
 
 class ContractionPhase(Enum):
     """
-    Fases del ciclo Tzimtzum.
-    
-    El proceso de contracción-expansión es cíclico, reflejando
-    el ritmo cósmico de creación y destrucción.
+    Fases del ciclo de poda y regeneración estructural (Magnitude Pruning Cycle).
     """
-    PLENITUD = auto()       # Red saturada, muchas conexiones
-    DARK_NIGHT = auto()     # Proceso de poda activo
-    CHALLAL = auto()        # Vacío primordial, mínimas conexiones
-    RENACIMIENTO = auto()   # Recrecimiento de conexiones
+    PLENITUD = auto()       # Red saturada, conexiones activas (STABLE)
+    DARK_NIGHT = auto()     # Proceso de poda activo (PRUNING)
+    CHALLAL = auto()        # Estado de máxima escasez (SPARSE)
+    RENACIMIENTO = auto()   # Recrecimiento y regeneración de conexiones (REGROWTH)
+
+# Production Technical Aliases
+ContractionPhase.STABLE = ContractionPhase.PLENITUD
+ContractionPhase.PRUNING = ContractionPhase.DARK_NIGHT
+ContractionPhase.SPARSE = ContractionPhase.CHALLAL
+ContractionPhase.REGROWTH = ContractionPhase.RENACIMIENTO
 
 @dataclass
 class TzimtzumState:
@@ -372,9 +375,13 @@ class TzimtzumESN(EchoStateNetwork):
         return stats
     
     def _normalize_spectral_radius(self):
-        """Renormaliza el reservoir para mantener estabilidad."""
-        eigenvalues = np.abs(np.linalg.eigvals(self.W_reservoir))
-        current_radius = eigenvalues.max() if len(eigenvalues) > 0 else 0
+        """Renormaliza el reservoir para mantener estabilidad numérica y espectral."""
+        try:
+            from utils.matrix_init import compute_spectral_radius
+            current_radius = compute_spectral_radius(self.W_reservoir, method='auto')
+        except ImportError:
+            eigenvalues = np.abs(np.linalg.eigvals(self.W_reservoir))
+            current_radius = eigenvalues.max() if len(eigenvalues) > 0 else 0.0
         
         if current_radius > 0:
             self.W_reservoir *= self.spectral_radius / current_radius
@@ -466,6 +473,12 @@ class TzimtzumESN(EchoStateNetwork):
             'final_connections': self.tzimtzum_state.total_connections,
             'total_cycles': self.tzimtzum_state.pruning_cycles
         }
+
+    # Aliases técnicos de métodos
+    prune = dark_night
+    regrow = renacimiento
+    full_pruning_cycle = full_tzimtzum_cycle
+    full_cycle = full_tzimtzum_cycle
     
     def _update_state(self, input_vector: np.ndarray) -> np.ndarray:
         """
@@ -760,6 +773,12 @@ DynamicPruningConfig = TzimtzumConfig
 DynamicPruningState = TzimtzumState
 DynamicPruningMixin = TzimtzumMixin
 DynamicPruningESN = TzimtzumESN
+
+# Structural Pruning Standard
+StructuralPruningESN = TzimtzumESN
+PruningConfig = TzimtzumConfig
+PruningState = TzimtzumState
+MagnitudePruningESN = TzimtzumESN
 
 if __name__ == "__main__":
     tzim = demonstrate_tzimtzum()

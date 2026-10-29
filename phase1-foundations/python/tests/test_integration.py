@@ -162,6 +162,31 @@ class TestESNToPlasticityPipeline:
         assert not np.any(np.isnan(predictions))
         assert not np.any(np.isinf(predictions))
 
+    def test_oja_plasticity_bounds_weights(self, mackey_glass_data):
+        """Verifica que la regla de Oja normalizada mantiene pesos estables y acotados."""
+        esn = HebbianESN(
+            n_inputs=1, n_reservoir=64, n_outputs=1,
+            spectral_radius=0.9, random_state=42,
+            plasticity_type='oja',
+            learning_rate=0.001
+        )
+        
+        esn.fit(mackey_glass_data['X_train'], mackey_glass_data['y_train'], washout=100)
+        
+        # Adaptar online con regla de Oja
+        esn.reset()
+        esn.adapt_online(mackey_glass_data['X_adapt'][:300])
+        
+        # Verificar que los pesos están acotados y no hay explosión numérica
+        assert not np.any(np.isnan(esn.W_reservoir))
+        assert not np.any(np.isinf(esn.W_reservoir))
+        assert np.max(np.abs(esn.W_reservoir)) < 5.0
+        
+        # Inferencia post-adaptación debe ser válida
+        esn.reset()
+        pred = esn.predict(mackey_glass_data['X_test'][:50])
+        assert not np.any(np.isnan(pred))
+
 
 class TestESNQuantizationPlasticityChain:
     """Tests: ESN → Plasticidad → Cuantización"""

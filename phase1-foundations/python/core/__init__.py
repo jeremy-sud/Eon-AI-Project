@@ -27,6 +27,8 @@ from .archaic_protocol import (
 # Pipeline de Acondicionamiento de Señal y Filtrado (ETL Pipeline)
 from .alchemy import (
     DataConditioningPipeline,
+    SignalConditioningPipeline,
+    SensorPipeline,
     PipelineConfig,
     PipelinePhase,
     ConditioningState,
@@ -104,6 +106,8 @@ __all__ = [
     
     # Sensor Conditioning & Filtering Pipeline (Production Standards)
     'DataConditioningPipeline',
+    'SignalConditioningPipeline',
+    'SensorPipeline',
     'PipelineConfig',
     'PipelinePhase',
     'ConditioningState',

@@ -109,6 +109,23 @@ class HebbianESN(EchoStateNetwork):
         delta_w = -self.learning_rate * np.outer(post, pre)
         return delta_w
     
+    def _oja_update(self, pre: np.ndarray, post: np.ndarray) -> np.ndarray:
+        """
+        Regla de plasticidad normalizada de Oja (1982):
+        Δw_ij = η * (post_i * pre_j - post_i² * w_ij)
+        
+        Equivalente matricial:
+        ΔW = η * (outer(post, pre) - diag(post²) @ W)
+        
+        Garantiza asintóticamente la normalización de pesos y convergencia
+        al subespacio principal (PCA no lineal local) sin explosión numérica.
+        """
+        post_sq = post ** 2
+        hebbian_term = np.outer(post, pre)
+        decay_term = post_sq[:, np.newaxis] * self.W_reservoir
+        delta_w = self.learning_rate * (hebbian_term - decay_term)
+        return delta_w
+    
     def _apply_plasticity(self, input_vector: np.ndarray, new_state: np.ndarray):
         """
         Aplica la regla de plasticidad seleccionada al reservoir.
@@ -123,6 +140,8 @@ class HebbianESN(EchoStateNetwork):
             )
         elif self.plasticity_type == 'anti_hebbian':
             delta_w = self._anti_hebbian_update(self._prev_state, new_state)
+        elif self.plasticity_type in ('oja', 'normalized_hebbian'):
+            delta_w = self._oja_update(self._prev_state, new_state)
         else:
             return
         
@@ -130,10 +149,11 @@ class HebbianESN(EchoStateNetwork):
         mask = (self.W_reservoir != 0)
         self.W_reservoir += delta_w * mask
         
-        # Mantener radio espectral bajo control (estabilidad)
-        self._normalize_spectral_radius()
-        
         self._adaptation_count += 1
+        
+        # Mantener radio espectral bajo control (estabilidad) cada 10 pasos o en el primer paso
+        if self._adaptation_count % 10 == 0 or self._adaptation_count == 1:
+            self._normalize_spectral_radius()
         
     def _normalize_spectral_radius(self):
         """Renormaliza el reservoir para mantener estabilidad."""
@@ -188,6 +208,9 @@ class HebbianESN(EchoStateNetwork):
                     'max_weight': np.max(np.abs(self.W_reservoir)),
                     'sparsity': np.mean(self.W_reservoir == 0)
                 })
+        
+        # Normalización final garantizada
+        self._normalize_spectral_radius()
         
         return self
     

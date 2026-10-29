@@ -71,7 +71,16 @@ class NodeSensorData:
     processing_load: float = 0.0            # 0-1, carga CPU/memoria
     sample_rate: float = 1.0                # Hz, frecuencia de muestreo
     prediction_error: float = 0.0           # MSE reciente
-    will_alignment: float = 1.0             # Alineación con True Will
+    will_alignment: float = 1.0             # Alineación con perfil de especialización
+
+    @property
+    def specialization_alignment(self) -> float:
+        """Alias técnico para alineación con el perfil de especialización del nodo."""
+        return self.will_alignment
+
+    @specialization_alignment.setter
+    def specialization_alignment(self, value: float) -> None:
+        self.will_alignment = value
 
 
 @dataclass
@@ -675,6 +684,12 @@ def demo_egregore():
     for key, value in actions.items():
         print(f"  {key}: {value}")
 
+
+# Technical Production Standards (Swarm Coherence & Homeostasis)
+SwarmState = EgregorState
+SwarmPhase = EgregorMood
+SwarmCoherenceProcessor = EgregorProcessor
+SwarmCoherenceMonitor = EgregorProcessor
 
 if __name__ == "__main__":
     demo_egregore()

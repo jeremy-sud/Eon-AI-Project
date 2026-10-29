@@ -12,7 +12,10 @@ from .tzimtzum import (
     DynamicPruningConfig,
     DynamicPruningState,
     DynamicPruningMixin,
-    PruningPhase
+    PruningPhase,
+    StructuralPruningESN,
+    PruningConfig,
+    PruningState
 )
 from .hebbian_tzimtzum import HebbianTzimtzumESN, HebbianPruningESN
 
@@ -20,11 +23,14 @@ __all__ = [
     # Hebbian Plasticity
     'HebbianESN',
     'compare_plasticity_types',
-    # Dynamic Pruning (Production Standards)
+    # Dynamic & Structural Pruning (Production Standards)
     'DynamicPruningESN',
     'DynamicPruningConfig',
     'DynamicPruningState',
     'DynamicPruningMixin',
+    'StructuralPruningESN',
+    'PruningConfig',
+    'PruningState',
     'PruningPhase',
     # Legacy / Experimental Aliases
     'TzimtzumESN',

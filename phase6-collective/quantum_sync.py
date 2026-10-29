@@ -339,3 +339,10 @@ class QuantumSyncProtocol:
             "current_epoch": self._epoch,
             **self.stats.to_dict(),
         }
+
+
+# Technical Production Standards (Deterministic State Synchronization via Synchronized PRNG)
+QuantumSync = QuantumSyncProtocol
+DeterministicPRNGSync = QuantumSyncProtocol
+SharedSeedSync = QuantumSyncProtocol
+DeterministicSyncProtocol = QuantumSyncProtocol

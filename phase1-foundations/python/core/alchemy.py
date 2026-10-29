@@ -41,6 +41,13 @@ class AlchemicalPhase(Enum):
     RUBEDO = auto()          # Iluminación: Inferencia completada
     OPUS_COMPLETE = auto()   # Piedra Filosofal: Resultado final listo
 
+# Production Technical Aliases
+AlchemicalPhase.RAW_INGESTION = AlchemicalPhase.NIGREDO
+AlchemicalPhase.FILTERING = AlchemicalPhase.ALBEDO
+AlchemicalPhase.FEATURE_PROJECTION = AlchemicalPhase.CITRINITAS
+AlchemicalPhase.INFERENCE = AlchemicalPhase.RUBEDO
+AlchemicalPhase.COMPLETE = AlchemicalPhase.OPUS_COMPLETE
+
 
 @dataclass
 class TransmutationState:
@@ -438,6 +445,7 @@ class AlchemicalPipeline:
             result['note'] = "Sin ESN - usando valor purificado como resultado"
         
         self._rubedo_result = result['gold']
+        result['prediction'] = result['gold']
         
         # Actualizar estado
         self.state.rubedo_predictions += 1
@@ -505,6 +513,12 @@ class AlchemicalPipeline:
         }
         
         return result
+
+    # Production Engineering Aliases
+    ingest_raw = nigredo
+    filter_signal = albedo
+    infer = rubedo
+    process = transmute
     
     def get_visualization_state(self) -> Dict:
         """
@@ -711,6 +725,8 @@ PipelinePhase = AlchemicalPhase
 ConditioningState = TransmutationState
 PipelineConfig = AlchemicalConfig
 DataConditioningPipeline = AlchemicalPipeline
+SignalConditioningPipeline = AlchemicalPipeline
+SensorPipeline = AlchemicalPipeline
 
 if __name__ == "__main__":
     pipeline = demonstrate_alchemy()

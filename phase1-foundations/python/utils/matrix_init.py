@@ -326,19 +326,21 @@ def ridge_regression(
     regularization: float = 1e-6
 ) -> np.ndarray:
     """
-    Calcula W_out usando Ridge Regression (más estable que inversión directa).
+    Calcula W_out usando Ridge Regression regularizada mediante descomposición de Cholesky.
     
-    Usa np.linalg.solve en lugar de np.linalg.inv que es:
-    - Más estable numéricamente
-    - Más rápido (O(n³/3) vs O(n³))
+    A = S^T @ S + λI es simétrica estrictamente definida positiva (SPD).
+    La descomposición de Cholesky (A = L @ L^T):
+    - Requiere solo O(n³/3) operaciones (la mitad de operaciones que LU y un tercio de Gauss-Jordan).
+    - Es numéricamente incondicionalmente estable sin necesidad de pivoteo parcial.
+    - Garantiza preservar el carácter definido positivo.
     
     Args:
-        states: Estados del reservoir (T x n_reservoir)
+        states: Estados del reservoir (T x n_features)
         targets: Objetivos (T x n_outputs)
-        regularization: Factor de regularización
+        regularization: Factor de regularización Tikhonov (λ > 0)
         
     Returns:
-        Matriz de pesos de salida W_out
+        Matriz de pesos de salida W_out (n_features x n_outputs)
     """
     n_features = states.shape[1]
     
@@ -348,5 +350,14 @@ def ridge_regression(
     # B = S^T @ Y
     B = states.T @ targets
     
-    # Resolver sistema lineal (más eficiente que inv)
-    return np.linalg.solve(A, B)
+    # Solver Cholesky para sistemas Simétricos Positivos Definidos (DPOSV en LAPACK)
+    try:
+        from scipy.linalg import solve
+        return solve(A, B, assume_a='pos')
+    except Exception:
+        try:
+            L = np.linalg.cholesky(A)
+            Z = np.linalg.solve(L, B)
+            return np.linalg.solve(L.T, Z)
+        except np.linalg.LinAlgError:
+            return np.linalg.solve(A, B)

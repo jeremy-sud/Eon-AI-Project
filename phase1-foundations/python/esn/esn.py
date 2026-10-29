@@ -33,7 +33,8 @@ try:
         validate_esn_parameters,
         validate_training_data,
         check_numerical_stability,
-        ridge_regression
+        ridge_regression,
+        compute_spectral_radius
     )
     _UTILS_AVAILABLE = True
 except ImportError:
@@ -168,9 +169,14 @@ class EchoStateNetwork:
             W *= mask
             
             # Escalar al radio espectral deseado para estabilidad
-            eigenvalues = np.abs(np.linalg.eigvals(W))
-            if eigenvalues.max() > 0:
-                W *= self.spectral_radius / eigenvalues.max()
+            if _UTILS_AVAILABLE:
+                current_radius = compute_spectral_radius(W, method='auto', rng=self.rng)
+            else:
+                eigenvalues = np.abs(np.linalg.eigvals(W))
+                current_radius = eigenvalues.max() if len(eigenvalues) > 0 else 0.0
+
+            if current_radius > 0:
+                W *= self.spectral_radius / current_radius
             
             self.W_reservoir = W
         

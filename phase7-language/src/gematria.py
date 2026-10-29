@@ -96,24 +96,23 @@ class GematriaEmbeddingLayer:
     
     def numeric_reduction(self, value: int) -> int:
         """
-        Reduce un número a un dígito (1-9) sumando sus dígitos.
+        Reduce un número a un dígito (1-9) mediante su raíz digital modular (Digital Root).
         
-        Esta es la técnica clásica de reducción numérica en numerología.
-        Ejemplo: 418 -> 4+1+8 = 13 -> 1+3 = 4
+        Optimización Matemática:
+        Calculado en O(1) mediante congruencia modular:
+            dr(n) = 1 + ((n - 1) mod 9) para n > 0
+        Elimina conversión a strings y bucles iterativos.
         
         Args:
-            value: Número a reducir
+            value: Número entero a reducir
             
         Returns:
             Dígito entre 1 y 9
         """
-        if value == 0:
-            return 9  # 0 se considera como 9 (completitud)
+        if value <= 0:
+            return 9  # 0 se mapea convencionalmente a 9 para completitud
         
-        while value > 9:
-            value = sum(int(d) for d in str(value))
-        
-        return value
+        return 1 + ((value - 1) % 9)
     
     def calculate_entropy(self, token: str) -> float:
         """
@@ -310,13 +309,19 @@ class GematriaEmbeddingLayer:
             "resonance_key": f"{reduced}-{bucket % 10}"
         }
 
+    # Production Engineering Aliases
+    calculate_token_hash = calculate_gematria
+    digital_root = numeric_reduction
+    get_hash_bucket = get_bucket
+    get_token_features = get_sacred_properties
+
 
 class GematriaTokenizer:
     """
-    Tokenizador que usa Gematria para embeddings.
+    Tokenizador que usa Gematria / Hash Numérico para embeddings.
     
     Compatible con WordTokenizer pero usa GematriaEmbeddingLayer
-    para generar embeddings basados en resonancia matemática.
+    para generar embeddings basados en resonancia matemática determinista.
     """
     
     # Tokens especiales con valores gemátricos significativos
@@ -430,6 +435,9 @@ class GematriaTokenizer:
         
         for word, idx in self.word2idx.items():
             self._embeddings[idx] = self.gematria.embed(word)
+    
+    # Alias público para pre-computar embeddings
+    build_embeddings = _build_embeddings
     
     def encode(self, text: str, add_special: bool = False) -> np.ndarray:
         """

@@ -21,8 +21,10 @@ logger = logging.getLogger(__name__)
 
 _current_dir = os.path.dirname(os.path.abspath(__file__))
 
+# Asegurar que el directorio web local tenga precedencia para módulos propios como learning.py
+sys.path.insert(0, _current_dir)
 # Ajustar path para importar módulos de phase1-foundations
-sys.path.insert(0, os.path.join(_current_dir, '..', 'phase1-foundations', 'python'))
+sys.path.append(os.path.join(_current_dir, '..', 'phase1-foundations', 'python'))
 
 from core.aeon_birth import AeonBirth
 from core.genesis import get_genesis
@@ -256,6 +258,10 @@ try:
 except Exception as e:
     logger.warning(f"Error inicializando Oráculo I-Ching: {e}")
     _iching_oracle = None
+
+@app.route('/', methods=['GET'])
+def serve_index():
+    return send_from_directory(os.path.join(_current_dir, 'static'), 'index.html')
 
 @app.route('/health', methods=['GET'])
 def health_check():

@@ -71,7 +71,9 @@ class EchoStateNetwork:
         use_circadian: bool = False,
         dropout: float = 0.0,
         learning_rate: float = 0.01,
-        random_state: Optional[int] = None
+        random_state: Optional[int] = None,
+        topology: str = 'random',
+        enable_stability_guard: bool = False
     ):
         # Validar parámetros
         if _UTILS_AVAILABLE:
@@ -112,6 +114,11 @@ class EchoStateNetwork:
         else:
             self.birth_hash = self._generate_hash(seed, self.birth_time)
         
+        self.topology = topology
+        self.stability_guard = None
+        if enable_stability_guard:
+            self.enable_stability_guard()
+
         # Inicializar matrices
         self._initialize_weights()
         
@@ -137,24 +144,35 @@ class EchoStateNetwork:
         return ''.join(f'{b:02x}' for b in bytes_list)
         
     def _initialize_weights(self):
-        """Inicializa las matrices de pesos aleatorios."""
-        
+        """Inicializa las matrices de pesos aleatorios u ortogonales."""
         # Matriz de entrada: conexiones aleatorias input -> reservoir
         self.W_in = self.rng.uniform(-1, 1, (self.n_reservoir, self.n_inputs))
         
         # Matriz del reservoir: conexiones recurrentes
-        # Aplicamos escasez (sparsity) para eficiencia
-        W = self.rng.uniform(-1, 1, (self.n_reservoir, self.n_reservoir))
-        mask = self.rng.random((self.n_reservoir, self.n_reservoir)) > self.sparsity
-        W *= mask
-        
-        # Escalar al radio espectral deseado para estabilidad
-        # El eigenvalor máximo controla la "memoria" del sistema
-        eigenvalues = np.abs(np.linalg.eigvals(W))
-        if eigenvalues.max() > 0:
-            W *= self.spectral_radius / eigenvalues.max()
-        
-        self.W_reservoir = W
+        if getattr(self, 'topology', 'random') == 'orthogonal':
+            if _UTILS_AVAILABLE:
+                from utils.matrix_init import create_orthogonal_reservoir
+                self.W_reservoir = create_orthogonal_reservoir(
+                    size=self.n_reservoir,
+                    spectral_radius=self.spectral_radius,
+                    rng=self.rng
+                )
+            else:
+                H = self.rng.standard_normal((self.n_reservoir, self.n_reservoir))
+                Q, _ = np.linalg.qr(H)
+                self.W_reservoir = self.spectral_radius * Q
+        else:
+            # Aplicamos escasez (sparsity) para eficiencia
+            W = self.rng.uniform(-1, 1, (self.n_reservoir, self.n_reservoir))
+            mask = self.rng.random((self.n_reservoir, self.n_reservoir)) > self.sparsity
+            W *= mask
+            
+            # Escalar al radio espectral deseado para estabilidad
+            eigenvalues = np.abs(np.linalg.eigvals(W))
+            if eigenvalues.max() > 0:
+                W *= self.spectral_radius / eigenvalues.max()
+            
+            self.W_reservoir = W
         
     def _update_state(self, input_vector: np.ndarray) -> np.ndarray:
         """
@@ -199,15 +217,45 @@ class EchoStateNetwork:
                 mask = self.rng.random(self.n_reservoir) >= current_dropout
                 self.state = (self.state * mask) / (1.0 - current_dropout)
         
+        # Aplicar guardián de estabilidad en tiempo real si está activo
+        if self.stability_guard is not None:
+            is_stable, _ = self.stability_guard.check_state(self.state)
+            if not is_stable:
+                self.state = self.stability_guard.stabilize_state(self.state)
+                
         # Verificar estabilidad numérica (opcional)
         if _UTILS_AVAILABLE:
             try:
                 check_numerical_stability(self.state, "reservoir")
             except RuntimeError:
-                # Re-lanzar con contexto adicional
                 raise
         
         return self.state
+
+    def enable_stability_guard(
+        self,
+        spectral_radius_max: Optional[float] = None,
+        saturation_threshold: float = 0.995,
+        max_saturation_ratio: float = 0.80,
+        damping_factor: float = 0.90
+    ) -> 'EchoStateNetwork':
+        """
+        Activa el guardián de estabilidad en tiempo real para el reservoir.
+        """
+        try:
+            from esn.stability_guard import StabilityGuard
+        except ImportError:
+            from .stability_guard import StabilityGuard
+            
+        max_rho = spectral_radius_max if spectral_radius_max is not None else min(1.2, self.spectral_radius * 1.1)
+        self.stability_guard = StabilityGuard(
+            spectral_radius_target=self.spectral_radius,
+            spectral_radius_max=max_rho,
+            saturation_threshold=saturation_threshold,
+            max_saturation_ratio=max_saturation_ratio,
+            damping_factor=damping_factor
+        )
+        return self
     
     def fit(self, inputs: np.ndarray, outputs: np.ndarray, washout: int = 100) -> 'EchoStateNetwork':
         """

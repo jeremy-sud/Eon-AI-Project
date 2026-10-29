@@ -817,7 +817,7 @@ const App = {
         email: "cliente@senselab.com",
         company_name: "Cafetalera El Bosque",
         tenant_id: "sl_tenant_000003",
-        plan: "pro",
+        plan: "business",
         twofa_enabled: true
       },
       sandbox: {
@@ -826,7 +826,7 @@ const App = {
         email: "dev@scisenselab.com",
         company_name: "Distribuidora del Sur S.A.",
         tenant_id: "sl_tenant_000004",
-        plan: "free",
+        plan: "business",
         twofa_enabled: false
       }
     };
@@ -1049,7 +1049,7 @@ const App = {
     if (userCard) {
       userCard.style.display = "flex";
       document.getElementById("sidebarUserName").textContent = profile.name;
-      document.getElementById("sidebarUserPlan").textContent = `Plan ${profile.plan.toUpperCase()}`;
+      document.getElementById("sidebarUserPlan").textContent = profile.plan === "business" ? "Business 2.0 (Gratis)" : `Plan ${profile.plan.toUpperCase()}`;
     }
 
     // Update mobile profile button
@@ -1078,7 +1078,7 @@ const App = {
       
       const planBadge = document.getElementById("profile-plan-badge");
       if (planBadge) {
-        planBadge.textContent = profile.plan.toUpperCase();
+        planBadge.textContent = profile.plan === "business" ? "BUSINESS 2.0 (GRATIS)" : profile.plan.toUpperCase();
         planBadge.className = "tenant-badge " + (profile.plan === 'business' ? 'admin' : (profile.plan === 'pro' ? 'pro' : 'sandbox'));
       }
       
@@ -1097,7 +1097,7 @@ const App = {
       }
       
       const tokenUsageEl = document.getElementById("profile-token-usage-txt");
-      if (tokenUsageEl) tokenUsageEl.textContent = `${currentTokens.toLocaleString()} / ${maxTokens.toLocaleString()}`;
+      if (tokenUsageEl) tokenUsageEl.textContent = profile.plan === "business" ? `${currentTokens.toLocaleString()} / Ilimitado (Business 2.0)` : `${currentTokens.toLocaleString()} / ${maxTokens.toLocaleString()}`;
       
       const progressEl = document.getElementById("profile-token-progress");
       if (progressEl) progressEl.style.width = `${(currentTokens / maxTokens * 100).toFixed(1)}%`;

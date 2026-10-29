@@ -267,9 +267,30 @@ pytest -v
 # - Web & Dashboard: 70 tests
 ```
 
+## 11. Control Numérico y Estabilidad Dinámica (v2.5)
+
+El subsistema de control numérico asegura la estabilidad matemática incondicional en despliegues embebidos y edge continuos (meses de operación ininterrumpida sin reseteo de software):
+
+### 11.1 Guardián de Estabilidad (`StabilityGuard`)
+- **Monitoreo de Lyapunov:** Estimación periódica del exponente local de Lyapunov ($\lambda_{\max} < 0$) para prevenir bifurcaciones hacia regímenes caóticos inestables durante el aprendizaje continuo.
+- **Contracción espectral automática:** Si $\rho(W) > \rho_{\max}$ tras plasticidad o poda, reescala instantáneamente $W \leftarrow \left(\frac{\rho_{\text{target}}}{\rho(W)}\right) W$.
+- **Protección contra saturación:** Amortiguamiento suave si la tasa de neuronas saturadas ($|x_i| \ge 0.995$) excede el 80%.
+
+### 11.2 Factorización U-D Bierman-Thornton (`UDFactorizedRLS`)
+- **Problema en edge:** El algoritmo RLS clásico acumula errores de truncamiento en aritmética de 32 bits, perdiendo la condición semidefinida positiva de la matriz de covarianza $P$ y divergiendo con `NaN`.
+- **Solución Eón:** Representación $P = U D U^T$ donde $U$ es triangular superior unitaria y $D$ es diagonal estrictamente positiva ($D_j > 0$). Actualiza directamente los factores sin inversión matricial ($O(N^2)$ por muestra), garantizando estabilidad numérica infinita y adaptación en tiempo real con factor de olvido $\beta$.
+
+### 11.3 Reservoirs Ortogonales de Cayley
+- Matriz ortogonal estricta $W_{\text{orth}} = (I - A)(I + A)^{-1}$ derivada de matrices antisimétricas $A = -A^T$.
+- Escalado exacto $W = \rho \cdot W_{\text{orth}}$: todos los eigenvalores tienen $|\lambda_i| = \rho$, asegurando un decaimiento homogéneo sin modos resonantes descontrolados.
+
+### 11.4 Sintonización Analítica de Capacidad de Memoria (`MemoryTuner`)
+- Medición experimental del límite teórico de Jaeger: $MC = \sum_{k=1}^{k_{\max}} r^2(u(t-k), y_k(t)) \le N$.
+- Selección óptima de $\alpha_{\text{opt}} \approx 1 - \exp(-\Delta t / \tau_{\text{corr}})$ a partir de la autocorrelación $R_{uu}(\tau)$ de la señal del sensor.
+
 ---
 
-*Updated: 2026-10-04 (v2.4.1)*
+*Updated: 2026-10-29 (v2.5.0-dev)*
 
 ---
 

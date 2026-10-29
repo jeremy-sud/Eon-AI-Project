@@ -1,15 +1,18 @@
 """
-Gematria Embedding Layer - Resonancia Matemática para Tokens
+Capa de Embeddings por Hash Numérico y Entropía (Numeric Hash Embedding Layer)
+=============================================================================
 
-Implementa un sistema de embeddings basado en principios gemátricos:
-- Hash por suma de bytes (valor numérico del token)
-- Agrupación por resonancia matemática
-- Reducción numérica a dígitos sagrados (1-9)
-- Embeddings por entropía de Shannon
+Implementa un sistema determinista de embeddings para microcontroladores con memoria mínima:
+- Función hash por suma de bytes (valor numérico determinista del token)
+- Reducción numérica de dígitos (raíz digital mod 9) para proyección en dimensiones bajas
+- Incorporación de entropía de Shannon del token
+- Huella de memoria virtualmente nula: no requiere almacenar tablas gigantescas de embeddings densos
 
-"Todo número es infinito; no hay diferencia" - Liber AL vel Legis I:4
+[Nota Histórica / Experimental]:
+El proyecto exploró inicialmente esta técnica bajo el concepto de gematria algorítmica,
+conservando los nombres de clase originales como aliases para compatibilidad.
 
-Autor: Eon Project AI
+Autor: Eon Project AI - SenseLab
 """
 
 import math
@@ -568,6 +571,10 @@ def demo_gematria():
     print(f"\n  Embeddings shape: {embeddings.shape}")
     print(f"  Primer embedding (primeros 8 valores): {embeddings[0][:8]}")
 
+
+# Technical Production Standards (Deterministic Hash-Based Token Embedding)
+NumericHashEmbeddingLayer = GematriaEmbeddingLayer
+NumericHashTokenizer = GematriaTokenizer
 
 if __name__ == "__main__":
     demo_gematria()

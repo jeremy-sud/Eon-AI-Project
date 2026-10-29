@@ -394,88 +394,71 @@ float aeon_train(aeon_core_t *core, const aeon_state_t *inputs,
   }
 
   /*
-   * Resolver W_out = (S^T*S)^(-1) * S^T*Y usando eliminación Gaussiana
-   * simplificada (Gauss-Jordan para sistemas pequeños)
+   * Factorización de Cholesky: StS + lambda*I = L * L^T
+   * StS es simétrica definida positiva (SPD), lo que garantiza descomposición exacta
+   * sin necesidad de pivoteo, con 1/3 de las operaciones (N^3 / 3) vs Gauss-Jordan (N^3),
+   * eliminando la inversión matricial explícita y mejorando la precisión numérica.
    */
+  float L[AEON_RESERVOIR_SIZE][AEON_RESERVOIR_SIZE];
+  memset(L, 0, sizeof(L));
 
-  /* Invertir StS usando Gauss-Jordan (in-place con matriz identidad) */
-  float inv[AEON_RESERVOIR_SIZE][AEON_RESERVOIR_SIZE];
+  for (int j = 0; j < AEON_RESERVOIR_SIZE; j++) {
+    float sum = 0.0f;
+    for (int k = 0; k < j; k++) {
+      sum += L[j][k] * L[j][k];
+    }
+    float d = StS[j][j] - sum;
+    if (d < 1e-7f) {
+      d = 1e-7f; /* Regularización numérica para garantizar SDP estricto */
+    }
+    L[j][j] = sqrtf(d);
 
-  /* Inicializar inversa como identidad */
-  for (int i = 0; i < AEON_RESERVOIR_SIZE; i++) {
-    for (int j = 0; j < AEON_RESERVOIR_SIZE; j++) {
-      inv[i][j] = (i == j) ? 1.0f : 0.0f;
+    for (int i = j + 1; i < AEON_RESERVOIR_SIZE; i++) {
+      sum = 0.0f;
+      for (int k = 0; k < j; k++) {
+        sum += L[i][k] * L[j][k];
+      }
+      L[i][j] = (StS[i][j] - sum) / L[j][j];
     }
   }
 
-  /* Gauss-Jordan */
-  for (int col = 0; col < AEON_RESERVOIR_SIZE; col++) {
-    /* Buscar pivote máximo */
-    int max_row = col;
-    float max_val = StS[col][col] > 0 ? StS[col][col] : -StS[col][col];
-
-    for (int row = col + 1; row < AEON_RESERVOIR_SIZE; row++) {
-      float val = StS[row][col] > 0 ? StS[row][col] : -StS[row][col];
-      if (val > max_val) {
-        max_val = val;
-        max_row = row;
-      }
-    }
-
-    /* Intercambiar filas si es necesario */
-    if (max_row != col) {
-      for (int k = 0; k < AEON_RESERVOIR_SIZE; k++) {
-        float tmp = StS[col][k];
-        StS[col][k] = StS[max_row][k];
-        StS[max_row][k] = tmp;
-        tmp = inv[col][k];
-        inv[col][k] = inv[max_row][k];
-        inv[max_row][k] = tmp;
-      }
-    }
-
-    /* Normalizar fila pivote */
-    float pivot = StS[col][col];
-    if (fabsf(pivot) < 1e-10f) {
-      pivot = (pivot >= 0.0f) ? 1e-10f : -1e-10f; /* Evitar división por cero preservando signo */
-    }
-
-    for (int k = 0; k < AEON_RESERVOIR_SIZE; k++) {
-      StS[col][k] /= pivot;
-      inv[col][k] /= pivot;
-    }
-
-    /* Eliminar en otras filas */
-    for (int row = 0; row < AEON_RESERVOIR_SIZE; row++) {
-      if (row != col) {
-        float factor = StS[row][col];
-        for (int k = 0; k < AEON_RESERVOIR_SIZE; k++) {
-          StS[row][k] -= factor * StS[col][k];
-          inv[row][k] -= factor * inv[col][k];
-        }
-      }
-    }
-  }
-
-  /* Calcular W_out = inv(StS) * StY */
+  /*
+   * Resolver (L * L^T) * W_out^T = StY
+   * Para cada salida o in [0, AEON_OUTPUT_SIZE - 1]:
+   *   1. Sustitución hacia adelante: L * z = StY[:, o]
+   *   2. Sustitución hacia atrás: L^T * w = z
+   */
   for (int o = 0; o < AEON_OUTPUT_SIZE; o++) {
+    /* 1. Sustitución hacia adelante: L * z = StY[:, o] */
+    float z[AEON_RESERVOIR_SIZE];
     for (int i = 0; i < AEON_RESERVOIR_SIZE; i++) {
       float sum = 0.0f;
-      for (int k = 0; k < AEON_RESERVOIR_SIZE; k++) {
-        sum += inv[i][k] * StY[k][o];
+      for (int k = 0; k < i; k++) {
+        sum += L[i][k] * z[k];
       }
+      z[i] = (StY[i][o] - sum) / L[i][i];
+    }
+
+    /* 2. Sustitución hacia atrás: L^T * w = z */
+    float w[AEON_RESERVOIR_SIZE];
+    for (int i = AEON_RESERVOIR_SIZE - 1; i >= 0; i--) {
+      float sum = 0.0f;
+      for (int k = i + 1; k < AEON_RESERVOIR_SIZE; k++) {
+        sum += L[k][i] * w[k];
+      }
+      w[i] = (z[i] - sum) / L[i][i];
 
       /* Limitar magnitud del peso para estabilidad */
-      if (sum > 2.0f)
-        sum = 2.0f;
-      if (sum < -2.0f)
-        sum = -2.0f;
+      if (w[i] > 2.0f)
+        w[i] = 2.0f;
+      if (w[i] < -2.0f)
+        w[i] = -2.0f;
 
 #if AEON_USE_FIXED_POINT
       core->W_out[o * AEON_RESERVOIR_SIZE + i] =
-          (aeon_weight_t)(sum * AEON_SCALE);
+          (aeon_weight_t)(w[i] * AEON_SCALE);
 #else
-      core->W_out[o * AEON_RESERVOIR_SIZE + i] = sum;
+      core->W_out[o * AEON_RESERVOIR_SIZE + i] = w[i];
 #endif
     }
   }
@@ -507,6 +490,71 @@ float aeon_train(aeon_core_t *core, const aeon_state_t *inputs,
   }
 
   return mse / (float)(train_samples * AEON_OUTPUT_SIZE);
+}
+
+float aeon_online_train_step(aeon_core_t *core, const aeon_state_t *target, float learning_rate) {
+  if (core == NULL || target == NULL)
+    return -1.0f;
+
+  /* Predicción previa al paso adaptativo */
+  aeon_state_t pred[AEON_OUTPUT_SIZE];
+  aeon_predict(core, pred);
+
+  /* Calcular norma euclídea del estado actual: ||state||^2 */
+  float state_norm_sq = 0.0f;
+  float state_f[AEON_RESERVOIR_SIZE];
+  for (int j = 0; j < AEON_RESERVOIR_SIZE; j++) {
+#if AEON_USE_FIXED_POINT
+    state_f[j] = (float)core->state[j] / AEON_SCALE;
+#else
+    state_f[j] = core->state[j];
+#endif
+    state_norm_sq += state_f[j] * state_f[j];
+  }
+
+  /* Regularizador para evitar división por cero cuando el estado es nulo */
+  const float epsilon = 1e-4f;
+  float denom = state_norm_sq + epsilon;
+  float total_mse = 0.0f;
+
+  for (int o = 0; o < AEON_OUTPUT_SIZE; o++) {
+#if AEON_USE_FIXED_POINT
+    float t_val = (float)target[o] / AEON_SCALE;
+    float p_val = (float)pred[o] / AEON_SCALE;
+#else
+    float t_val = target[o];
+    float p_val = pred[o];
+#endif
+    float error = t_val - p_val;
+    total_mse += error * error;
+
+    /* Factor de escala normalizado: eta * error / (||state||^2 + eps) */
+    float delta_factor = (learning_rate * error) / denom;
+
+    for (int j = 0; j < AEON_RESERVOIR_SIZE; j++) {
+      int idx = o * AEON_RESERVOIR_SIZE + j;
+#if AEON_USE_FIXED_POINT
+      float current_w = (float)core->W_out[idx] / AEON_SCALE;
+      float new_w = current_w + delta_factor * state_f[j];
+      if (new_w > 2.0f)
+        new_w = 2.0f;
+      if (new_w < -2.0f)
+        new_w = -2.0f;
+      core->W_out[idx] = (aeon_weight_t)(new_w * AEON_SCALE);
+#else
+      float new_w = core->W_out[idx] + delta_factor * state_f[j];
+      if (new_w > 2.0f)
+        new_w = 2.0f;
+      if (new_w < -2.0f)
+        new_w = -2.0f;
+      core->W_out[idx] = new_w;
+#endif
+    }
+  }
+
+  core->is_trained = true;
+  core->learning_sessions++;
+  return total_mse / (float)AEON_OUTPUT_SIZE;
 }
 
 int aeon_prune(aeon_core_t *core, float threshold) {

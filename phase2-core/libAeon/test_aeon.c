@@ -102,6 +102,21 @@ int main(void) {
   }
   test_passed("Structural Pruning");
 
+  // TEST 5: Real-time Online LMS Adaptation
+  aeon_state_t online_input = 0;
+#if AEON_USE_FIXED_POINT
+  online_input = (aeon_state_t)(0.5f * AEON_SCALE);
+#else
+  online_input = 0.5f;
+#endif
+  aeon_update(&core, &online_input);
+  aeon_state_t desired_output[AEON_OUTPUT_SIZE] = {online_input};
+  float step_error = aeon_online_train_step(&core, desired_output, 0.05f);
+  if (step_error < 0.0f || isnan(step_error)) {
+    test_failed("Online Training", "Step error is negative or NaN");
+  }
+  test_passed("Online LMS Adaptation");
+
   printf("\nAll tests passed successfully.\n");
   return 0;
 }

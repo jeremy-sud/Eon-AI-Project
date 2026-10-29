@@ -43,6 +43,7 @@ class AeonBirth:
         n_reservoir: int = 100, 
         name: str = "Eon-Instance", 
         data_dir: str = "data",
+        optimal_seed: Optional[int] = None,
         sacred_seed: Optional[int] = None,
         auto_excavate: bool = False,
         target_resonance: tuple = (0.95, 1.0),
@@ -57,7 +58,8 @@ class AeonBirth:
             n_reservoir: Tamaño del reservorio
             name: Nombre de la instancia
             data_dir: Directorio para persistencia
-            sacred_seed: Semilla sagrada pre-descubierta (modo descubrimiento)
+            optimal_seed: Semilla óptima pre-descubierta (modo determinista)
+            sacred_seed: Semilla pre-descubierta (alias legado)
             auto_excavate: Si True, excava automáticamente para encontrar semilla
             target_resonance: Rango de resonancia objetivo para auto-excavación
         """
@@ -68,7 +70,10 @@ class AeonBirth:
         self.excavation_result: Optional[ExcavationResult] = None
         
         # Determinar la semilla a usar
-        if sacred_seed is not None:
+        if optimal_seed is not None:
+            seed = optimal_seed
+            self._initialization_mode = "optimal_seed"
+        elif sacred_seed is not None:
             # Modo Descubrimiento: usar semilla sagrada pre-descubierta
             seed = sacred_seed
             self._initialization_mode = "sacred_seed"
@@ -108,13 +113,18 @@ class AeonBirth:
         return self.esn.birth_hash
     
     @property
+    def optimal_seed(self) -> int:
+        """La semilla óptima calibrada usada para inicializar este Eón."""
+        return self._sacred_seed
+
+    @property
     def sacred_seed(self) -> int:
-        """La semilla sagrada usada para inicializar este Eón."""
+        """La semilla usada para inicializar este Eón (alias legado)."""
         return self._sacred_seed
     
     @property
     def initialization_mode(self) -> str:
-        """Modo de inicialización: 'classic', 'sacred_seed', o 'auto_excavated'."""
+        """Modo de inicialización: 'classic', 'optimal_seed', 'sacred_seed', o 'auto_excavated'."""
         return self._initialization_mode
 
     @property

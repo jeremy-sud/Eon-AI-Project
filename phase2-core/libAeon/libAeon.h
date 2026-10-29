@@ -173,6 +173,20 @@ float aeon_train(aeon_core_t *core, const aeon_state_t *inputs,
                  uint16_t washout);
 
 /**
+ * @brief Actualización de entrenamiento online continuo (Normalized LMS / Delta Rule).
+ *
+ * Permite que microcontroladores en el edge adapten W_out en tiempo real muestra por muestra
+ * sin almacenar matrices de covarianza históricas ni requerir inversión matricial:
+ * W_out[o, :] += eta * (target[o] - pred[o]) * state^T / (||state||^2 + epsilon)
+ *
+ * @param core Puntero al núcleo
+ * @param target Vector de salidas deseadas (tamaño AEON_OUTPUT_SIZE)
+ * @param learning_rate Tasa de aprendizaje eta (ej: 0.01f a 0.05f)
+ * @return Error cuadrático medio de la predicción previa al paso de adaptación
+ */
+float aeon_online_train_step(aeon_core_t *core, const aeon_state_t *target, float learning_rate);
+
+/**
  * @brief Resetea el estado del reservoir a ceros
  *
  * @param core Puntero al núcleo

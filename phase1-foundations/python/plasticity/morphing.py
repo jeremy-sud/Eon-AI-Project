@@ -44,6 +44,7 @@ class TopologyType(Enum):
     SCALE_FREE = "scale_free"    # Barabási-Albert: distribución power-law
     RANDOM = "random"            # Estándar ESN (aleatoria)
     LATTICE = "lattice"          # Rejilla 2D (√N × √N)
+    ORTHOGONAL = "orthogonal"    # Ortogonal (Cayley transform: máxima memoria)
 
 def _build_ring(n: int, k: int, rng: np.random.Generator, spectral_radius: float) -> np.ndarray:
     """
@@ -182,17 +183,28 @@ def _build_lattice(n: int, rng: np.random.Generator, spectral_radius: float) -> 
                 W[i, nb] = rng.standard_normal()
     return _scale_spectral_radius(W, spectral_radius)
 
+def _build_orthogonal(n: int, rng: np.random.Generator, spectral_radius: float) -> np.ndarray:
+    """
+    Construye topología estrictamente ortogonal escalada (Cayley transform).
+    Garantiza que todos los autovalores decaigan uniformemente como rho^t.
+    """
+    from utils.matrix_init import create_orthogonal_reservoir
+    return create_orthogonal_reservoir(size=n, spectral_radius=spectral_radius, rng=rng)
+
 def _scale_spectral_radius(W: np.ndarray, target: float) -> np.ndarray:
-    """Escala W para que su radio espectral sea target."""
+    """Escala W para que su radio espectral sea target utilizando power iteration eficiente."""
     if not np.any(W != 0):
         return W
     try:
-        eigs = np.abs(np.linalg.eigvals(W))
-        current = eigs.max()
+        from utils.matrix_init import compute_spectral_radius
+        current = compute_spectral_radius(W, method='auto')
         if current > 1e-10:
             W = W * (target / current)
-    except np.linalg.LinAlgError:
-        pass
+    except Exception:
+        eigs = np.abs(np.linalg.eigvals(W))
+        current = eigs.max() if len(eigs) > 0 else 0.0
+        if current > 1e-10:
+            W = W * (target / current)
     return W
 
 def build_topology(
@@ -226,6 +238,8 @@ def build_topology(
         return _build_scale_free(n, m=m, rng=rng, spectral_radius=spectral_radius)
     elif topology == TopologyType.LATTICE:
         return _build_lattice(n, rng=rng, spectral_radius=spectral_radius)
+    elif topology == TopologyType.ORTHOGONAL:
+        return _build_orthogonal(n, rng=rng, spectral_radius=spectral_radius)
     else:  # RANDOM (default)
         return _build_random(n, sparsity=sparsity, rng=rng, spectral_radius=spectral_radius)
 

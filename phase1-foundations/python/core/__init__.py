@@ -7,10 +7,12 @@ from .aeon_birth import AeonBirth
 from .universal_miner import (
     UniversalMiner,
     ExcavationResult,
+    OptimalSeedResult,
     ResonanceType,
     SeedVault,
     quick_excavate,
-    KNOWN_SACRED_SEEDS
+    KNOWN_SACRED_SEEDS,
+    KNOWN_OPTIMAL_SEEDS
 )
 
 # Protocolo Arcaico (I Ching Communication)
@@ -86,10 +88,12 @@ __all__ = [
     # Seed Mining
     'UniversalMiner',
     'ExcavationResult', 
+    'OptimalSeedResult',
     'ResonanceType',
     'SeedVault',
     'quick_excavate',
     'KNOWN_SACRED_SEEDS',
+    'KNOWN_OPTIMAL_SEEDS',
     
     # Archaic Protocol
     'ArchaicProtocol',

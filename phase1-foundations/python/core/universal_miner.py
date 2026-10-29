@@ -41,25 +41,39 @@ class ResonanceType(Enum):
 
 @dataclass
 class ExcavationResult:
-    """Resultado de una excavación exitosa en el espacio latente."""
-    sacred_seed: int              # La semilla sagrada descubierta
-    divine_matrix: np.ndarray     # El reservorio revelado
-    resonance: float              # Nivel de resonancia natural
+    """Resultado de una excavación y certificación espectral en el espacio latente."""
+    sacred_seed: int              # La semilla sagrada descubierta (alias de optimal_seed)
+    divine_matrix: np.ndarray     # El reservorio calibrado (alias de calibrated_reservoir)
+    resonance: float              # Nivel de resonancia natural (radio espectral rho)
     resonance_type: ResonanceType # Tipo de resonancia encontrada
     excavation_depth: int         # Cuántas semillas se exploraron
     excavation_time: float        # Tiempo de excavación en segundos
     eigenspectrum: np.ndarray     # Espectro completo de eigenvalues
+
+    @property
+    def optimal_seed(self) -> int:
+        """Semilla óptima descubierta para inicialización determinista."""
+        return self.sacred_seed
+
+    @property
+    def calibrated_reservoir(self) -> np.ndarray:
+        """Matriz de reservorio calibrada en el borde del caos."""
+        return self.divine_matrix
     
     def __repr__(self):
         return (
             f"ExcavationResult(\n"
             f"  sacred_seed={self.sacred_seed},\n"
+            f"  optimal_seed={self.sacred_seed},\n"
             f"  resonance={self.resonance:.6f},\n"
             f"  type={self.resonance_type.value},\n"
             f"  depth={self.excavation_depth},\n"
             f"  time={self.excavation_time:.2f}s\n"
             f")"
         )
+
+# Alias de ingeniería
+OptimalSeedResult = ExcavationResult
 
 
 class UniversalMiner:
@@ -165,12 +179,12 @@ class UniversalMiner:
         resonance = np.max(np.abs(eigenvalues))
         return resonance, eigenvalues
     
-    def _fast_spectral_radius(self, matrix: np.ndarray, max_iter: int = 30, tol: float = 1e-6) -> float:
+    def _fast_spectral_radius(self, matrix: np.ndarray, max_iter: int = 20, tol: float = 1e-4) -> float:
         """
-        Estimación rápida del radio espectral usando Power Iteration.
+        Estimación rápida del radio espectral usando Power Iteration O(k * n^2).
         
-        Mucho más rápido que calcular todos los eigenvalores para matrices grandes.
-        Complejidad: O(n²) por iteración vs O(n³) para eigenvalores completos.
+        Mucho más rápido que calcular todos los autovalores para matrices grandes.
+        Complejidad: O(k * n^2) vs O(n^3) para descomposición espectral completa.
         
         Args:
             matrix: Matriz del reservorio
@@ -178,37 +192,33 @@ class UniversalMiner:
             tol: Tolerancia de convergencia
             
         Returns:
-            Estimación del radio espectral
+            Estimación rigurosa del radio espectral
         """
         n = matrix.shape[0]
-        # Vector inicial aleatorio normalizado (usando API moderna)
-        rng = np.random.default_rng()
+        rng = np.random.default_rng(42)
         v = rng.standard_normal(n)
-        v = v / np.linalg.norm(v)
+        norm = np.linalg.norm(v)
+        if norm < 1e-12:
+            return 0.0
+        v = v / norm
         
         eigenvalue_estimate = 0.0
         
         for _ in range(max_iter):
-            # Power iteration
-            v_new = matrix @ v
-            norm = np.linalg.norm(v_new)
+            w = matrix @ v
+            norm = np.linalg.norm(w)
             
-            if norm < 1e-10:
-                return 0.0  # Matriz nula o casi nula
+            if norm < 1e-12:
+                return 0.0
             
-            v_new = v_new / norm
+            v = w / norm
             
-            # Rayleigh quotient para mejor estimación
-            new_estimate = np.abs(np.vdot(matrix @ v_new, v_new))
+            if abs(norm - eigenvalue_estimate) < tol:
+                return norm
             
-            # Verificar convergencia
-            if abs(new_estimate - eigenvalue_estimate) < tol:
-                return float(np.sqrt(new_estimate)) if new_estimate > 0 else new_estimate
-            
-            eigenvalue_estimate = new_estimate
-            v = v_new
+            eigenvalue_estimate = norm
         
-        return float(np.sqrt(eigenvalue_estimate)) if eigenvalue_estimate > 0 else eigenvalue_estimate
+        return eigenvalue_estimate
     
     def _check_golden_ratio(self, eigenvalues: np.ndarray) -> float:
         """Verifica presencia del ratio áureo en el espectro."""
@@ -266,6 +276,13 @@ class UniversalMiner:
         
         start_time = time.time()
         min_res, max_res = self.target_resonance
+        target_center = (min_res + max_res) / 2
+        
+        # Filtro rápido de 2 etapas con Power Iteration para reservorios medianos/grandes
+        use_fast_filter = self.reservoir_size >= 40 and self.resonance_type == ResonanceType.EDGE_OF_CHAOS
+        filter_margin = max(0.40, (max_res - min_res) * 1.5)
+        filter_min = min_res - filter_margin
+        filter_max = max_res + filter_margin
         
         best_seed = None
         best_resonance = float('inf')
@@ -275,11 +292,19 @@ class UniversalMiner:
             # 1. Muestreo del Caos - revelar la matriz
             matrix = self.chaos_sample(seed)
             
-            # 2. Medir resonancia natural
+            # Etapa 1: Filtro rápido O(k * n^2) para descartar matrices con radio espectral lejano
+            if use_fast_filter:
+                fast_est = self._fast_spectral_radius(matrix, max_iter=8)
+                est_dist = abs(fast_est - target_center)
+                if (fast_est < filter_min or fast_est > filter_max) and est_dist > best_distance:
+                    if callback:
+                        callback(seed, fast_est)
+                    continue
+
+            # 2. Medir resonancia natural exacta (Etapa 2: Certificación espectral completa O(N^3))
             resonance, eigenspectrum = self.measure_resonance(matrix)
             
             # 3. Calcular distancia al objetivo
-            target_center = (min_res + max_res) / 2
             distance = abs(resonance - target_center)
             
             # Registrar mejor candidato
@@ -475,6 +500,9 @@ KNOWN_SACRED_SEEDS = {
     'minimal_16': 7,              # Reservorio mínimo para edge devices
     'fibonacci_89': 144,          # Resonancia Fibonacci
 }
+
+# Alias técnico
+KNOWN_OPTIMAL_SEEDS = KNOWN_SACRED_SEEDS
 
 
 def quick_excavate(

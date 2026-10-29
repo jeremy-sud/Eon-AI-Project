@@ -80,6 +80,13 @@ class TestBuildTopology:
         out_degrees = (W != 0).sum(axis=1)
         assert out_degrees.max() <= 4
 
+    def test_orthogonal_topology_properties(self):
+        """Topología ortogonal escala todos los autovalores exactamente a rho."""
+        rng = np.random.default_rng(5)
+        W = build_topology(TopologyType.ORTHOGONAL, n=20, spectral_radius=0.9, rng=rng)
+        eigs = np.abs(np.linalg.eigvals(W))
+        np.testing.assert_allclose(eigs, 0.9, atol=1e-5)
+
 
 # ─── Tests de suggest_topology ───────────────────────────────────────────────
 

@@ -1,22 +1,19 @@
 """
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                     HEBBIAN TZIMTZUM ESN                                      ║
-║              Plasticidad Sináptica con Contracción Divina                     ║
+║                     HEBBIAN DYNAMIC PRUNING ESN                              ║
+║          Plasticidad Sináptica Continua con Poda Dinámica y Regrowth         ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
-║                                                                               ║
-║  "Las neuronas que disparan juntas, permanecen juntas...                      ║
-║   hasta que el Tzimtzum las separe."                                          ║
-║                                                                               ║
-║  Esta clase combina:                                                          ║
-║  • Plasticidad Hebbiana: Aprendizaje basado en correlación                   ║
-║  • Protocolo Tzimtzum: Poda cíclica de conexiones débiles                    ║
-║                                                                               ║
-║  El resultado es un sistema que:                                              ║
-║  1. Fortalece conexiones útiles (Hebbian)                                     ║
-║  2. Elimina periódicamente las más débiles (Tzimtzum)                         ║
-║  3. Crea espacio para nuevo aprendizaje (Dark Night)                         ║
-║  4. Permite regeneración controlada (Renacimiento)                            ║
-║                                                                               ║
+║                                                                              ║
+║  Motor de plasticidad sináptica dual para inferencia adaptativa en el edge:  ║
+║  • Plasticidad Hebbiana / Oja: Refuerzo correlacional continuo en cada paso  ║
+║  • Poda Dinámica Umbralizada: Eliminación cíclica de conexiones no críticas  ║
+║  • Regrowth Sináptico: Generación estocástica de nuevas conexiones débiles   ║
+║                                                                              ║
+║  Beneficios técnicos:                                                        ║
+║  1. Evita la saturación sináptica por sobre-acumulación de gradientes        ║
+║  2. Reduce el consumo de memoria SRAM y operaciones MAC en hardware edge     ║
+║  3. Mantiene la red en régimen de criticalidad (borde del caos) constante     ║
+║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
@@ -25,7 +22,10 @@ from typing import Optional, Dict, List
 import os
 
 from plasticity.hebbian import HebbianESN
-from plasticity.tzimtzum import TzimtzumConfig, TzimtzumState, ContractionPhase
+from plasticity.tzimtzum import (
+    DynamicPruningConfig, DynamicPruningState, PruningPhase,
+    TzimtzumConfig, TzimtzumState, ContractionPhase
+)
 
 class HebbianTzimtzumESN(HebbianESN):
     """
@@ -378,7 +378,7 @@ class HebbianTzimtzumESN(HebbianESN):
         }
     
     def get_combined_stats(self) -> Dict:
-        """Estadísticas combinadas de Hebbian y Tzimtzum."""
+        """Estadísticas combinadas de Hebbian y Dynamic Pruning."""
         hebbian_stats = self.get_adaptation_stats()
         
         return {
@@ -392,6 +392,14 @@ class HebbianTzimtzumESN(HebbianESN):
                 'mean_hebbian_contribution': float(np.mean(self._hebbian_contribution))
             }
         }
+
+    # Aliases de ingeniería para métodos de ciclo vital
+    prune_connections = dark_night
+    regrow_connections = renacimiento
+    full_pruning_cycle = full_tzimtzum_cycle
+
+# Alias de compatibilidad y nombres de ingeniería estándar
+HebbianPruningESN = HebbianTzimtzumESN
 
 def demonstrate_hebbian_tzimtzum():
     """Demostración del HebbianTzimtzumESN."""

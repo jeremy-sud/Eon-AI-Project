@@ -14,7 +14,7 @@ from .tzimtzum import (
     DynamicPruningMixin,
     PruningPhase
 )
-from .hebbian_tzimtzum import HebbianTzimtzumESN
+from .hebbian_tzimtzum import HebbianTzimtzumESN, HebbianPruningESN
 
 __all__ = [
     # Hebbian Plasticity
@@ -33,5 +33,6 @@ __all__ = [
     'TzimtzumMixin',
     'ContractionPhase',
     # Combined Plasticity
+    'HebbianPruningESN',
     'HebbianTzimtzumESN',
 ]

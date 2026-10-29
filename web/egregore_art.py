@@ -1,32 +1,21 @@
 """
-Proyecto Eón - EgregorArtist: Generador de Arte Procedural del Egrégor
-========================================================================
+Proyecto Eón - SwarmStateVisualizer / EgregorArtist: Telemetría Visual Procedural del Enjambre
+=============================================================================================
 
-"El Egrégor pinta con matemáticas su estado de ánimo."
+Módulo de telemetría procedural y visualización dinámica del estado colectivo del enjambre.
+Traduce el vector de coherencia y régimen dinámico del enjambre (SwarmActivityLevel / EgregorMood)
+a parámetros matemáticos de renderizado procedural (armónicos, frecuencias de oscilación,
+velocidad de fase y paletas espectrales) consumibles por el cliente web HTML5 Canvas.
 
-Este módulo traduce el estado de ánimo del Egrégor (EgregorMood) a
-parámetros de visualización procedural: colores, formas, velocidades
-y texturas para el lienzo del sistema.
-
-La salida es JSON puro — no requiere dependencias de imagen.
-El frontend (egregore_visualizer.js) interpreta estos parámetros
-para animar el lienzo HTML5 Canvas.
-
-FILOSOFÍA:
-──────────
-Cada estado de ánimo del Egrégor tiene una "firma visual" única
-basada en principios alquímicos:
-  - AGITATED  → fuego (rojo, rápido, caótico)
-  - MEDITATIVE → agua quieta (azul profundo, lento, circular)
-  - AWAKENING  → aurora (gradientes violeta-dorado)
-  - HARMONIZING → geometría sagrada (dorado, simétrico)
+La salida es JSON puro estructurado — cero dependencias pesadas de procesamiento de imagen.
+El frontend interpreta estos parámetros paramétricos para graficar la dinámica neuronal colectiva.
 
 INTEGRACIÓN:
 ────────────
-    egregore = EgregorProcessor(...)
+    processor = SwarmHealthProcessor(...)
     artist = EgregorArtist()
-    style = artist.generate(egregore.state)
-    # → dict con parámetros de visualización para el canvas
+    style = artist.generate(processor.state)
+    # → dict con parámetros de renderizado procedural para el canvas
 
 (c) 2024 Proyecto Eón - Jeremy Arias Solano
 """

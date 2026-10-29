@@ -411,11 +411,24 @@ class MetaSeedLearner:
         best_seed, best_resonance, best_dist = None, float('inf'), float('inf')
         best_matrix, best_spectrum = None, None
         target_center = (mn + mx) / 2
+        use_fast_filter = self.miner.reservoir_size >= 40
+        filter_margin = max(0.40, (mx - mn) * 1.5)
+        filter_min = mn - filter_margin
+        filter_max = mx + filter_margin
 
         for attempt, seed in enumerate(all_seeds[:max_attempts]):
             if seed <= 0:
                 continue
             matrix = self.miner.chaos_sample(seed)
+
+            # Etapa 1: Filtro rápido O(k * n^2) para descartar matrices con radio lejano
+            if use_fast_filter:
+                fast_est = self.miner._fast_spectral_radius(matrix, max_iter=8)
+                est_dist = abs(fast_est - target_center)
+                if (fast_est < filter_min or fast_est > filter_max) and est_dist > best_dist:
+                    continue
+
+            # Etapa 2: Medición espectral exacta
             resonance, eigenspectrum = self.miner.measure_resonance(matrix)
 
             dist = abs(resonance - target_center)
